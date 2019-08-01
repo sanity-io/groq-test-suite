@@ -1,0 +1,12 @@
+{
+  "name": "groq-test-suite",
+  "private": true,
+  "scripts": {
+    "build": "node src/build.js"
+  },
+  "dependencies": {
+    "glob": "^7.1.4",
+    "js-yaml": "^3.13.1",
+    "ndjson": "^1.5.0"
+  }
+}
