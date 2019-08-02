@@ -32,9 +32,12 @@ tests:
 
 ### Nesting tests
 
-Tests can be nested and will inherit properties from their parent:
+Tests can be nested and will then inherit properties from their parent.
+
+Here's a slightly contrived example which shows how the dataset can be overriden for a specific test case:
 
 ```yaml
+# This test file:
 documents:
   - _id: "a"
   - _id: "b"
@@ -45,12 +48,31 @@ tests:
     count(*)
   result: 2
 
-  # Sub-tests
   tests:
     - documents:
         - _id: "a"
         - _id: "b"
-      result: 2
+        - _id: "c"
+      result: 3
+
+# … would be equivalent to:
+tests:
+  - name: "Counting"
+    documents:
+      - _id: "a"
+      - _id: "b"
+    query: |
+      count(*)
+    result: 2
+
+  - name: "Counting 2"
+    documents:
+      - _id: "a"
+      - _id: "b"
+      - _id: "c"
+    query: |
+      count(*)
+    result: 3
 ```
 
 ### Variables
