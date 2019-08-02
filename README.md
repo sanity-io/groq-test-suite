@@ -35,18 +35,22 @@ tests:
 Tests can be nested and will inherit properties from their parent:
 
 ```yaml
-query: |
-  count(*)
+documents:
+  - _id: "a"
+  - _id: "b"
+
 tests:
-  - documents:
-      - _id: "a"
-      - _id: "b"
-    result: 2
-  - documents:
-      - _id: "a"
-      - _id: "b"
-      - _id: "c"
-    result: 3
+  name: "Counting"
+  query: |
+    count(*)
+  result: 2
+
+  # Sub-tests
+  tests:
+    - documents:
+        - _id: "a"
+        - _id: "b"
+      result: 2
 ```
 
 ### Variables
@@ -55,15 +59,22 @@ Queries can use the syntax `${name}` for refering to variables.
 Together with test inheritance this can be used to succinctly test many different cases.
 
 ```yaml
-query: |
-  count(*[${filter}])
+documents:
+  - _id: "a"
+  - _id: "b"
+  - _id: "c"
+
 tests:
-  - result: 1
-    variables:
-      filter: '_id == "a"'
-  - result: 2
-    variables:
-      filter: '_id >= "b"'
+  - name: "Filtering"
+    query: |
+      count(*[${filter}])
+    tests:
+      - result: 1
+        variables:
+          filter: '_id == "a"'
+      - result: 2
+        variables:
+          filter: '_id >= "b"'
 ```
 
 ### Specifying datasets
