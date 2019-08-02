@@ -12,42 +12,71 @@ Currently we're working on moving over tests from the internal GROQ implementati
 The test suite is written in YAML files in the `test/` directory. Here's an example file:
 
 ```yaml
-- _type: dataset
-  documents:
-    - _id: a
-      _type: person
-      name: George Michael Bluth
-    - _id: b
-      _type: company
-      name: Bluth Inc.
-      manager:
-        _ref: a
+documents:
+  - _id: "a"
+    _type: "person"
+    name: "George Michael Bluth"
+  - _id: "b"
+    _type: "company"
+    name: "Bluth Inc."
+    manager:
+      _ref: "a"
 
-- _type: test
-  name: Resolve references
-  query: |
-    *[_type == "company"][].manager->name
-  result:
-    - George Michael Bluth
+tests:
+  - name: "Resolve references"
+    query: |
+      *[_type == "company"][].manager->name
+    result:
+      - "George Michael Bluth"
 ```
 
-### Templates
+### Nesting tests
 
-Often you want to test queries which share a lot of similarities.
-The test suite supports *templates* to avoid repeating yourself:
+Tests can be nested and will inherit properties from their parent:
 
 ```yaml
-- _type: template
-  id: template.fst-person
-  query: |
-    *[_type == "person"] [${filter}] [0].${attribute}
+query: |
+  count(*)
+tests:
+  - documents:
+      - _id: "a"
+      - _id: "b"
+    result: 2
+  - documents:
+      - _id: "a"
+      - _id: "b"
+      - _id: "c"
+    result: 3
+```
 
-- _type: test
-  template:
-    _ref: template.fst-person
-    filter: age <= 18
-    attribute: name
-  result: George Michael Bluth
+### Variables
+
+Queries can use the syntax `${name}` for refering to variables.
+Together with test inheritance this can be used to succinctly test many different cases.
+
+```yaml
+query: |
+  count(*[${filter}])
+tests:
+  - result: 1
+    variables:
+      filter: '_id == "a"'
+  - result: 2
+    variables:
+      filter: '_id >= "b"'
+```
+
+### Specifying datasets
+
+Tests can either declare datasets inline (using the `documents` property) or refer to an external dataset by name:
+
+```yaml
+dataset: movies
+tests:
+  - name: "Good movies"
+    query: |
+      count(*[_type == "movive" && rating > 8.0])
+    result: 123
 ```
 
 ### Schema
@@ -55,54 +84,22 @@ The test suite supports *templates* to avoid repeating yourself:
 The full schema is as follows:
 
 ```typescript
-type Content = Array<Document>
-
-type Document = Test | Dataset | Template
-
-// If an _id is not specified it's auto-generated based on the filename.
+// Every test file contains a single "test"
+type TestFile = Test
 
 type Test = {
-  _id?: string
-  _type: "test"
+  dataset?: string
+  documents?: Array<any>
 
-  // Name of the test
-  name: string
+  name?: string
 
-  // The query. This should be undefined if you use a template.
   query?: string
+  variables?: Variables
 
-  // The expected result.
-  result: any
-
-  // Reference to a template (with variables).
-  template?: {
-    // Reference to a template. If this is undefined, it will will default to
-    // the previous template defined in the same file.
-    _ref?: string
-    [key: string]: string
-  }
-
-  // Reference to a dataset. If this is undefined, it will will default to
-  // the previous dataset defined in the same file.
-  dataset?: {
-    _ref: string
-  }
+  tests?: Array<Test>
 }
 
-type Dataset = {
-  _id?: string
-  _type: "dataset"
-
-  documents: Array<any>
-}
-
-type Template = {
-  _id?: string
-  _type: "template"
-
-  // The template query.
-  query: string
-}
+type Variables = { [key: string]: string }
 ```
 
 ### Compiling the test suite
@@ -118,9 +115,27 @@ $ yarn
 $ yarn build > test.ndjson
 ```
 
-The compiled test suite is a [NDJSON](http://ndjson.org/) file where:
+The compiled test suite is a [NDJSON](http://ndjson.org/) file where every entry uses the following schema:
 
-- Every document has a generated `_id`.
-- Every test has a `dataset` reference.
-- Every test has a `query` (i.e. the template is expanded).
+```typescript
+type Entry = Dataset | Test
+
+type Dataset = {
+  _type: "dataset"
+  _id: string
+
+  documents: Array<any>
+}
+
+type Test = {
+  _type: "test"
+  _id: string
+
+  name: string
+  filename: string
+  query: string
+  result: string
+  dataset: string // refers to a dataset id
+}
+```
 
