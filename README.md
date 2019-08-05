@@ -158,6 +158,7 @@ type Dataset = {
   _id: string
 
   documents: Array<any>
+  filename: string
 }
 
 type Test = {

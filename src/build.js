@@ -5,7 +5,16 @@ const {promisify} = require('util');
 const glob = promisify(require('glob'));
 const ndjson = require('ndjson');
 
-const PATTERN = __dirname + "/../test/**/*.yml";
+function expandQueryVariables(query, variables) {
+  return query.replace(/~(\w+)~/g, (_, name) => {
+    if (!variables.hasOwnProperty(name)) {
+      throw new Error(`Template variable '${name}' is missing`);
+    }
+
+    return variables;
+  });
+}
+
 
 class IdGenerator {
   constructor() {
@@ -36,81 +45,93 @@ class IdGenerator {
   }
 }
 
-async function readDocuments(cb) {
-  let idGenerator = new IdGenerator();
+class Builder {
+  constructor(emitter) {
+    this.idGenerator = new IdGenerator();
+    this.emit = emitter;
+  }
 
-  let fileNames = await glob(PATTERN);
-  for (let fileName of fileNames) {
-    let latestDataset;
-    let latestTemplate;
-    let data = fs.readFileSync(fileName);
-    let documents = yaml.safeLoad(data);
-    let baseName = path.basename(fileName, ".yml");
+  process(test, extra) {
+    test = this.exportDocuments(test, extra);
 
-    for (let doc of documents) {
-      if (doc._id == null) {
-        doc._id = idGenerator.generate(doc._type, baseName, doc.name);
+    if (test.query != null && test.result != null) {
+      let query = test.query;
+
+      if (test.variables != null) {
+        query = expandQueryVariables(query, test.variables);
       }
 
-      if (doc._type == "dataset") {
-        latestDataset = doc._id;
+      let _id = this.idGenerator.generate("test", test.name);
+
+      let entry = {
+        _id,
+        _type: "test",
+        dataset: test.dataset,
+        name: test.name,
+        query,
+        result: test.result,
+        ...extra,
       }
-
-      if (doc._type == "template") {
-        latestTemplate = doc._id;
-      }
-
-      if (doc._type == "test") {
-        if (doc.dataset == null) {
-          doc.dataset = {_ref: latestDataset};
-        }
-
-        if (doc.template != null && doc.template._ref == null) {
-          doc.template._ref = latestTemplate;
-        }
-      }
-
-      cb(doc);
+      
+      this.emit(entry);
     }
+
+    // Process children
+    if (test.tests != null) {
+      for (let child of test.tests) {
+        this.process({...test, ...child, tests: null}, extra);
+      }
+    }
+  }
+
+  exportDocuments(test, extra) {
+    let {dataset, documents, ...rest} = test;
+
+    if (documents != null) {
+      dataset = this.createDataset(documents, extra);
+    }
+
+    return {dataset, ...rest};
+  }
+
+  createDataset(documents, extra) {
+    let _id = this.idGenerator.generate("dataset");
+    let entry = {
+      _id,
+      _type: "dataset",
+      documents,
+      ...extra,
+    }
+    this.emit(entry);
+    return _id;
   }
 }
 
-function expandTemplates(docs) {
-  for (let doc of docs.values()) {
-    if (doc._type == "test" && doc.template != null) {
-      let template = docs.get(doc.template._ref);
-      if (!template) throw new Error(`[${doc._id} Could not find template ${doc.template._ref}`);
-      doc.query = template.query.replace(/\$\{(\w+)\}/g, (_, name) => {
-        if (!doc.template.hasOwnProperty(name)) {
-          throw new Error(`[${doc._id}] Template variable '${name}' is missing`);
-        }
+const BASEDIR = path.resolve(__dirname + "/../test");
+const PATTERN = BASEDIR + "/**/*.yml";
 
-        return doc.template[name];
-      });
-    }
+async function build(emitter) {
+  let testPaths = await glob(PATTERN);
+  let builder = new Builder(emitter);
+
+  for (let testPath of testPaths) {
+    let filename = path.relative(BASEDIR, testPath);
+    let data = fs.readFileSync(testPath);
+    let test = yaml.safeLoad(data);
+    let extra = {filename};
+    builder.process(test, extra);
   }
 }
 
-async function build() {
-  let documents = new Map();
-
-  await readDocuments(doc => {
-    documents.set(doc._id, doc);
-  });
-
-  expandTemplates(documents);
-
-  return Array.from(documents.values());
-}
 
 async function main() {
   let serialize = ndjson.serialize();
   serialize.pipe(process.stdout);
 
-  let documents = await build();
-  for (let doc of documents) {
-    serialize.write(doc);
-  }
+  await build(entry => {
+    let didWrite = serialize.write(entry);
+    if (!didWrite) throw new Error("Failed to write entry");
+  });
   serialize.end();
 }
 
