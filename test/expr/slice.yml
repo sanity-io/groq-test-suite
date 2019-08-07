@@ -1,0 +1,99 @@
+name: Slice
+documents:
+  - _id: "array-empty"
+    _type: "data"
+    value: []
+  - _id: "array-full"
+    _type: "data"
+    value: ["string", 1, 3.14, true, null, [1], {"key": "value"}]
+
+tests:
+  - name: "Item slicing"
+    query: |
+      *[_id == "array-full"][0].value[~slice~]
+    tests:
+      - {variables: {slice: 0}, result: "string"}
+      - {variables: {slice: 1}, result: 1}
+      - {variables: {slice: 2}, result: 3.14}
+      - {variables: {slice: 3}, result: true}
+      - {variables: {slice: 4}, result: null}
+      - {variables: {slice: 5}, result: [1]}
+      - {variables: {slice: 6}, result: {key: "value"}}
+      - {variables: {slice: 7}, result: null}
+      - {variables: {slice: -1}, result: {key: "value"}}
+      - {variables: {slice: -2}, result: [1]}
+      - {variables: {slice: -3}, result: null}
+      - {variables: {slice: -4}, result: true}
+      - {variables: {slice: -5}, result: 3.14}
+      - {variables: {slice: -6}, result: 1}
+      - {variables: {slice: -7}, result: "string"}
+      - {variables: {slice: -8}, result: null}
+
+
+  - name: "Item slicing on other types"
+    query: |
+      (~data~)[0]
+    tests:
+      - {variables: {data: "123"}, result: null}
+      - {variables: {data: "'123'"}, result: null}
+      - {variables: {data: "null"}, result: null}
+      - {variables: {data: "false"}, result: null}
+      - {variables: {data: "true"}, result: null}
+      - {variables: {data: "{}"}, result: null}
+      - {variables: {data: "*[false][0]"}, result: null}
+
+  - name: "Range slicing"
+    query: |
+      *[_id == "array-full"][0].value[~slice~]
+    tests:
+      - {variables: {slice: "0..0"}, result: ["string"]}
+      - {variables: {slice: "0..1"}, result: ["string", 1]}
+      - {variables: {slice: "0..2"}, result: ["string", 1, 3.14]}
+      - {variables: {slice: "1..2"}, result: [1, 3.14]}
+      - {variables: {slice: "0..-1"}, result: ["string", 1, 3.14, true, null, [1], {"key": "value"}]}
+      - {variables: {slice: "0..-3"}, result: ["string", 1, 3.14, true, null]}
+      - {variables: {slice: "1..-3"}, result: [1, 3.14, true, null]}
+      - {variables: {slice: "-2..-1"}, result: [[1], {"key": "value"}]}
+      - {variables: {slice: "-10..1"}, result: ["string", 1]}
+      - {variables: {slice: "10..15"}, result: []}
+      - {variables: {slice: "1..0"}, result: []}
+
+  - name: "Exclusive range slicing"
+    query: |
+      *[_id == "array-full"][0].value[~slice~]
+    tests:
+      - {variables: {slice: "0...1"}, result: ["string"]}
+      - {variables: {slice: "0...2"}, result: ["string", 1]}
+      - {variables: {slice: "0...3"}, result: ["string", 1, 3.14]}
+      - {variables: {slice: "1...3"}, result: [1, 3.14]}
+      - {variables: {slice: "0...-1"}, result: ["string", 1, 3.14, true, null, [1]]}
+      - {variables: {slice: "0...-3"}, result: ["string", 1, 3.14, true]}
+      - {variables: {slice: "1...-3"}, result: [1, 3.14, true]}
+      - {variables: {slice: "-2...-1"}, result: [[1]]}
+      - {variables: {slice: "-10...2"}, result: ["string", 1]}
+      - {variables: {slice: "10...15"}, result: []}
+      - {variables: {slice: "1...0"}, result: []}
+
+  - name: "Range slicing on other types"
+    query: |
+      (~data~)[0..1]
+    tests:
+      - {variables: {data: "123"}, result: null}
+      - {variables: {data: "'123'"}, result: null}
+      - {variables: {data: "null"}, result: null}
+      - {variables: {data: "false"}, result: null}
+      - {variables: {data: "true"}, result: null}
+      - {variables: {data: "{}"}, result: null}
+      - {variables: {data: "*[false][0]"}, result: null}
+
+  - name: "Exclusive range slicing on other types"
+    query: |
+      (~data~)[0...1]
+    tests:
+      - {variables: {data: "123"}, result: null}
+      - {variables: {data: "'123'"}, result: null}
+      - {variables: {data: "null"}, result: null}
+      - {variables: {data: "false"}, result: null}
+      - {variables: {data: "true"}, result: null}
+      - {variables: {data: "{}"}, result: null}
+      - {variables: {data: "*[false][0]"}, result: null}

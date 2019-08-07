@@ -1,0 +1,46 @@
+name: Attribute
+documents:
+  - _id: "doc"
+    a: "a"
+    b: "b"
+    num: 1
+
+tests:
+  - name: "Identifier on dataset"
+    query: |
+      *[_id == "doc"][0].a
+    result: "a"
+
+  - name: "Identifier on literal"
+    query: |
+      {"a": "a"}.a
+    result: "a"
+
+  - name: "String literal on dataset"
+    query: |
+      *[_id == "doc"][0]["num"]
+    result: 1
+
+  - name: "String literal on literal"
+    query: |
+      {"num": 1}["num"]
+    result: 1
+
+  - name: "Identifier, missing"
+    query: |
+      {"a": "a"}.b
+    result: null
+
+  - name: "String literal, missing"
+    query: |
+      {"a": "a"}["b"]
+    result: null
+
+  - name: "Non-object base value"
+    query: |
+      (~expr~)["a"]
+    tests:
+      - {variables: {expr: "1"}, result: null}
+      - {variables: {expr: "'b'"}, result: null}
+      - {variables: {expr: "[1]"}, result: null}
+
