@@ -11,7 +11,7 @@ function expandQueryVariables(query, variables) {
       throw new Error(`Template variable '${name}' is missing`);
     }
 
-    return variables;
+    return variables[name];
   });
 }
 
@@ -54,7 +54,7 @@ class Builder {
   process(test, extra) {
     test = this.exportDocuments(test, extra);
 
-    if (test.query != null && test.result != null) {
+    if (test.query != null && test.hasOwnProperty('result')) {
       let query = test.query;
 
       if (test.variables != null) {
@@ -79,7 +79,10 @@ class Builder {
     // Process children
     if (test.tests != null) {
       for (let child of test.tests) {
-        this.process({...test, ...child, tests: null}, extra);
+        let name = (test.name != null && child.name != null)
+          ? (test.name + " / " + child.name)
+          : (child.name || test.name)
+        this.process({...test, tests: null, ...child, name}, extra);
       }
     }
   }
