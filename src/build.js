@@ -15,6 +15,10 @@ function expandQueryVariables(query, variables) {
   });
 }
 
+function containsVariables(query) {
+  return /~(\w+)~/.test(query)
+}
+
 
 class IdGenerator {
   constructor() {
@@ -54,13 +58,20 @@ class Builder {
   process(test, extra) {
     test = this.exportDocuments(test, extra);
 
-    if (test.query != null && test.hasOwnProperty('result')) {
-      let query = test.query;
-
-      if (test.variables != null) {
-        query = expandQueryVariables(query, test.variables);
+    let fullQuery
+    if (test.query != null) {
+      if (containsVariables(test.query)) {
+        if (test.variables != null) {
+          fullQuery = expandQueryVariables(test.query, test.variables);
+        }
+      } else {
+        fullQuery = test.query
       }
+    }
 
+    let hasResult = test.hasOwnProperty('result')
+
+    if (fullQuery != null && hasResult) {
       let _id = this.idGenerator.generate("test", test.name);
 
       let entry = {
@@ -68,7 +79,7 @@ class Builder {
         _type: "test",
         dataset: test.dataset,
         name: test.name,
-        query,
+        query: fullQuery,
         result: test.result,
         ...extra,
       }

@@ -77,23 +77,25 @@ tests:
   - name: "Range slicing on other types"
     query: |
       (~data~)[0..1]
+    result: null
     tests:
-      - {variables: {data: "123"}, result: null}
-      - {variables: {data: "'123'"}, result: null}
-      - {variables: {data: "null"}, result: null}
-      - {variables: {data: "false"}, result: null}
-      - {variables: {data: "true"}, result: null}
-      - {variables: {data: "{}"}, result: null}
-      - {variables: {data: "*[false][0]"}, result: null}
+      - variables: {data: "123"}
+      - variables: {data: "'123'"}
+      - variables: {data: "null"}
+      - variables: {data: "false"}
+      - variables: {data: "true"}
+      - variables: {data: "{}"}
+      - variables: {data: "*[false][0]"}
 
   - name: "Exclusive range slicing on other types"
     query: |
       (~data~)[0...1]
+    result: null
     tests:
-      - {variables: {data: "123"}, result: null}
-      - {variables: {data: "'123'"}, result: null}
-      - {variables: {data: "null"}, result: null}
-      - {variables: {data: "false"}, result: null}
-      - {variables: {data: "true"}, result: null}
-      - {variables: {data: "{}"}, result: null}
-      - {variables: {data: "*[false][0]"}, result: null}
+      - variables: {data: "123"}
+      - variables: {data: "'123'"}
+      - variables: {data: "null"}
+      - variables: {data: "false"}
+      - variables: {data: "true"}
+      - variables: {data: "{}"}
+      - variables: {data: "*[false][0]"}
