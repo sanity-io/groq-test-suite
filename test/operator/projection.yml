@@ -1,0 +1,685 @@
+name: "Projection operator"
+documents:
+- _id: arrays
+  _type: test
+  arrays:
+  - [11, 12]
+  - [21, 22]
+- _id: arrays-unbalanced
+  _type: test
+  arrays:
+  - [11, 12]
+  - [[211, 212], 22]
+  - 3
+- _id: arrays-arrays
+  _type: test
+  arrays:
+  - - [11, 12]
+    - [21, 22]
+  - - [31, 32]
+    - [41, 42]
+- _id: integers
+  _type: test
+  integers:
+  - 1
+  - 2
+  - 3
+- _id: objects
+  _type: test
+  objects:
+  - value: 1
+  - value: 2
+  - value: 3
+- _id: objects-array
+  _type: test
+  objects:
+  - array: [11, 12]
+  - array: [21, 22]
+- _id: objects-arrays
+  _type: test
+  objects:
+  - arrays:
+    - [11, 12]
+    - [21, 22]
+  - arrays:
+    - [31, 32]
+    - [41, 42]
+- _id: objects-objects
+  _type: test
+  objects:
+  - objects:
+    - value: 11
+    - value: 12
+  - objects:
+    - value: 21
+    - value: 22
+- _id: objects-object-objects
+  _type: test
+  objects:
+  - object:
+      objects:
+      - value: 11
+      - value: 12
+  - object:
+      objects:
+      - value: 21
+      - value: 22
+- _id: objects-object-arrays-object
+  _type: test
+  objects:
+  - object:
+      arrays:
+      - - value: 11
+        - value: 12
+      - - value: 21
+        - value: 22
+  - object:
+      arrays:
+      - - value: 31
+        - value: 32
+      - - value: 41
+        - value: 42
+- _id: refs
+  _type: test
+  refs:
+  - _ref: arrays
+  - _ref: integers
+  - _ref: objects
+- _id: objects-ref
+  _type: test
+  objects:
+  - ref:
+      _ref: arrays
+  - ref:
+      _ref: integers
+  - ref:
+      _ref: objects
+  - ref:
+      _ref: refs
+
+tests:
+- name: "Applied to array of arrays"
+  query: |
+    *[_id=="arrays"][0].arrays[]
+  result:
+  - [11, 12]
+  - [21, 22]
+- name: "Applied to dataset"
+  query: |
+    *[_id=="arrays"][].arrays
+  result:
+  - - [11, 12]
+    - [21, 22]
+- name: "Together with slice"
+  query: |
+    (*[_id=="arrays"][0].arrays[])[0]
+  result: [11, 12]
+- name: "Together with slice"
+  query: |
+    ((*[_id=="arrays"][0].arrays[])[0][])[0]
+  result: 11
+- name: "Nested operator"
+  query: |
+    *[_id=="arrays"][0].arrays[][]
+  result: [11, 12, 21, 22]
+- name: "Nested nested operator"
+  query: |
+    *[_id=="arrays"][0].arrays[][][]
+  result:
+  - null
+  - null
+  - null
+  - null
+
+- name: "Nested nested operator (on unbalanced array)"
+  query: |
+    *[_id=="arrays-unbalanced"][0].arrays[][][]
+  result:
+  - null
+  - null
+  - 211
+  - 212
+  - null
+  - null
+
+- name: "Nested array attribute"
+  query: |
+    *[_id=="arrays-arrays"][0].arrays[]
+  result:
+  - - [11, 12]
+    - [21, 22]
+  - - [31, 32]
+    - [41, 42]
+
+- name: "Nested operator on nested array attribute"
+  query: |
+    *[_id=="arrays-arrays"][0].arrays[][]
+  result:
+  - [11, 12]
+  - [21, 22]
+  - [31, 32]
+  - [41, 42]
+
+- name: "Nested nested operator on nested array attribute"
+  query: |
+    *[_id=="arrays-arrays"][0].arrays[][][]
+  result:
+  - 11
+  - 12
+  - 21
+  - 22
+  - 31
+  - 32
+  - 41
+  - 42
+
+
+- name: "Combined with element access"
+  query: |
+    *[_id=="arrays-arrays"][0].arrays~expr~
+  tests:
+    - variables: {expr: "[1][]"}
+      result:
+      - [31, 32]
+      - [41, 42]
+    - variables: {expr: "[1][][]"}
+      result:
+      - 31
+      - 32
+      - 41
+      - 42
+    - variables: {expr: "[][1]"}
+      result:
+      - [21, 22]
+      - [41, 42]
+    - variables: {expr: "[][1][]"}
+      result:
+      - 21
+      - 22
+      - 41
+      - 42
+    - variables: {expr: "[][][1]"}
+      result:
+      - 12
+      - 22
+      - 32
+      - 42
+    - variables: {expr: "[1][1][]"}
+      result:
+      - 41
+      - 42
+    - variables: {expr: "[1][][1]"}
+      result:
+      - 32
+      - 42
+
+- name: "Applied to integer array"
+  query: |
+    *[_id=="integers"][0].integers[]
+  result:
+  - 1
+  - 2
+  - 3
+
+- name: "Nested operator on integer array"
+  query: |
+    *[_id=="integers"][0].integers[]~expr~
+  result:
+  - null
+  - null
+  - null
+  tests:
+    - {variables: {expr: "[]"}}
+    - {variables: {expr: ".attr"}}
+    - {variables: {expr: ".attr[]"}}
+    - {variables: {expr: "[0]"}}
+    - {variables: {expr: "[0][0]"}}
+    - {variables: {expr: "[0..2]"}}
+    - {variables: {expr: "[0..2][]"}}
+    - {variables: {expr: "[true]"}}
+    - {variables: {expr: "[true][]"}}
+    - {variables: {expr: "->"}}
+    - {variables: {expr: "->[]"}}
+
+- name: "Objects"
+  query: |
+    *[_id=="objects"][0].objects[]
+  result:
+  - value: 1
+  - value: 2
+  - value: 3
+
+- name: "Objects attribute"
+  query: |
+    *[_id=="objects"][0].objects[].value
+  result:
+  - 1
+  - 2
+  - 3
+
+- name: "Objects attribute with filter"
+  query: |
+    *[_id=="objects"][0].objects[value==2][].value
+  result:
+  - 2
+
+- name: "Objects array"
+  query: |
+    *[_id=="objects-array"][0].objects[]~expr~
+  tests:
+    - variables: {expr: ".array"}
+      result:
+      - [11, 12]
+      - [21, 22]
+    - variables: {expr: ".array[]"}
+      result:
+      - 11
+      - 12
+      - 21
+      - 22
+
+- name: "Objects arrays"
+  query: |
+    *[_id=="objects-arrays"][0].objects[]~expr~
+    - variables: {expr: ".arrays"}
+      result:
+      - - [11, 12]
+        - [21, 22]
+      - - [31, 32]
+        - [41, 42]
+    - variables: {expr: ".arrays[]"}
+      result:
+      - [11, 12]
+      - [21, 22]
+      - [31, 32]
+      - [41, 42]
+    - variables: {expr: ".arrays[][]"}
+      result:
+      - 11
+      - 12
+      - 21
+      - 22
+      - 31
+      - 32
+      - 41
+      - 42
+    - variables: {expr: ".arrays[][1]"}
+      result:
+      - 12
+      - 22
+      - 32
+      - 42
+
+- name: "Objects objects"
+  query: |
+    *[_id=="objects-objects"][0].objects[].objects~expr~
+  tests:
+    - variables: {expr: ""}
+      result:
+      - - value: 11
+        - value: 12
+      - - value: 21
+        - value: 22
+    - variables: {expr: "[]"}
+      result:
+      - value: 11
+      - value: 12
+      - value: 21
+      - value: 22
+    - variables: {expr: "[].value"}
+      result:
+      - 11
+      - 12
+      - 21
+      - 22
+    - variables: {expr: "[value >= 20]"}
+      result:
+      - []
+      - - value: 21
+        - value: 22
+    - variables: {expr: "[value >= 20][]"}
+      result:
+      - value: 21
+      - value: 22
+    - variables: {expr: "[][value >= 20]"}
+      result:
+      - null
+      - null
+      - null
+      - null
+
+- name: "Objects objects, filtered after projection"
+  query: |
+    (*[_id=="objects-objects"][0].objects[].objects[])[ value >= 20 ]
+  result:
+  - value: 21
+  - value: 22
+
+- name: "Objects objects, filtered with `in`"
+  query: |
+    *[_id=="objects-objects"][0].objects[21 in objects[].value][].objects[].value
+  result:
+  - 21
+  - 22
+
+- name: "Objects object arrays"
+  query: |
+    *[_id=="objects-object-arrays-object"][0].objects[].object.arrays~expr~
+  tests:
+    - variables: {expr: ""}
+      result:
+      - - - value: 11
+          - value: 12
+        - - value: 21
+          - value: 22
+      - - - value: 31
+          - value: 32
+        - - value: 41
+          - value: 42
+    - variables: {expr: "[]"}
+      result:
+      - - value: 11
+        - value: 12
+      - - value: 21
+        - value: 22
+      - - value: 31
+        - value: 32
+      - - value: 41
+        - value: 42
+    - variables: {expr: "[][]"}
+      result:
+      - value: 11
+      - value: 12
+      - value: 21
+      - value: 22
+      - value: 31
+      - value: 32
+      - value: 41
+      - value: 42
+    - variables: {expr: "[][].value"}
+      result:
+      - 11
+      - 12
+      - 21
+      - 22
+      - 31
+      - 32
+      - 41
+      - 42
+
+- name: "Objects object arrays with filter"
+  query: |
+    *[_id=="objects-object-arrays-object"][0].objects[].object.arrays[21 in @[].value][][].value
+  result:
+  - 21
+  - 22
+
+- name: "Objects object arrays with filter and slice"
+  query: |
+    *[_id=="objects-object-arrays-object"][0].objects[].object.arrays[21 in @[].value][][~idx~].value
+  tests:
+    - {variables: {idx: "0"}, result: 21}
+    - {variables: {idx: "1"}, result: 22}
+
+- name: "Objects object arrays with filter and slice"
+  query: |
+    (*[_id=="objects-object-arrays-object"][0].objects[].object.arrays[21 in @[].value])[0][0][~idx~].value
+  tests:
+    - {variables: {idx: "0"}, result: 21}
+    - {variables: {idx: "1"}, result: 22}
+
+- name: "Objects object objects"
+  query: |
+    *[_id=="objects-object-objects"][0].objects[].object.objects~expr~
+  tests:
+    - variables: {expr: ""}
+      result:
+      - - value: 11
+        - value: 12
+      - - value: 21
+        - value: 22
+    - variables: {expr: "[]"}
+      result:
+      - value: 11
+      - value: 12
+      - value: 21
+      - value: 22
+    - variables: {expr: "[].value"}
+      result:
+      - 11
+      - 12
+      - 21
+      - 22
+    - variables: {expr: "[1].value"}
+      result:
+      - 12
+      - 22
+
+- name: "Objects object objects with filter"
+  query: |
+    *[_id=="objects-object-objects"][0].objects[].object.objects[value in [12, 21]][].value
+  result:
+  - 12
+  - 21
+
+- name: "Objects ref"
+  query: |
+    *[_id=="objects-ref"][0].objects[].ref
+  result:
+  - _ref: arrays
+  - _ref: integers
+  - _ref: objects
+  - _ref: refs
+
+- name: "Objects deref"
+  query: |
+    *[_id=="objects-ref"][0].objects[].ref->~expr~
+  tests:
+    - variables: {expr: "{_id, _type}"}
+      result:
+      - _id: arrays
+        _type: test
+      - _id: integers
+        _type: test
+      - _id: objects
+        _type: test
+      - _id: refs
+        _type: test
+    - variables: {expr: "arrays"}
+      result:
+      - - [11, 12]
+        - [21, 22]
+      - null
+      - null
+      - null
+    - variables: {expr: "arrays[]"}
+      result:
+      - [11, 12]
+      - [21, 22]
+      - null
+      - null
+      - null
+    - variables: {expr: "arrays[][]"}
+      result:
+      - 11
+      - 12
+      - 21
+      - 22
+      - null
+      - null
+      - null
+    - variables: {expr: "refs[]->objects[].value"}
+      result:
+      - null
+      - null
+      - null
+      - null
+      - null
+      - 1
+      - 2
+      - 3
+    - variables: {expr: "refs[]->objects[value==2][].value"}
+      result:
+      - null
+      - null
+      - null
+      - null
+      - null
+      - 2
+    - variables: {expr: "refs[_ref=='objects'][]->objects[].value"}
+      result:
+      - null
+      - null
+      - null
+      - 1
+      - 2
+      - 3
+
+- name: "Objects ref; complicated"
+  query: |
+    (*[_id=="objects-ref"][].objects)[][ref._ref=="refs"][].ref->refs[_ref=="objects"][]->objects[value in [1,3]][].value
+  result:
+  - 1
+  - 3
+
+- name: "Objects ref; complicated"
+  query: |
+    (*[_id=="objects-ref"][].objects[])[3].ref->refs[2]->objects[value in [1,3]][].value
+  result:
+  - 1
+  - 3
+
+- name: "Objects ref; complicated"
+  query: |
+    *[_id=="objects-ref"][].objects[2].ref->refs[2]->objects[value in [1,3]][].value
+  result:
+  - null
+
+- name: "Objects ref; complicated"
+  query: |
+    (*[_id=="objects-ref"][].objects[])[3].ref->refs[3]->objects[value in [1,3]][].value
+  result: null
+
+- name: "Objects ref; complicated"
+  query: |
+    *[_id=="objects-ref"][].objects[3].ref->refs[2]->objects[value==4][].value
+  result: []
+
+- name: "Objects ref; complicated"
+  query: |
+    *[_id=="objects-ref"][0].objects[ref._ref=="refs"][].ref->refs[]->objects[value in [1,3]][1].value
+  result:
+  - null
+  - null
+  - 3
+
+- name: "Objects ref; complicated"
+  query: |
+    *[_id=="objects-ref"][0].objects[ref._ref=="refs"][].ref->refs[]->objects[value == 2][].value
+  result:
+  - null
+  - null
+  - 2
+
+- name: "Objects ref; complicated"
+  query: |
+    *[_id=="objects-ref"][0].objects[ref._ref=="arrays"][0].ref->refs[_ref=="objects"][0]->objects[value==2][0].value
+  result: null
+
+- name: "Refs"
+  query: |
+    *[_id=="refs"][0].refs[]->~expr~
+  tests:
+    - variables: {expr: "{_id, _type}"}
+      result:
+      - _id: arrays
+        _type: test
+      - _id: integers
+        _type: test
+      - _id: objects
+        _type: test
+    - variables: {expr: "_id"}
+      result:
+      - arrays
+      - integers
+      - objects
+    - variables: {expr: "arrays"}
+      result:
+      - - [11, 12]
+        - [21, 22]
+      - null
+      - null
+    - variables: {expr: "arrays[]"}
+      result:
+      - [11, 12]
+      - [21, 22]
+      - null
+      - null
+    - variables: {expr: "arrays[][]"}
+      result:
+      - 11
+      - 12
+      - 21
+      - 22
+      - null
+      - null
+    - variables: {expr: "arrays[1][]"}
+      result:
+      - 21
+      - 22
+      - null
+      - null
+    - variables: {expr: "arrays[][1]"}
+      result:
+      - 12
+      - 22
+      - null
+      - null
+    - variables: {expr: "arrays[1][1]"}
+      result:
+      - 22
+      - null
+      - null
+    - variables: {expr: "objects"}
+      result:
+      - null
+      - null
+      - - value: 1
+        - value: 2
+        - value: 3
+    - variables: {expr: "objects[]"}
+      result:
+      - null
+      - null
+      - value: 1
+      - value: 2
+      - value: 3
+    - variables: {expr: "objects[].value"}
+      result:
+      - null
+      - null
+      - 1
+      - 2
+      - 3
+    - variables: {expr: "objects[1].value"}
+      result:
+      - null
+      - null
+      - 2
+
+- name: "Objects ref element"
+  query: |
+    *[_id=="refs"][0].refs[2]->objects[1].value
+  result: 2
+
+- name: "Objects"
+  query: |
+    *[_id=="objects"][].objects[0]
+  result:
+  - value: 1
+
+- name: "Objects with filter"
+  query: |
+    *[_id=="objects"][].objects[value == 2]
+  result:
+  - - value: 2
