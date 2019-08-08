@@ -683,3 +683,17 @@ tests:
     *[_id=="objects"][].objects[value == 2]
   result:
   - - value: 2
+
+- name: "Objects object objects with filter"
+  query: |
+    *[_id=="objects-object-objects"][].objects[].object.objects[value in [12, 21]][].value
+  result:
+  - 12
+  - 21
+
+- name: "Objects object objects with filter"
+  query: |
+    *[_id=="objects-ref"][].objects[ref._ref=="refs"][].ref->refs[_ref=="objects"][]->objects[value in [1,3]][].value
+  result:
+  - 1
+  - 3
