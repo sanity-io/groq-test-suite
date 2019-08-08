@@ -418,8 +418,8 @@ tests:
   query: |
     *[_id=="objects-object-arrays-object"][0].objects[].object.arrays[21 in @[].value][][~idx~].value
   tests:
-    - {variables: {idx: "0"}, result: 21}
-    - {variables: {idx: "1"}, result: 22}
+    - {variables: {idx: "0"}, result: [21]}
+    - {variables: {idx: "1"}, result: [22]}
 
 - name: "Objects object arrays with filter and slice"
   query: |
