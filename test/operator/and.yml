@@ -1,0 +1,64 @@
+name: "And operator"
+documents:
+- _id: "id"
+  _type: "test"
+  v_true: true
+  v_false: false
+  v_null: null
+  v_string: "string"
+  v_integer: 1
+
+tests:
+- variables:
+    T: "*[_id=='id'][0].v_true"
+    F: "*[_id=='id'][0].v_false"
+    N: "*[_id=='id'][0].v_null"
+    S: "*[_id=='id'][0].v_string"
+    I: "*[_id=='id'][0].v_integer"
+  tests:
+
+  # Basic true/false
+  - query: ~T~ && ~T~
+    result: true
+  - query: ~F~ && ~T~
+    result: false
+  - query: ~T~ && ~F~
+    result: false
+  - query: ~F~ && ~F~
+    result: false
+
+  # Basic null values
+  - query: ~T~ && ~N~
+    result: null
+  - query: ~N~ && ~T~
+    result: null
+  - query: ~F~ && ~N~
+    result: false
+  - query: ~N~ && ~F~
+    result: false
+  - query: ~N~ && ~N~
+    result: null
+
+  # Coerced strings
+  - query: ~T~ && ~S~
+    result: null
+  - query: ~S~ && ~T~
+    result: null
+  - query: ~F~ && ~S~
+    result: false
+  - query: ~S~ && ~F~
+    result: false
+  - query: ~S~ && ~S~
+    result: null
+
+  # Coerced integers
+  - query: ~T~ && ~I~
+    result: null
+  - query: ~I~ && ~T~
+    result: null
+  - query: ~F~ && ~I~
+    result: false
+  - query: ~I~ && ~F~
+    result: false
+  - query: ~I~ && ~I~
+    result: null

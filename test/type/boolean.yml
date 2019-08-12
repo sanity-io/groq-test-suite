@@ -1,0 +1,27 @@
+# Tests for booleans.
+name: "Boolean"
+documents:
+- _id: "booleans"
+  _type: "test"
+  value: [true, false]
+
+tests:
+- name: "True literal"
+  query: |
+    true
+  result: true
+
+- name: "False literal"
+  query: |
+    false
+  result: false
+
+- name: "True value in document"
+  query: |
+    *[ _id == "booleans" ][0].value[0]
+  result: true
+
+- name: "False value in document"
+  query: |
+    *[ _id == "booleans" ][0].value[1]
+  result: false
