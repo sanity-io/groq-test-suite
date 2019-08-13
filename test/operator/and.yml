@@ -10,11 +10,21 @@ documents:
 
 tests:
 - variables:
-    T: "*[_id=='id'][0].v_true"
-    F: "*[_id=='id'][0].v_false"
-    N: "*[_id=='id'][0].v_null"
-    S: "*[_id=='id'][0].v_string"
-    I: "*[_id=='id'][0].v_integer"
+    T:
+    - "*[_id=='id'][0].v_true"
+    - "true"
+    F:
+    - "*[_id=='id'][0].v_false"
+    - "false"
+    N:
+    - "*[_id=='id'][0].v_null"
+    - "null"
+    S:
+    - "*[_id=='id'][0].v_string"
+    - "'abc'"
+    I:
+    - "*[_id=='id'][0].v_integer"
+    - "123"
   tests:
 
   # Basic true/false

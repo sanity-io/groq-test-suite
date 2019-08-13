@@ -5,20 +5,57 @@ const {promisify} = require('util');
 const glob = promisify(require('glob'));
 const ndjson = require('ndjson');
 
-function expandQueryVariables(query, variables) {
-  return query.replace(/~(\w+)~/g, (_, name) => {
-    if (!variables.hasOwnProperty(name)) {
-      throw new Error(`Template variable '${name}' is missing`);
-    }
+function* expandQueryVariables(query, variables) {
+  let state = []
+  let isDone = false
 
-    return variables[name];
-  });
+  while (!isDone) {
+    let didAdvance = false
+    let i = 0
+
+    let fullQuery = query.replace(/~(\w+)~/g, (_, name) => {
+      if (!variables.hasOwnProperty(name)) {
+        throw new Error(`Template variable '${name}' is missing`);
+      }
+
+      let value = variables[name]
+
+      if (Array.isArray(value)) {
+        if (!(i in state)) state.push(0)
+
+        let current = state[i]
+
+        if (!didAdvance) {
+          state[i]++
+          if (state[i] == value.length) {
+            // There's no more choices here. Start again, and rather try to advance
+            // the next variable.
+            state[i] = 0
+          } else {
+            // We did successfully advance to the next alternative
+            didAdvance = true
+          }
+        }
+
+        i++
+        return value[current]
+      } else {
+        return value
+      }
+    });
+
+    yield fullQuery
+
+    if (!didAdvance) {
+      // There were no more alternatives *anywhere*
+      break
+    }
+  }
 }
 
 function containsVariables(query) {
   return /~(\w+)~/.test(query)
 }
-
 
 class IdGenerator {
   constructor() {
@@ -58,33 +95,17 @@ class Builder {
   process(test, extra) {
     test = this.exportDocuments(test, extra);
 
-    let fullQuery
-    if (test.query != null) {
-      if (containsVariables(test.query)) {
-        if (test.variables != null) {
-          fullQuery = expandQueryVariables(test.query, test.variables);
-        }
-      } else {
-        fullQuery = test.query
-      }
-    }
-
     let hasResult = test.hasOwnProperty('result')
+    let hasQuery = test.query != null
 
-    if (fullQuery != null && hasResult) {
-      let _id = this.idGenerator.generate("test", test.name);
-
-      let entry = {
-        _id,
-        _type: "test",
-        dataset: test.dataset,
-        name: test.name,
-        query: fullQuery,
-        result: test.result,
-        ...extra,
+    if (hasResult && hasQuery) {
+      if (test.variables != null) {
+        for (let query of expandQueryVariables(test.query, test.variables)) {
+          this.emitTest(test, query, extra)
+        }
+      } else if (!containsVariables(test.query)) {
+        this.emitTest(test, test.query, extra)
       }
-      
-      this.emit(entry);
     }
 
     // Process children
@@ -96,6 +117,22 @@ class Builder {
         this.process({...test, tests: null, ...child, name}, extra);
       }
     }
+  }
+
+  emitTest(test, query, extra) {
+    let _id = this.idGenerator.generate("test", test.name);
+
+    let entry = {
+      _id,
+      _type: "test",
+      dataset: test.dataset,
+      name: test.name,
+      query,
+      result: test.result,
+      ...extra,
+    }
+
+    this.emit(entry);
   }
 
   exportDocuments(test, extra) {
