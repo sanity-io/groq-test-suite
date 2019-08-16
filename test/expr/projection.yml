@@ -358,3 +358,40 @@ tests:
       "dogs": dogs[]->{cat}
     }
   result: null
+
+- name: "Null parent scoping"
+  query: |
+    *[_id == "a"]{"a": ^.a}
+  result:
+  - {}
+
+- name: "Parent scoping"
+  query: |
+    *[_id == "a"]{
+      other->{
+        "a": _id,
+        "b": ^._id,
+      }
+    }
+  result:
+  - other:
+      a: "b"
+      b: "a"
+
+- name: "Grand parent scoping"
+  query: |
+    *[_id == "a"]{
+      other->{
+        other->{
+          "a": _id,
+          "b": ^._id,
+          "c": ^.^._id,
+        }
+      }
+    }
+  result:
+  - other:
+      other:
+        a: "c"
+        b: "b"
+        c: "a"

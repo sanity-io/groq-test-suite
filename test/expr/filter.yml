@@ -213,4 +213,23 @@ tests:
     *[true]|[true]|[true]|[true]|[true]|[true]|[true]|[true]|[true]|[true][]._id
   result: ["a", "b", "c", "d", "e", "id"]
 
+- name: "Null parent scoping"
+  query: |
+    *[_id == ^.other._ref][]
+  result: []
 
+- name: "Parent scoping"
+  query: |
+    *[*[_id == ^.other._ref][0].name == "B"][].name
+  result:
+  - A
+
+- name: "Grand parent scoping"
+  query: |
+    *[
+      *[
+        *[_id == ^.^.other._ref][0].name == name
+      ][0].name == "B"
+    ][].name
+  result:
+  - A
