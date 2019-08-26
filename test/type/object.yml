@@ -1,0 +1,139 @@
+documents:
+- _id: "a"
+  name: "Michael"
+  title: "CEO"
+- _id: "b"
+  ref:
+    _ref: "a"
+  arr:
+  - 1
+  - 2
+  - 3
+  arref:
+  - {_ref: "a"}
+
+tests:
+- name: "Empty object"
+  query: |
+    {}
+  result: {}
+
+- name: "Basic object"
+  query: |
+    {
+      "name": "Michael",
+      "title": "CEO"
+    }
+  result:
+    name: "Michael"
+    title: "CEO"
+
+- name: "Trailing commas"
+  query: |
+    {
+      "name": "Michael",
+      "title": "CEO",
+    }
+  result:
+    name: "Michael"
+    title: "CEO"
+
+- name: "Null values"
+  query: |
+    {
+      "a": null,
+      "b": true && 1,
+    }
+  result: {}
+
+- name: "Splatting"
+  query: |
+    {
+      "a": 1,
+      ...{"a": 2, "b": 3, "c": 4},
+      "b": 5
+    }
+  result:
+    a: 2
+    b: 5
+    c: 4
+
+- name: "Object with context"
+  variables:
+    obj:
+    - '*[_id == "a"][0]'
+    - '{"_id": "a", "name":"Michael","title":"CEO"}'
+
+  tests:
+  - query: "~obj~ {name}"
+    result: {name: "Michael"}
+
+  - query: |
+      ~obj~ {"a": name}
+    result: {a: "Michael"}
+
+  - query: |
+      ~obj~ {..., "a": "1"}
+    result:
+      _id: "a"
+      name: "Michael"
+      title: "CEO"
+      a: "1"
+
+  - query: |
+      ~obj~ {..., "name": "1"}
+    result:
+      _id: "a"
+      name: "1"
+      title: "CEO"
+
+  - query: |
+      ~obj~ {"name": "1", ...}
+    result:
+      _id: "a"
+      name: "Michael"
+      title: "CEO"
+
+  - query: |
+      ~obj~ {..., "name": null}
+    result:
+      _id: "a"
+      title: "CEO"
+
+  - query: |
+      ~obj~ {name, "name": "1"}
+    result:
+      name: "1"
+
+  - query: |
+      ~obj~ {name, "name": null}
+    result: {}
+
+- name: "Property key"
+  variables:
+    obj: '*[_id == "b"][0]'
+
+  tests:
+  - query: ~obj~ {arr}
+    result: {"arr": [1, 2, 3]}
+
+  - query: ~obj~ {arr[0]}
+    result: {"arr": 1}
+
+  - query: ~obj~ {arr[@ > 1]}
+    result: {"arr": [2, 3]}
+
+  - query: ~obj~ {arr[0..1]}
+    result: {"arr": [1, 2]}
+
+  - query: ~obj~ {ref->}.ref.name
+    result: "Michael"
+
+  - query: ~obj~ {ref->{name}}
+    result:
+      ref: {name: "Michael"}
+
+  - query: ~obj~ {arref[]->{name}}
+    result:
+      arref:
+      - {name: "Michael"}
