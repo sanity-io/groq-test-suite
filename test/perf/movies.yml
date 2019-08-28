@@ -1,0 +1,8 @@
+dataset: movies
+name: "perf / movies"
+
+tests:
+  - name: "Count"
+    query: |
+      count(*[_type == "movie"])
+    result: 45430
