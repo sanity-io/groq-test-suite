@@ -112,6 +112,12 @@ tests:
     result: 123
 ```
 
+Currently the following named datasets are available:
+
+| Name | Size | Documentation | URL |
+| --- | --- | --- | --- |
+| `movies` | ~500k documents (~200MB) | [./utils/the-movies-dataset](./utils/the-movies-dataset) | [🔗](https://groq-test-suite.storage.googleapis.com/datasets/movies/movies-f6fd5605328d7e1d6c667addc455aff2.ndjson) |
+
 ### Schema
 
 The full schema is as follows:
@@ -157,8 +163,8 @@ type Dataset = {
   _type: "dataset"
   _id: string
 
-  documents: Array<any>
-  filename: string
+  documents?: Array<any>
+  url: string
 }
 
 type Test = {
@@ -169,7 +175,9 @@ type Test = {
   filename: string
   query: string
   result: string
-  dataset: string // refers to a dataset id
+  dataset: {
+    _ref: string
+  }
 }
 ```
 

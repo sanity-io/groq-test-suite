@@ -4,6 +4,15 @@ const yaml = require('js-yaml');
 const {promisify} = require('util');
 const glob = promisify(require('glob'));
 const ndjson = require('ndjson');
+const crypto = require('crypto');
+
+const DATASETS = {
+  movies: 'https://groq-test-suite.storage.googleapis.com/datasets/movies/movies-f6fd5605328d7e1d6c667addc455aff2.ndjson'
+}
+
+function sha1(s) {
+  return crypto.createHash('sha1').update(s).digest('hex')
+}
 
 function* expandQueryVariables(query, variables) {
   let state = []
@@ -89,6 +98,7 @@ class IdGenerator {
 class Builder {
   constructor(emitter) {
     this.idGenerator = new IdGenerator();
+    this.datasetMapping = new Map();
     this.emit = emitter;
   }
 
@@ -138,23 +148,52 @@ class Builder {
   exportDocuments(test, extra) {
     let {dataset, documents, ...rest} = test;
 
-    if (documents != null) {
-      dataset = this.createDataset(documents, extra);
+    if (documents) {
+      dataset = documents
+    }
+
+    let datasetId
+
+    if (Array.isArray(dataset)) {
+      datasetId = this.createDatasetFromDocuments(documents, extra);
+    } else if (typeof dataset == 'string') {
+      if (!DATASETS.hasOwnProperty(dataset)) {
+        throw new Error(`[${extra.filename}] Unknown dataset: ${dataset}`)
+      }
+      datasetId = this.createDatasetFromURL(DATASETS[dataset])
+    }
+
+    if (datasetId != null) {
+      dataset = {_ref: datasetId}
     }
 
     return {dataset, ...rest};
   }
 
-  createDataset(documents, extra) {
+  createDatasetFromDocuments(documents, extra) {
     let _id = this.idGenerator.generate("dataset");
     let entry = {
       _id,
       _type: "dataset",
       documents,
-      ...extra,
+      url: `file://${extra.filename}`,
     }
     this.emit(entry);
     return _id;
+  }
+
+  createDatasetFromURL(url) {
+    if (!this.datasetMapping.has(url)) {
+      let _id = sha1(url)
+      let entry = {
+        _id,
+        _type: "dataset",
+        url,
+      }
+      this.emit(entry);
+      this.datasetMapping.set(url, _id);
+    }
+    return this.datasetMapping.get(url)
   }
 }
 
