@@ -1,0 +1,28 @@
+name: "Number"
+tests:
+- name: "Integers"
+  tests:
+  - {query: "1", result: 1}
+  - {query: "123", result: 123}
+  - {query: "-123", result: -123}
+
+- name: "Decimals"
+  tests:
+  - {query: "1.23", result: 1.23}
+  - {query: "-1.23", result: -1.23}
+
+- name: "Scientific notation"
+  variables:
+    e: ["e", "E"]
+    p: ["+", ""]
+    m: "-"
+  tests:
+  - {query: "~p~4~e~~p~2", result: 400}
+  - {query: "~m~4~e~~p~2", result: -400}
+  - {query: "~p~4~e~~m~2", result: 0.04}
+  - {query: "~m~4~e~~m~2", result: -0.04}
+  - {query: "~p~4.1~e~~p~2", result: 410}
+  - {query: "~m~4.1~e~~p~2", result: -410}
+  - {query: "~p~4.1~e~~m~2", result: 0.041}
+  - {query: "~m~4.1~e~~m~2", result: -0.041}
+
