@@ -1,0 +1,9 @@
+name: "Pair"
+
+tests:
+- query: "1 => 2"
+  result: [1, 2]
+- query: "'a' => 2"
+  result: ['a', 2]
+- query: "true => 2"
+  result: [true, 2]
