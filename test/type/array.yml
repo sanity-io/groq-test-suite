@@ -1,24 +1,87 @@
+documents:
+- _id: "a"
+  _type: "doc"
+  value: [1, 2, 4, 9]
+
 tests:
-  - name: "Empty array"
+- name: "Empty array"
+  query: |
+    []
+  result: []
+
+- name: "Basic array"
+  query: |
+    [1, 2, 3]
+  result: [1, 2, 3]
+
+- name: "Trailing commas in array"
+  query: |
+    [1, 2, 3,]
+  result: [1, 2, 3]
+
+- name: "Newlines in array"
+  query: |
+    [
+      1,
+      2,
+      3,
+    ]
+  result: [1, 2, 3]
+
+- name: "Splatting"
+  variables:
+    a:
+    - '*[_id == "a"][0].value'
+    - '[1, 2, 4, 9]'
+  tests:
+  - name: "Noop"
     query: |
-      []
+      [...~a~]
+    result: [1, 2, 4, 9]
+  - name: "First"
+    query: |
+      [0, ...~a~]
+    result: [0, 1, 2, 4, 9]
+  - name: "Middle"
+    query: |
+      [0, ...~a~, 16]
+    result: [0, 1, 2, 4, 9, 16]
+  - name: "Last"
+    query: |
+      [...~a~, 16]
+    result: [1, 2, 4, 9, 16]
+  - name: "Multiple"
+    query: |
+      [...~a~, 16, ...~a~]
+    result: [1, 2, 4, 9, 16, 1, 2, 4, 9]
+
+- name: "Splatting non-array"
+  variables:
+    a:
+    - "1"
+    - "'1'"
+    - "null"
+    - "true"
+    - "false"
+    - "{}"
+  tests:
+  - name: "Noop"
+    query: |
+      [...~a~]
     result: []
-
-  - name: "Basic array"
+  - name: "First"
     query: |
-      [1, 2, 3]
-    result: [1, 2, 3]
-
-  - name: "Trailing commas in array"
+      [0, ...~a~]
+    result: [0]
+  - name: "Middle"
     query: |
-      [1, 2, 3,]
-    result: [1, 2, 3]
-
-  - name: "Newlines in array"
+      [0, ...~a~, 16]
+    result: [0, 16]
+  - name: "Last"
     query: |
-      [
-        1,
-        2,
-        3,
-      ]
-    result: [1, 2, 3]
+      [...~a~, 16]
+    result: [16]
+  - name: "Multiple"
+    query: |
+      [...~a~, 16, ...~a~]
+    result: [16]
