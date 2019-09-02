@@ -1,0 +1,68 @@
+name: "Comparison operators"
+variables:
+  lt:
+  - "<"
+  - "<="
+  gt:
+  - ">"
+  - ">="
+  eq:
+  - ">="
+  - "<="
+  ne:
+  - "<"
+  - ">"
+  op:
+  - "<"
+  - "<="
+  - ">"
+  - ">="
+
+  bool:
+  - "true"
+  - "false"
+
+  # These are considered "unordered"
+  un:
+  - "{}"
+  - "null"
+  - "[]"
+  - "(1 => 2)"
+  - "(1 .. 2)"
+  - "(1 ... 2)"
+
+tests:
+- name: "Numbers"
+  result: true
+  tests:
+  - query: '1 ~eq~ 1'
+  - query: '1 ~lt~ 2'
+  - query: '2 ~gt~ 1'
+
+- name: "Boolean"
+  result: true
+  tests:
+  - query: 'true ~gt~ false'
+  - query: 'false ~lt~ true'
+  - query: 'true ~eq~ true'
+  - query: 'false ~eq~ false'
+
+- name: "Strings"
+  result: true
+  tests:
+  - query: '"a" ~eq~ "a"'
+  - query: '"a" ~lt~ "b"'
+  - query: '"a" ~lt~ "ab"'
+  - query: '"b" ~gt~ "a"'
+  - query: '"ab" ~gt~ "a"'
+  
+- name: "Mixed types"
+  result: null
+  tests:
+  - query: '1 ~op~ "1"'
+  - query: '1 ~op~ ~bool~'
+  - query: '1 ~op~ ~un~'
+  - query: '"1" ~op~ ~bool~'
+  - query: '"1" ~op~ ~un~'
+  - query: '~bool~ ~op~ ~un~'
+  - query: '~un~ ~op~ ~un~'
