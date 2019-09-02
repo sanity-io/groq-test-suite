@@ -1,0 +1,53 @@
+name: "Range"
+documents:
+- _id: "a"
+  v_string1: "a"
+  v_string2: "b"
+  v_num1: 1
+  v_num2: 2
+tests:
+- name: "String construction"
+  variables:
+    first:
+    - '*[_id == "a"][0].v_string1'
+    - '"a"'
+    last:
+    - '*[_id == "a"][0].v_string2'
+    - '"b"'
+  result: ["a", "b"]
+  tests:
+  - query: "~first~ .. ~last~"
+  - query: "~first~ ... ~last~"
+
+- name: "Number construction"
+  variables:
+    first:
+    - '*[_id == "a"][0].v_num1'
+    - '1'
+    last:
+    - '*[_id == "a"][0].v_num2'
+    - '2'
+  result: [1, 2]
+  tests:
+  - query: "~first~ .. ~last~"
+  - query: "~first~ ... ~last~"
+
+- name: "Un-rangable types"
+  variables:
+    t:
+    - "[]"
+    - "{}"
+    - "null"
+    - "true"
+    - "false"
+  result: null
+  tests:
+  - query: "~t~ .. ~t~"
+  - query: "~t~ ... ~t~"
+
+- name: "Mixed type"
+  result: null
+  tests:
+  - query: '1 .. "a"'
+  - query: '"a" .. 1'
+  
