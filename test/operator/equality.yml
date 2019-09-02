@@ -1,0 +1,44 @@
+name: "Equality"
+tests:
+- name: "Equal values"
+  result: true
+  tests:
+  - query: "10 == 10"
+  - query: '"a" == "a"'
+  - query: 'true == true'
+  - query: 'false == false'
+  - query: 'null == null'
+
+- name: "Inequal values"
+  result: false
+  variables:
+    val:
+    - "11"
+    - "'11'"
+    - "true"
+    - "false"
+    - "null"
+    - "[]"
+    - "{}"
+  tests:
+  - query: "10 == ~val~"
+  - query: "'10' == ~val~"
+  - query: "[] == ~val~"
+  - query: "{} == ~val~"
+
+- name: "Inequal values"
+  result: true
+  variables:
+    val:
+    - "11"
+    - "'11'"
+    - "true"
+    - "false"
+    - "null"
+    - "[]"
+    - "{}"
+  tests:
+  - query: "10 != ~val~"
+  - query: "'10' != ~val~"
+  - query: "[] != ~val~"
+  - query: "{} != ~val~"
