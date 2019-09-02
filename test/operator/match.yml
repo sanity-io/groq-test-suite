@@ -1,0 +1,82 @@
+name: "Match operator"
+documents:
+- _id: "doc"
+  _type: "doc"
+  text: "hello world FOO-bar"
+  pattern1: "hel*"
+  pattern2: "fo"
+  patterns: ["hello", "foo"]
+
+variables:
+  text:
+  - '"hello world FOO-bar"'
+  - '*[_id=="doc"][0].text'
+
+tests:
+- result: true
+  tests:
+    - name: "Matching"
+      result: true
+      tests:
+      - query: |
+          ~text~ match "hello"
+      - query: |
+          ~text~ match "hello*"
+      - query: |
+          ~text~ match "hel*"
+      - query: |
+          ~text~ match "foo"
+      - query: |
+          ~text~ match "bar"
+      - query: |
+          ~text~ match "*ld"
+      - query: |
+          ~text~ match "h*l*o"
+      - query: |
+          ~text~ match "foo-bar"
+      - query: |
+          ~text~ match "hello bar"
+      - query: |
+          ~text~ match "hel* bar"
+      - query: |
+          ~text~ match ["hel*", "bar"]
+
+    - name: "Non-matching"
+      result: false
+      tests:
+      - query: |
+          ~text~ match "hell"
+      - query: |
+          ~text~ match "fo bar"
+
+- name: "Dynamic pattern true"
+  query: |
+    ~text~ match *[_id=="doc"][0].pattern1
+  result: true
+
+- name: "Dynamic pattern false"
+  query: |
+    ~text~ match *[_id=="doc"][0].pattern2
+  result: false
+
+- name: "Dynamic pattern array"
+  query: |
+    ~text~ match *[_id=="doc"][0].patterns
+  result: true
+    
+- name: "Unsupported types"
+  variables:
+    expr:
+    - '{}'
+    - '[1]'
+    - '["1", null]'
+    - '["1", 1]'
+    - '123'
+    - '(1 => 2)'
+    - '(1 .. 2)'
+    - 'true'
+    - 'false'
+    - 'null'
+  query: |
+    ~expr~ match ~expr~
+  result: null
