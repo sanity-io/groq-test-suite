@@ -1,0 +1,126 @@
+name: "In operator"
+
+tests:
+- name: "Array"
+  query: |
+    ~el~ in ~arr~
+  tests:
+
+  - result: true
+    variables:
+      arr: '[1, "1", null, true, false]'
+      el:
+      - '1'
+      - '"1"'
+      - 'null'
+      - 'true'
+      - 'false'
+
+  - result: false
+    tests:
+      - variables: {el: '1', arr: '["1", null, true]'}
+      - variables: {el: '1', arr: '["1", 1.1, null, true]'}
+      - variables: {el: 'true', arr: '["1", null, false]'}
+      - variables: {el: 'false', arr: '["1", null, true]'}
+      - variables: {el: '[]', arr: '[[]]'}
+      - variables: {el: '{}', arr: '[{}, []]'}
+
+- name: "Numeric range"
+  query: |
+    ~el~ in ~arr~
+  tests:
+
+  - result: true
+    variables:
+      arr: '1..5'
+      el:
+      - '1'
+      - '2'
+      - '2.5'
+      - '4'
+      - '5'
+
+  - result: true
+    variables:
+      arr: '1...5'
+      el:
+      - '1'
+      - '2'
+      - '2.5'
+      - '4'
+
+  - result: false
+    variables:
+      arr: '1...5'
+      el:
+      - '0'
+      - '5'
+
+  - result: null
+    variables:
+      arr: '1...5'
+      el:
+      - 'true'
+      - 'false'
+      - 'null'
+      - '{}'
+      - '(1 => 2)'
+      - '(1 .. 5)'
+
+- name: "String range"
+  query: |
+    ~el~ in ~arr~
+  tests:
+
+  - result: true
+    variables:
+      arr: '"a".."c"'
+      el:
+      - '"a"'
+      - '"ab"'
+      - '"bbbb"'
+      - '"b"'
+      - '"c"'
+
+  - result: true
+    variables:
+      arr: '"a"..."c"'
+      el:
+      - '"a"'
+      - '"ab"'
+      - '"bbbb"'
+      - '"b"'
+
+  - result: false
+    variables:
+      arr: '"a"..."c"'
+      el:
+      - '"0"'
+      - '"c"'
+
+  - result: null
+    variables:
+      arr: '"a"..."c"'
+      el:
+      - 'true'
+      - 'false'
+      - 'null'
+      - '{}'
+      - '(1 => 2)'
+      - '(1 .. 5)'
+
+- name: "String range"
+
+- name: "Unknown types"
+  result: null
+  query: |
+    1 in ~arr~
+  variables:
+    arr:
+    - '{}'
+    - '"1"'
+    - '(1 => 2)'
+    - 'true'
+    - 'false'
+    - 'null'
+      
