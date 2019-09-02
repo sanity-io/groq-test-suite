@@ -1,0 +1,32 @@
+name: "Percent operator"
+
+tests:
+- name: "Unknown types"
+  variables:
+    val:
+    - "true"
+    - "false"
+    - "null"
+    - "[]"
+    - "{}"
+    - '"ab"'
+    - "(1 => 2)"
+    - "(1 .. 2)"
+  result: null
+  query: |
+    ~val~ % ~val~
+
+- name: "Supported types"
+  query: |
+    ~left~ % ~right~
+  tests:
+  - {variables: {left: '10', right: '3'}, result: 1}
+  - {variables: {left: '10.5', right: '3'}, result: 1.5}
+  - {variables: {left: '6', right: '2.5'}, result: 1}
+  - {variables: {left: '5', right: '2.5'}, result: 0}
+  - {variables: {left: '-10', right: '3'}, result: -1}
+  - {variables: {left: '-10.5', right: '3'}, result: -1.5}
+  - {variables: {left: '10', right: '-3'}, result: 1}
+  - {variables: {left: '10.5', right: '-3'}, result: 1.5}
+  - {variables: {left: '-10', right: '-3'}, result: -1}
+  - {variables: {left: '-10.5', right: '-3'}, result: -1.5}

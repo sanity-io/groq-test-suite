@@ -1,0 +1,33 @@
+name: "Slash operator"
+
+tests:
+- name: "Unknown types"
+  variables:
+    val:
+    - "true"
+    - "false"
+    - "null"
+    - "[]"
+    - "{}"
+    - '"ab"'
+    - "(1 => 2)"
+    - "(1 .. 2)"
+  result: null
+  query: |
+    ~val~ / ~val~
+
+- name: "Supported types"
+  query: |
+    ~left~ / ~right~
+  tests:
+  - {variables: {left: '4', right: '2'}, result: 2}
+  - {variables: {left: '5', right: '2'}, result: 2.5}
+  - {variables: {left: '5', right: '0'}, result: null}
+  - {variables: {left: '0', right: '0'}, result: null}
+
+- name: "Non-finite is null"
+  query: '(~expr~) == null'
+  result: true
+  tests:
+  - {variables: {expr: '5 / 0'}}
+  - {variables: {expr: '0 / 0'}}

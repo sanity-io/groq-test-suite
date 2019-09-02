@@ -1,0 +1,24 @@
+name: "Star operator"
+
+tests:
+- name: "Unknown types"
+  variables:
+    val:
+    - "true"
+    - "false"
+    - "null"
+    - "[]"
+    - "{}"
+    - '"ab"'
+    - "(1 => 2)"
+    - "(1 .. 2)"
+  result: null
+  query: |
+    ~val~ * ~val~
+
+- name: "Supported types"
+  query: |
+    ~left~ * ~right~
+  tests:
+  - {variables: {left: '2', right: '3'}, result: 6}
+  - {variables: {left: '1.5', right: '10'}, result: 15}
