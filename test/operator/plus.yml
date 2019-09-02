@@ -1,0 +1,24 @@
+name: "Plus operator"
+
+tests:
+- name: "Unknown types"
+  variables:
+    val:
+    - "true"
+    - "false"
+    - "null"
+    - "[]"
+    - "{}"
+    - "(1 => 2)"
+    - "(1 .. 2)"
+  result: null
+  query: |
+    ~val~ + ~val~
+
+- name: "Supports types"
+  query: |
+    ~left~ + ~right~
+  tests:
+  - {variables: {left: '1', right: '1'}, result: 2}
+  - {variables: {left: '1.5', right: '1'}, result: 2.5}
+  - {variables: {left: '"a"', right: '"b"'}, result: "ab"}
