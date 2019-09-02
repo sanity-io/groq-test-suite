@@ -213,15 +213,70 @@ async function build(emitter) {
   }
 }
 
+class StreamBuffer {
+  constructor(stream) {
+    this.stream = stream;
+    this.data = [];
+    this.isBlocked = false;
+  }
+
+  write(entry) {
+    this.data.push(entry);
+    if (this.isBlocked) {
+      this.data.push(entry);
+    } else {
+      let ok = this.stream.write(entry);
+      if (!ok) {
+        this.data.push(entry);
+        this.scheduleDrain();
+      }
+    }
+  }
+
+  end() {
+    if (this.isBlocked) {
+      this.shouldEnd = true;
+    } else {
+      this.stream.end();
+    }
+  }
+
+  scheduleDrain() {
+    this.isBlocked = true;
+    this.stream.once('drain', () => this.flush());
+  }
+
+  flush() {
+    let i = 0;
+    this.isBlocked = false;
+
+    for (; i < this.data.length; i++) {
+      let entry = this.data[i];
+      let ok = this.stream.write(entry);
+      if (!ok) {
+        this.scheduleDrain();
+        break;
+      }
+    }
+
+    this.data = this.data.slice(i + 1);
+
+    if (!this.isBlocked && this.shouldEnd) {
+      this.shouldEnd = false;
+      this.stream.end();
+    }
+  }
+}
 
 async function main() {
   let serialize = ndjson.serialize();
   serialize.pipe(process.stdout);
+  serialize = new StreamBuffer(serialize);
 
   await build(entry => {
-    let didWrite = serialize.write(entry);
-    if (!didWrite) throw new Error("Failed to write entry");
+    serialize.write(entry);
   });
+
   serialize.end();
 }
 
