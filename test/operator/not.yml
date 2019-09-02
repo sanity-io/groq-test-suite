@@ -1,0 +1,19 @@
+name: "Not operator"
+tests:
+- query: "!false"
+  result: true
+- query: "!true"
+  result: false
+- query: "!null"
+  result: null
+- name: "Other types"
+  variables:
+    val:
+    - "1"
+    - "'1'"
+    - "[]"
+    - "1 => 2"
+    - "1 .. 2"
+    - "1 ... 2"
+  result: null
+  query: "!(~val~)"
