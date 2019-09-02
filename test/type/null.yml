@@ -1,0 +1,16 @@
+name: "Boolean"
+documents:
+- _id: "null"
+  _type: "test"
+  value: [null]
+
+tests:
+- name: "Null literal"
+  query: |
+    null
+  result: null
+
+- name: "Null value in document"
+  query: |
+    *[_id == "null"][0].value[0]
+  result: null
