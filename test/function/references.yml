@@ -1,0 +1,61 @@
+name: "references() function"
+documents:
+- _id: "a"
+  _type: "doc"
+  name: "A"
+  ref:
+    _ref: "b"
+  arrref:
+    - _ref: "c"
+    - _ref: "d"
+  objref:
+    inner:
+      _ref: "e"
+- _id: "b"
+  _type: "doc"
+  name: "B"
+- _id: "c"
+  _type: "doc"
+  name: "C"
+- _id: "d"
+  _type: "doc"
+  name: "D"
+- _id: "e"
+  _type: "doc"
+  name: "E"
+
+tests:
+- name: "Basic"
+  query: |
+    *[references(~id~)]{name}
+  result:
+  - name: "A"
+  tests:
+  - variables: {id: '"b"'}
+  - variables: {id: '"c"'}
+  - variables: {id: '"d"'}
+  - variables: {id: '"e"'}
+
+- name: "Filtered"
+  query: |
+    *{ref,name}[references(~id~)]{name}
+  tests:
+  - {variables: {id: '"b"'}, result: [{name: "A"}]}
+  - {variables: {id: '"c"'}, result: []}
+  - {variables: {id: '"d"'}, result: []}
+  - {variables: {id: '"e"'}, result: []}
+
+- name: "Invalid arguments"
+  query: |
+    *[_type == "doc"]{"res": references(~id~)}
+  # We check for {} to verify that we actually get `null` as a result
+  result: [{}, {}, {}, {}, {}]
+  tests:
+  - variables: {id: ''}
+  - variables: {id: '1'}
+  - variables: {id: '"1", 2'}
+  - variables: {id: 'null'}
+  - variables: {id: 'true'}
+  - variables: {id: 'false'}
+  - variables: {id: '"1" => "1"'}
+  - variables: {id: '"1" .. "1"'}
