@@ -1,0 +1,31 @@
+name: "round() function"
+
+tests:
+- query: |
+    round(~args~)
+  tests:
+  - {variables: {args: '3'}, result: 3}
+  - {variables: {args: '3.14'}, result: 3}
+  - {variables: {args: '3.5'}, result: 4}
+  - {variables: {args: '3.9'}, result: 4}
+  - {variables: {args: '3.9'}, result: 4}
+  - {variables: {args: '3.14159265359, 2'}, result: 3.14}
+  - {variables: {args: '3.14159265359, 4'}, result: 3.1416}
+
+- name: "Invalid arguments"
+  result: null
+  variables:
+    nonnum:
+    - '"3.14"'
+    - '[3.14]'
+    - '{}'
+    - '(3 .. 14)'
+    - 'null'
+    - 'true'
+    - 'false'
+  tests:
+  - query: 'round()'
+  - query: 'round(~nonnum~)'
+  - query: 'round(3.14, ~nonnum~)'
+  - query: 'round(~nonnum~, ~nonnum~)'
+  - query: 'round(3.14, 2, 3)'
