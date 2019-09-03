@@ -1,0 +1,22 @@
+name: "coalesce() function"
+
+tests:
+- query: |
+    coalesce()
+  result: null
+
+- query: |
+    coalesce(1)
+  result: 1
+
+- query: |
+    coalesce(1, 2)
+  result: 1
+
+- query: |
+    coalesce(null, 1, 2)
+  result: 1
+
+- query: |
+    coalesce(null, false, 1)
+  result: false
