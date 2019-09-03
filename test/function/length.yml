@@ -1,0 +1,47 @@
+name: "length() function"
+documents:
+- _id: "a"
+  _type: "doc"
+  values: [1, 2, 3]
+  str: "abc"
+- _id: "b"
+  _type: "doc"
+  values: [1, 2, 3, 4]
+  str: "😀"
+
+tests:
+- query: |
+    length(*[_type == "doc"])
+  result: 2
+
+- query: |
+    length(*[_id == "a"][0].values)
+  result: 3
+
+- query: |
+    length(*[_id == "a"][0].str)
+  result: 3
+
+- query: |
+    length(*[_id == "b"][0].values)
+  result: 4
+
+- query: |
+    length(*[_id == "b"][0].str)
+  result: 1
+
+- name: "Unknown types"
+  variables:
+    expr:
+    - '123'
+    - '{"key": "value"}'
+    - '(1 => 2)'
+    - '(1 .. 3)'
+    - '[], []'
+    - '"", []'
+    - 'null'
+    - 'true'
+    - 'false'
+  query: |
+    length(~expr~)
+  result: null
