@@ -1,0 +1,69 @@
+name: "Dereference operator"
+documents:
+- _id: "b"
+  _type: "test"
+  name: "B"
+- _id: "a"
+  _type: "test"
+  name: "A"
+  other:
+    _ref: "b"
+  weakother:
+    _ref: "b"
+    _weak: true
+
+tests:
+- query: |
+    *[_id == "a"][0].other->_id
+  result: "b"
+
+- query: |
+    *[_id == "a"][0].other->name
+  result: "B"
+
+- query: |
+    *[_id == "a"][0].other->{_id, name}
+  result:
+    _id: "b"
+    name: "B"
+
+- query: |
+    *[_id == "a"][0].other->missing
+  result: null
+
+- query: |
+    *[_id == "a"][0].missing->
+  result: null
+
+- query: |
+    *[_id == "a"][0].missing->name
+  result: null
+
+- query: |
+    *[_id == "a"][0].weakother->_id
+  result: "b"
+
+- query: |
+    *[_id == "a"][0].weakother->name
+  result: "B"
+
+- query: |
+    *[_id == "a"][0].weakother->missing
+  result: null
+
+- name: "Unsupported types"
+  variables:
+    expr:
+    - '"abc"'
+    - '123'
+    - '3.14'
+    - '[1, 2]'
+    - '[{"_ref": "a"}]'
+    - '{"key": "value"}'
+    - '{"_ref": 123}'
+    - '{"_ref": []}'
+    - '{"_ref": ["123"]}'
+    - '{"_ref": {"_ref": "a"}}'
+  query: |
+    (~expr~)->
+  result: null
