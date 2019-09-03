@@ -1,0 +1,52 @@
+name: "select() function"
+documents:
+- _id: "a"
+  _type: "person"
+  age: 10
+- _id: "b"
+  _type: "person"
+  age: 16
+- _id: "c"
+  _type: "person"
+  age: 20
+
+tests:
+- name: "From documents"
+  query: |
+    *[_type == "person"]{"category": select(~args~)}
+  tests:
+  - variables:
+      args: |
+        age >= 18 => "adult",
+        age >= 13 => "teen",
+        "child"
+    result:
+    - category: "child"
+    - category: "teen"
+    - category: "adult"
+
+  - name: "null fallback"
+    variables:
+      args: |
+        age >= 18 => "adult",
+        age >= 13 => "teen"
+    result:
+    - {}
+    - category: "teen"
+    - category: "adult"
+
+  - name: "Order-dependent"
+    variables:
+      args: |
+        age >= 13 => "teen",
+        age >= 18 => "adult"
+    result:
+    - {}
+    - category: "teen"
+    - category: "teen"
+
+- name: "Invalid arguments"
+  result: null
+  tests:
+  - query: 'select("a", 2 > 1 => "b")'
+  - query: 'select("a", "b")'
