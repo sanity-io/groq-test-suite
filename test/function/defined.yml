@@ -1,0 +1,45 @@
+name: "defined() function"
+documents:
+- _id: "a"
+  _type: "doc"
+  v_num: 0
+  v_str: ""
+  v_arr: []
+
+tests:
+- result: false
+  query: |
+    defined(~expr~)
+  variables:
+    expr:
+    - 'null'
+    - '*[_id == "b"][0]'
+    - '*[_id == "a"][0].missing'
+
+- result: true
+  query: |
+    defined(~expr~)
+  variables:
+    expr:
+    - '3.14'
+    - '[1, 2]'
+    - '[]'
+    - '{}'
+    - '0..0'
+    - '0...0'
+    - 'false'
+    - 'true'
+    - '""'
+    - '"1"'
+    - '*[_id == "a"][0].v_num'
+    - '*[_id == "a"][0].v_str'
+    - '*[_id == "a"][0].v_arr'
+
+- result: null
+  query: |
+    defined(~expr~)
+  variables:
+    expr:
+    - 'null, null'
+    - 'null, null, null'
+    - 'null, null, null, null'
