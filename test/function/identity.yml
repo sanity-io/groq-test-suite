@@ -1,0 +1,21 @@
+name: "identity() function"
+result: true
+
+tests:
+- name: "defined"
+  query: |
+    defined(identity())
+
+- name: "string"
+  # We use the semantics of > to test for type
+  query: |
+    defined(identity() > "")
+
+- query: |
+    identity(~expr~)
+  result: null
+  variables:
+    expr:
+    - "null"
+    - "1"
+    - "null, 1"
