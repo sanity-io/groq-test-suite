@@ -1,0 +1,23 @@
+name: "Unary minus operator"
+query: |
+  - ~val~
+
+tests:
+- name: "Unknown types"
+  variables:
+    val:
+    - "true"
+    - "false"
+    - "null"
+    - "[]"
+    - "{}"
+    - '"ab"'
+    - "(1 => 2)"
+    - "(1 .. 2)"
+  result: null
+
+- name: "Supported types"
+  tests:
+  - {variables: {val: '2'}, result: -2}
+  - {variables: {val: '1.5'}, result: -1.5}
+  - {variables: {val: '(-2)'}, result: 2}
