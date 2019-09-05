@@ -1,0 +1,173 @@
+name: "Precedence and assoiativity"
+
+# Tests are structured as follows:
+#
+# - Higher precedence level first.
+# - For each operator:
+#   - A test which demonstrates assoiativity.
+#   - A test with parenthesis forcing the opposite assoiativity.
+# - Then, pick one operator from this level to compare against the next level:
+#   - A test which demonstrates precedence.
+#   - A test with parenthesis forcing the opposite precedence.
+#   - A test which flips the position of the operators.
+#
+# Note that there's a test even when the assoiativity doesn't matter.
+
+tests:
+# Level 8
+
+- query: |
+    - 3 ** 2
+  result: 9
+- query: |
+    - (3 ** 2)
+  result: -9
+
+# Level 7
+
+- query: |
+    3 ** 3 ** 2
+  result: 19683
+- query: |
+    (3 ** 3) ** 2
+  result: 729
+
+- query: |
+    2 ** 3 * 4
+  result: 32
+- query: |
+    2 ** (3 * 4)
+  result: 4096
+- query: |
+    4 * 2 ** 3
+  result: 32
+
+# Level 6
+
+- query: |
+    2 * 3 * 4
+  result: 24
+- query: |
+    2 * (3 * 4)
+  result: 24
+
+- query: |
+    4 / 2 / 2
+  result: 1
+- query: |
+    4 / (2 / 2)
+  result: 4
+
+- query: |
+    10 % 3 % 2
+  result: 1
+- query: |
+    10 % (3 % 2)
+  result: 0
+
+- query: |
+    2 * 3 + 4
+  result: 10
+- query: |
+    2 * (3 + 4)
+  result: 14
+- query: |
+    4 + 2 * 3
+  result: 10
+
+# Level 5
+
+- query: |
+    2 + 3 + 4
+  result: 9
+- query: |
+    2 + (3 + 4)
+  result: 9
+
+- query: |
+    4 - 3 - 1
+  result: 0
+- query: |
+    4 - (3 - 1)
+  result: 2
+
+- query: |
+    1 + 2 .. 3
+  result: [3, 3]
+- query: |
+    1 + (2 .. 3)
+  result: null
+- query: |
+    1 .. 2 + 3
+  result: [1, 5]
+
+# Level 4
+
+# .. is non-assoiative - no tests.
+
+# This is the only combination of comparison and range we can't actually test for:
+- query: |
+    2 in 1 .. 4
+  result: true
+- query: |
+    2 in (1 .. 4)
+  result: true
+- query: |
+    (2 in 1) .. 4
+  result: null
+
+# Use an operator at a higher level instead:
+- query: |
+    2 + 2 > 3
+  result: true
+- query: |
+    2 + (2 > 3)
+  result: null
+- query: |
+    2 > 2 + 3
+  result: false
+
+# Level 3
+
+# All comparison operators are non-assoiative - no tests.
+
+- query: |
+    2 < 4 && true
+  result: true
+- query: |
+    2 < (4 && true)
+  result: null
+- query: |
+    true && 2 < 4
+  result: true
+
+# Level 2
+
+- query: |
+    true && false && true
+  result: false
+- query: |
+    (true && false) && true
+  result: false
+
+- query: |
+    false && false || true
+  result:
+    true
+- query: |
+    false && (false || true)
+  result:
+    false
+- query: |
+    true || false && false
+  result:
+    true
+
+# Level 1
+
+- query: |
+    true || false || true
+  result: true
+- query: |
+    (true || false) || true
+  result: true
