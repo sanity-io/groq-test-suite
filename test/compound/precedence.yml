@@ -3,7 +3,7 @@ name: "Precedence and assoiativity"
 # Tests are structured as follows:
 #
 # - Higher precedence level first.
-# - For each operator:
+# - For each binary operator:
 #   - A test which demonstrates assoiativity.
 #   - A test with parenthesis forcing the opposite assoiativity.
 # - Then, pick one operator from this level to compare against the next level:
@@ -14,16 +14,32 @@ name: "Precedence and assoiativity"
 # Note that there's a test even when the assoiativity doesn't matter.
 
 tests:
-# Level 8
+# Level 11 (compund expressions)
 
 - query: |
-    - 3 ** 2
-  result: 9
+    + {"a":2}.a
+  result: 2
 - query: |
-    - (3 ** 2)
-  result: -9
+    (+ {"a":2}).a
+  result: null
 
-# Level 7
+# Level 10 (unary +, !)
+
+- query: |
+    + true == true
+  result: false
+- query: |
+    + (true == true)
+  result: null
+
+- query: |
+    ! true == null
+  result: false
+- query: |
+    ! (true == null)
+  result: true
+
+# Level 9 (**)
 
 - query: |
     3 ** 3 ** 2
@@ -32,6 +48,14 @@ tests:
     (3 ** 3) ** 2
   result: 729
 
+- query: |
+    - 3 ** 2
+  result: -9
+- query: |
+    (- 3) ** 2
+  result: 9
+
+# Also test against level 7, since there's no good way of testing level 8 against 7.
 - query: |
     2 ** 3 * 4
   result: 32
@@ -42,7 +66,9 @@ tests:
     4 * 2 ** 3
   result: 32
 
-# Level 6
+# Level 8 (unary -)
+
+# Level 7 (*, /, %)
 
 - query: |
     2 * 3 * 4
@@ -75,7 +101,7 @@ tests:
     4 + 2 * 3
   result: 10
 
-# Level 5
+# Level 6 (+, -)
 
 - query: |
     2 + 3 + 4
@@ -101,11 +127,9 @@ tests:
     1 .. 2 + 3
   result: [1, 5]
 
-# Level 4
+# Level 5 (.., ...)
 
-# .. is non-assoiative - no tests.
-
-# This is the only combination of comparison and range we can't actually test for:
+# This is the only combination of comparison and range we can actually test for:
 - query: |
     2 in 1 .. 4
   result: true
@@ -116,7 +140,7 @@ tests:
     (2 in 1) .. 4
   result: null
 
-# Use an operator at a higher level instead:
+# Test level 6 against level 4 as a replacement for level 5 against 5:
 - query: |
     2 + 2 > 3
   result: true
@@ -127,9 +151,7 @@ tests:
     2 > 2 + 3
   result: false
 
-# Level 3
-
-# All comparison operators are non-assoiative - no tests.
+# Level 4 (==, <=, <, >=, >, in, match, asc/desc)
 
 - query: |
     2 < 4 && true
@@ -141,7 +163,17 @@ tests:
     true && 2 < 4
   result: true
 
-# Level 2
+- query: |
+    [1, true] | order(@ && true asc)
+  result: [1, true]
+- query: |
+    [1, true] | order(@ && (true asc))
+  result: [1, true]
+- query: |
+    [1, true] | order((@ && true) asc)
+  result: [true, 1]
+
+# Level 3 (&&)
 
 - query: |
     true && false && true
@@ -163,7 +195,7 @@ tests:
   result:
     true
 
-# Level 1
+# Level 2 (||)
 
 - query: |
     true || false || true
@@ -171,3 +203,12 @@ tests:
 - query: |
     (true || false) || true
   result: true
+
+- query: |
+    true || true => false
+  result: [true, false]
+- query: |
+    true || (true => false)
+  result: true
+
+# Level 1 (=>)
