@@ -124,7 +124,10 @@ class Builder {
         let name = (test.name != null && child.name != null)
           ? (test.name + " / " + child.name)
           : (child.name || test.name)
-        this.process({...test, tests: null, ...child, name}, extra);
+        let variables = (test.variables != null || child.variables != null)
+          ? Object.assign({}, test.variables, child.variables)
+          : null;
+        this.process({...test, tests: null, ...child, name, variables}, extra);
       }
     }
   }
