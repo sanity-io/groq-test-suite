@@ -1,0 +1,109 @@
+name: "String literals"
+variables:
+  a: ['a', 'A']
+  b: ['b', 'B']
+  c: ['c', 'C']
+  d: ['d', 'D']
+  e: ['e', 'E']
+  f: ['f', 'F']
+
+tests:
+- query: |
+    "abc"
+  result: "abc"
+
+- query: |
+    "a
+    c"
+  result: "a\nc"
+
+- name: "Single escape sequence"
+  tests:
+  - query: |
+      "a\"b"
+    result: "a\"b"
+
+  - query: |
+      'a\"b'
+    result: "a\"b"
+
+  - query: |
+      "a\'b"
+    result: "a'b"
+
+  - query: |
+      'a\'b'
+    result: "a'b"
+
+  - query: |
+      "a\\b"
+    result: "a\\b"
+
+  - query: |
+      'a\\b'
+    result: "a\\b"
+
+  - query: |
+      "a\/b"
+    result: "a/b"
+
+  - query: |
+      'a\/b'
+    result: "a\/b"
+
+  - query: |
+      "a\bb"
+    result: "a\bb"
+
+  - query: |
+      'a\bb'
+    result: "a\bb"
+
+  - query: |
+      "a\fb"
+    result: "a\fb"
+
+  - query: |
+      'a\fb'
+    result: "a\fb"
+
+  - query: |
+      "a\fb"
+    result: "a\fb"
+
+  - query: |
+      'a\fb'
+    result: "a\fb"
+
+  - query: |
+      "a\nb"
+    result: "a\nb"
+
+  - query: |
+      'a\nb'
+    result: "a\nb"
+
+  - query: |
+      "a\rb"
+    result: "a\rb"
+
+  - query: |
+      'a\rb'
+    result: "a\rb"
+
+  - query: |
+      "a\tb"
+    result: "a\tb"
+
+  - query: |
+      'a\tb'
+    result: "a\tb"
+
+- name: "Unicode escape sequence"
+  tests:
+  - query: |
+      "\u00~e~5"
+    result: "å"
+  - query: |
+      "\u~d~83~d~\u~d~~e~05"
+    result: "😅"
