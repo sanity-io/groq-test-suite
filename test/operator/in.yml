@@ -109,7 +109,40 @@ tests:
       - '(1 => 2)'
       - '(1 .. 5)'
 
-- name: "String range"
+- name: "Path"
+  query: |
+    ~el~ in path(~path~)
+  tests:
+
+  - result: true
+    variables:
+      path: '"a.*"'
+      el:
+      - '"a.b"'
+      - '"a.b"'
+
+  - result: false
+    variables:
+      path: '"a.*"'
+      el:
+      - '"b.a.b"'
+      - '"a"'
+      - '"a.b.c"'
+
+  - result: true
+    variables:
+      path: '"a.**.c"'
+      el:
+      - '"a.b.c"'
+      - '"a.b.c.c"'
+
+  - result: false
+    variables:
+      path: '"a.**.c"'
+      el:
+      - '"a.c.d"'
+      - '"d.a.c"'
+      - '"d.a.c.c"'
 
 - name: "Unknown types"
   result: null

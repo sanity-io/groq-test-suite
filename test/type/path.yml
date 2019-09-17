@@ -1,0 +1,22 @@
+name: "Path"
+
+tests:
+- query: "path('a.b')"
+  result: 'a.b'
+
+- query: "path('a.**')"
+  result: 'a.**'
+
+- name: "Invalid types"
+  query: "path(~expr~)"
+  result: null
+  variables:
+    expr:
+    - "123"
+    - "[]"
+    - "{}"
+    - "null"
+    - "true"
+    - "false"
+    - "1 .. 2"
+    - "1 => 2"
