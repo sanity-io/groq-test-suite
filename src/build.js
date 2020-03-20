@@ -7,7 +7,7 @@ const ndjson = require('ndjson');
 const crypto = require('crypto');
 
 const DATASETS = {
-  movies: 'https://groq-test-suite.storage.googleapis.com/datasets/movies/movies-f6fd5605328d7e1d6c667addc455aff2.ndjson'
+  movies: 'https://groq-test-suite.storage.googleapis.com/datasets/movies/movies-7d858de5318a6bc27d92a638899957ef.ndjson'
 }
 
 function sha1(s) {

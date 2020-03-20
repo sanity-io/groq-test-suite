@@ -116,7 +116,7 @@ Currently the following named datasets are available:
 
 | Name | Size | Documentation | URL |
 | --- | --- | --- | --- |
-| `movies` | ~500k documents (~200MB) | [./utils/the-movies-dataset](./utils/the-movies-dataset) | [🔗](https://groq-test-suite.storage.googleapis.com/datasets/movies/movies-f6fd5605328d7e1d6c667addc455aff2.ndjson) |
+| `movies` | ~500k documents (~200MB) | [./utils/the-movies-dataset](./utils/the-movies-dataset) | [🔗](https://groq-test-suite.storage.googleapis.com/datasets/movies/movies-7d858de5318a6bc27d92a638899957ef.ndjson) |
 
 ### Schema
 

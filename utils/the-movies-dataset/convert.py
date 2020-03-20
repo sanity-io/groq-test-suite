@@ -193,8 +193,8 @@ class Converter:
             self.collections,
             self.companies,
             self.genres,
-            self.movies,
             self.persons,
+            self.movies,
         ]
 
         for table in tables:
