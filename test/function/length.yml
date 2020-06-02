@@ -37,11 +37,19 @@ tests:
     - '{"key": "value"}'
     - '(1 => 2)'
     - '(1 .. 3)'
-    - '[], []'
-    - '"", []'
     - 'null'
     - 'true'
     - 'false'
   query: |
     length(~expr~)
   result: null
+
+- name: "Incorrect number of arguments"
+  variables:
+    expr:
+    - ''
+    - '"123", "456"'
+    - '"123", []'
+  query: |
+    length(~expr~)
+  valid: false
