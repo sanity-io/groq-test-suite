@@ -151,7 +151,7 @@ If you're planning to consume the test suite it's recommended to use the *compil
 $ yarn
 
 # Build the test suite
-$ yarn build > test.ndjson
+$ yarn build > suite.ndjson
 ```
 
 The compiled test suite is a [NDJSON](http://ndjson.org/) file where every entry uses the following schema:
