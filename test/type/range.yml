@@ -5,6 +5,8 @@ documents:
   v_string2: "b"
   v_num1: 1
   v_num2: 2
+  v_true: true
+  v_false: false
 tests:
 - name: "String construction"
   variables:
@@ -32,14 +34,24 @@ tests:
   - query: "~first~ .. ~last~"
   - query: "~first~ ... ~last~"
 
+- name: "Boolean construction"
+  variables:
+    first:
+    - '*[_id == "a"][0].v_false'
+    - 'false'
+    last:
+    - '*[_id == "a"][0].v_true'
+    - 'true'
+  result: [false, true]
+  tests:
+  - query: "~first~ .. ~last~"
+  - query: "~first~ ... ~last~"
+
 - name: "Un-rangable types"
   variables:
     t:
     - "[]"
     - "{}"
-    - "null"
-    - "true"
-    - "false"
   result: null
   tests:
   - query: "~t~ .. ~t~"
