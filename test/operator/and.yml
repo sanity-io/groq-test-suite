@@ -4,7 +4,6 @@ documents:
   _type: "test"
   v_true: true
   v_false: false
-  v_null: null
   v_string: "string"
   v_integer: 1
 
