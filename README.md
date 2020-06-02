@@ -37,7 +37,8 @@ type Test = {
   name: string
   filename: string
   query: string
-  result: string
+  result: any
+  valid: boolean
   dataset: {
     _ref: string
   }
@@ -183,6 +184,9 @@ type Test = {
 
   query?: string
   variables?: Variables
+
+  result?: any
+  valid?: boolean // defaults to `true`
 
   tests?: Array<Test>
 }

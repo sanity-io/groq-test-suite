@@ -142,6 +142,7 @@ class Builder {
     let _id = this.idGenerator.generate("test", test.name);
 
     let dataset = test.dataset || { _ref: this.createEmptyDataset() };
+    let valid = test.valid != null ? test.valid : true;
 
     let entry = {
       _id,
@@ -149,7 +150,8 @@ class Builder {
       dataset,
       name: test.name,
       query,
-      result: test.result,
+      result: valid ? test.result : null,
+      valid,
       ...extra,
     };
 
