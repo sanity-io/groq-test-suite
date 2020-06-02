@@ -131,18 +131,10 @@ tests:
 
   - result: true
     variables:
-      path: '"a.**.c"'
+      path: '"a.**"'
       el:
       - '"a.b.c"'
       - '"a.b.c.c"'
-
-  - result: false
-    variables:
-      path: '"a.**.c"'
-      el:
-      - '"a.c.d"'
-      - '"d.a.c"'
-      - '"d.a.c.c"'
 
 - name: "Unknown types"
   result: null
