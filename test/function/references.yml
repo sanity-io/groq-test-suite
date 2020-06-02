@@ -48,8 +48,12 @@ tests:
 - name: "Invalid arguments"
   query: |
     *[_type == "doc"]{"res": references(~id~)}
-  # We check for {} to verify that we actually get `null` as a result
-  result: [{}, {}, {}, {}, {}]
+  result:
+  - {"res": false}
+  - {"res": false}
+  - {"res": false}
+  - {"res": false}
+  - {"res": false}
   variables:
     id:
     - '1'
