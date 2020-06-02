@@ -4,8 +4,57 @@ The GROQ test suite is the official conformance test suite for the [GROQ specifi
 
 ## Status
 
-The test suite (and the specification) was started in August 2019 and is nearly empty, but under active development.
+The test suite (and the specification) was started in August 2019 and has good coverage of the basic features.
 Currently we're working on moving over tests from the internal GROQ implementation used in [Sanity](https://www.sanity.io/).
+
+## Versioning
+
+The test suite uses the version scheme `vX.Y.Z` where `X.Y` follows the version of [GROQ](https://github.com/sanity-io/GROQ) and `Z` is monotonically increasing.
+
+## Using the test suite
+
+The YAML files in this repository is optimized for writing tests.
+For using the test suite it's recommended to use the *compiled* version.
+The compiled test suite is a [NDJSON](http://ndjson.org/) file where every entry uses the schema below.
+
+The compiled test suite can either be downloaded from [the GitHub Release page](https://github.com/sanity-io/groq-test-suite/releases) or be built from source (see next section).
+
+```typescript
+type Entry = Dataset | Test
+
+type Dataset = {
+  _type: "dataset"
+  _id: string
+
+  documents?: Array<any>
+  url: string
+}
+
+type Test = {
+  _type: "test"
+  _id: string
+
+  name: string
+  filename: string
+  query: string
+  result: string
+  dataset: {
+    _ref: string
+  }
+}
+```
+
+### Compiling the test suite
+
+Use the provided `build` script to compile the test suite:
+
+```bash
+# Install dependencies
+$ yarn
+
+# Build the test suite
+$ yarn -s build > suite.ndjson
+```
 
 ## Structure
 
@@ -34,7 +83,7 @@ tests:
 
 Tests can be nested and will then inherit properties from their parent.
 
-Here's a slightly contrived example which shows how the dataset can be overriden for a specific test case:
+Here's a slightly contrived example which shows how the dataset can be overridden for a specific test case:
 
 ```yaml
 # This test file:
@@ -77,7 +126,7 @@ tests:
 
 ### Variables
 
-Queries can use the syntax `${name}` for refering to variables.
+Queries can use the syntax `${name}` for referring to variables.
 Together with test inheritance this can be used to succinctly test many different cases.
 
 ```yaml
@@ -139,45 +188,5 @@ type Test = {
 }
 
 type Variables = { [key: string]: string }
-```
-
-### Compiling the test suite
-
-The YAML files are optimized for writing tests.
-If you're planning to consume the test suite it's recommended to use the *compiled* test suite:
-
-```bash
-# Install dependencies
-$ yarn
-
-# Build the test suite
-$ yarn build > suite.ndjson
-```
-
-The compiled test suite is a [NDJSON](http://ndjson.org/) file where every entry uses the following schema:
-
-```typescript
-type Entry = Dataset | Test
-
-type Dataset = {
-  _type: "dataset"
-  _id: string
-
-  documents?: Array<any>
-  url: string
-}
-
-type Test = {
-  _type: "test"
-  _id: string
-
-  name: string
-  filename: string
-  query: string
-  result: string
-  dataset: {
-    _ref: string
-  }
-}
 ```
 
