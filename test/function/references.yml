@@ -50,12 +50,20 @@ tests:
     *[_type == "doc"]{"res": references(~id~)}
   # We check for {} to verify that we actually get `null` as a result
   result: [{}, {}, {}, {}, {}]
-  tests:
-  - variables: {id: ''}
-  - variables: {id: '1'}
-  - variables: {id: '"1", 2'}
-  - variables: {id: 'null'}
-  - variables: {id: 'true'}
-  - variables: {id: 'false'}
-  - variables: {id: '"1" => "1"'}
-  - variables: {id: '"1" .. "1"'}
+  variables:
+    id:
+    - '1'
+    - 'null'
+    - 'true'
+    - 'false'
+    - '"1" => "1"'
+    - '"1" .. "1"'
+
+- name: "Incorrect number of arguments"
+  query: |
+    *[_type == "doc"]{"res": references(~id~)}
+  valid: false
+  variables:
+    id:
+    - ''
+    - '1, 2'
