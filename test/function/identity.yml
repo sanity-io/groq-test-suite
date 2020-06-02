@@ -13,7 +13,7 @@ tests:
 
 - query: |
     identity(~expr~)
-  result: null
+  valid: false
   variables:
     expr:
     - "null"
