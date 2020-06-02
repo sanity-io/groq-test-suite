@@ -141,10 +141,12 @@ class Builder {
   emitTest(test, query, extra) {
     let _id = this.idGenerator.generate("test", test.name);
 
+    let dataset = test.dataset || { _ref: this.createEmptyDataset() };
+
     let entry = {
       _id,
       _type: "test",
-      dataset: test.dataset,
+      dataset,
       name: test.name,
       query,
       result: test.result,
@@ -157,13 +159,9 @@ class Builder {
   exportDocuments(test, extra) {
     let { dataset, documents, ...rest } = test;
 
-    if (documents) {
-      dataset = documents;
-    }
-
     let datasetId;
 
-    if (Array.isArray(dataset)) {
+    if (documents) {
       datasetId = this.createDatasetFromDocuments(documents, extra);
     } else if (typeof dataset == "string") {
       if (!DATASETS.hasOwnProperty(dataset)) {
@@ -198,6 +196,23 @@ class Builder {
         _id,
         _type: "dataset",
         url,
+      };
+      this.emit(entry);
+      this.datasetMapping.set(url, _id);
+    }
+    return this.datasetMapping.get(url);
+  }
+
+  createEmptyDataset() {
+    let url = "about:blank";
+
+    if (!this.datasetMapping.has(url)) {
+      let _id = sha1(url);
+      let entry = {
+        _id,
+        _type: "dataset",
+        url,
+        documents: [],
       };
       this.emit(entry);
       this.datasetMapping.set(url, _id);
