@@ -107,9 +107,10 @@ class Builder {
     test = this.exportDocuments(test, extra);
 
     let hasResult = test.hasOwnProperty("result");
+    let isInvalid = test.valid === false;
     let hasQuery = test.query != null;
 
-    if (hasResult && hasQuery) {
+    if (hasQuery && (hasResult || isInvalid)) {
       if (test.variables != null) {
         for (let query of expandQueryVariables(test.query, test.variables)) {
           this.emitTest(test, query, extra);
