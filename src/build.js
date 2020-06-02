@@ -81,12 +81,12 @@ class IdGenerator {
       parts.push(sanitized);
     }
 
-    let baseId = parts.join(".");
+    let baseId = parts.join("-");
     let finalId = baseId;
     let nonce = 2;
 
     while (this.used.has(finalId)) {
-      finalId = baseId + "." + nonce;
+      finalId = baseId + "-" + nonce;
       nonce++;
     }
 
@@ -181,7 +181,7 @@ class Builder {
   }
 
   createDatasetFromDocuments(documents, extra) {
-    let _id = this.idGenerator.generate("dataset");
+    let _id = this.idGenerator.generate(sha1(extra.filename));
     let entry = {
       _id,
       _type: "dataset",
