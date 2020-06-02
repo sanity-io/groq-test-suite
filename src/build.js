@@ -1,69 +1,70 @@
-const fs = require('fs');
-const path = require('path');
-const yaml = require('js-yaml');
-const {promisify} = require('util');
-const glob = promisify(require('glob'));
-const ndjson = require('ndjson');
-const crypto = require('crypto');
+const fs = require("fs");
+const path = require("path");
+const yaml = require("js-yaml");
+const { promisify } = require("util");
+const glob = promisify(require("glob"));
+const ndjson = require("ndjson");
+const crypto = require("crypto");
 
 const DATASETS = {
-  movies: 'https://groq-test-suite.storage.googleapis.com/datasets/movies/movies-7d858de5318a6bc27d92a638899957ef.ndjson'
-}
+  movies:
+    "https://groq-test-suite.storage.googleapis.com/datasets/movies/movies-7d858de5318a6bc27d92a638899957ef.ndjson",
+};
 
 function sha1(s) {
-  return crypto.createHash('sha1').update(s).digest('hex')
+  return crypto.createHash("sha1").update(s).digest("hex");
 }
 
 function* expandQueryVariables(query, variables) {
-  let state = []
-  let isDone = false
+  let state = [];
+  let isDone = false;
 
   while (!isDone) {
-    let didAdvance = false
-    let i = 0
+    let didAdvance = false;
+    let i = 0;
 
     let fullQuery = query.replace(/~(\w+)~/g, (_, name) => {
       if (!variables.hasOwnProperty(name)) {
         throw new Error(`Template variable '${name}' is missing`);
       }
 
-      let value = variables[name]
+      let value = variables[name];
 
       if (Array.isArray(value)) {
-        if (!(i in state)) state.push(0)
+        if (!(i in state)) state.push(0);
 
-        let current = state[i]
+        let current = state[i];
 
         if (!didAdvance) {
-          state[i]++
+          state[i]++;
           if (state[i] == value.length) {
             // There's no more choices here. Start again, and rather try to advance
             // the next variable.
-            state[i] = 0
+            state[i] = 0;
           } else {
             // We did successfully advance to the next alternative
-            didAdvance = true
+            didAdvance = true;
           }
         }
 
-        i++
-        return value[current]
+        i++;
+        return value[current];
       } else {
-        return value
+        return value;
       }
     });
 
-    yield fullQuery
+    yield fullQuery;
 
     if (!didAdvance) {
       // There were no more alternatives *anywhere*
-      break
+      break;
     }
   }
 }
 
 function containsVariables(query) {
-  return /~(\w+)~/.test(query)
+  return /~(\w+)~/.test(query);
 }
 
 class IdGenerator {
@@ -105,29 +106,34 @@ class Builder {
   process(test, extra) {
     test = this.exportDocuments(test, extra);
 
-    let hasResult = test.hasOwnProperty('result')
-    let hasQuery = test.query != null
+    let hasResult = test.hasOwnProperty("result");
+    let hasQuery = test.query != null;
 
     if (hasResult && hasQuery) {
       if (test.variables != null) {
         for (let query of expandQueryVariables(test.query, test.variables)) {
-          this.emitTest(test, query, extra)
+          this.emitTest(test, query, extra);
         }
       } else if (!containsVariables(test.query)) {
-        this.emitTest(test, test.query, extra)
+        this.emitTest(test, test.query, extra);
       }
     }
 
     // Process children
     if (test.tests != null) {
       for (let child of test.tests) {
-        let name = (test.name != null && child.name != null)
-          ? (test.name + " / " + child.name)
-          : (child.name || test.name)
-        let variables = (test.variables != null || child.variables != null)
-          ? Object.assign({}, test.variables, child.variables)
-          : null;
-        this.process({...test, tests: null, ...child, name, variables}, extra);
+        let name =
+          test.name != null && child.name != null
+            ? test.name + " / " + child.name
+            : child.name || test.name;
+        let variables =
+          test.variables != null || child.variables != null
+            ? Object.assign({}, test.variables, child.variables)
+            : null;
+        this.process(
+          { ...test, tests: null, ...child, name, variables },
+          extra
+        );
       }
     }
   }
@@ -143,34 +149,34 @@ class Builder {
       query,
       result: test.result,
       ...extra,
-    }
+    };
 
     this.emit(entry);
   }
 
   exportDocuments(test, extra) {
-    let {dataset, documents, ...rest} = test;
+    let { dataset, documents, ...rest } = test;
 
     if (documents) {
-      dataset = documents
+      dataset = documents;
     }
 
-    let datasetId
+    let datasetId;
 
     if (Array.isArray(dataset)) {
       datasetId = this.createDatasetFromDocuments(documents, extra);
-    } else if (typeof dataset == 'string') {
+    } else if (typeof dataset == "string") {
       if (!DATASETS.hasOwnProperty(dataset)) {
-        throw new Error(`[${extra.filename}] Unknown dataset: ${dataset}`)
+        throw new Error(`[${extra.filename}] Unknown dataset: ${dataset}`);
       }
-      datasetId = this.createDatasetFromURL(DATASETS[dataset])
+      datasetId = this.createDatasetFromURL(DATASETS[dataset]);
     }
 
     if (datasetId != null) {
-      dataset = {_ref: datasetId}
+      dataset = { _ref: datasetId };
     }
 
-    return {dataset, ...rest};
+    return { dataset, ...rest };
   }
 
   createDatasetFromDocuments(documents, extra) {
@@ -180,23 +186,23 @@ class Builder {
       _type: "dataset",
       documents,
       url: `file://${extra.filename}`,
-    }
+    };
     this.emit(entry);
     return _id;
   }
 
   createDatasetFromURL(url) {
     if (!this.datasetMapping.has(url)) {
-      let _id = sha1(url)
+      let _id = sha1(url);
       let entry = {
         _id,
         _type: "dataset",
         url,
-      }
+      };
       this.emit(entry);
       this.datasetMapping.set(url, _id);
     }
-    return this.datasetMapping.get(url)
+    return this.datasetMapping.get(url);
   }
 }
 
@@ -211,7 +217,7 @@ async function build(emitter) {
     let filename = path.relative(BASEDIR, testPath);
     let data = fs.readFileSync(testPath);
     let test = yaml.safeLoad(data);
-    let extra = {filename};
+    let extra = { filename };
     builder.process(test, extra);
   }
 }
@@ -220,16 +226,14 @@ async function main() {
   let serialize = ndjson.serialize();
   serialize.pipe(process.stdout);
 
-  await build(entry => {
+  await build((entry) => {
     serialize.write(entry);
   });
 
   serialize.end();
 }
 
-main().catch(error => {
+main().catch((error) => {
   console.error(error);
   process.exit(1);
 });
-
-
