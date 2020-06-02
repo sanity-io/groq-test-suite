@@ -39,13 +39,11 @@ documents:
   v_decimal: 3.14
   v_false: false
   v_integer: 1
-  v_null: null
   v_object: {
     "v_array": ["a", "b", "c"],
     "v_boolean": true,
     "v_decimal": 2.718,
     "v_integer": 2,
-    "v_null": null,
     "v_object": {"k": "v"},
     "v_string": "abc"
   }
