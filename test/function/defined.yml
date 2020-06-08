@@ -35,11 +35,12 @@ tests:
     - '*[_id == "a"][0].v_str'
     - '*[_id == "a"][0].v_arr'
 
-- result: null
+- valid: false
   query: |
     defined(~expr~)
   variables:
     expr:
+    - ''
     - 'null, null'
     - 'null, null, null'
     - 'null, null, null, null'
