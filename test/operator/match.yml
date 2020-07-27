@@ -64,6 +64,14 @@ tests:
     ~text~ match *[_id=="doc"][0].patterns
   result: true
 
+- name: "Multiple text"
+  query: |
+    ~text~ match "abc"
+  tests:
+  - {variables: {text: '["abc"]'}, result: true}
+  - {variables: {text: '["abc", "def"]'}, result: true}
+  - {variables: {text: '["def"]'}, result: false}
+
 - name: "Unsupported RHS"
   variables:
     expr:
