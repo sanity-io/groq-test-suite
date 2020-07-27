@@ -63,14 +63,13 @@ tests:
   query: |
     ~text~ match *[_id=="doc"][0].patterns
   result: true
-    
-- name: "Unsupported types"
+
+- name: "Unsupported RHS"
   variables:
     expr:
+    - '123'
     - '{}'
     - '[1]'
-    - '["1", null]'
-    - '["1", 1]'
     - '123'
     - '(1 => 2)'
     - '(1 .. 2)'
@@ -78,5 +77,20 @@ tests:
     - 'false'
     - 'null'
   query: |
-    ~expr~ match ~expr~
+    "" match ~expr~
+  result: null
+    
+- name: "Unsupported LHS"
+  variables:
+    expr:
+    - '{}'
+    - '[1]'
+    - '123'
+    - '(1 => 2)'
+    - '(1 .. 2)'
+    - 'true'
+    - 'false'
+    - 'null'
+  query: |
+    ~expr~ match ""
   result: null
