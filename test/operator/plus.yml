@@ -7,18 +7,24 @@ tests:
     - "true"
     - "false"
     - "null"
-    - "[]"
-    - "{}"
     - "(1 => 2)"
     - "(1 .. 2)"
   result: null
   query: |
     ~val~ + ~val~
 
-- name: "Supports types"
+- name: "Supported types"
   query: |
     ~left~ + ~right~
   tests:
   - {variables: {left: '1', right: '1'}, result: 2}
   - {variables: {left: '1.5', right: '1'}, result: 2.5}
   - {variables: {left: '"a"', right: '"b"'}, result: "ab"}
+  - {variables: {left: '[1]', right: '[2]'}, result: [1, 2]}
+  - variables:
+      left: '{"a":1, "b":2}'
+      right: '{"a":3, "c":4}'
+      result:
+        a: 3
+        b: 2
+        c: 4
