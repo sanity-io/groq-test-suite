@@ -165,10 +165,10 @@ tests:
 
 - query: |
     [1, true] | order(@ && true asc)
-  result: [1, true]
+  valid: false
 - query: |
     [1, true] | order(@ && (true asc))
-  result: [1, true]
+  valid: false
 - query: |
     [1, true] | order((@ && true) asc)
   result: [true, 1]
