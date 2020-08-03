@@ -1,17 +1,17 @@
-name: "Precedence and assoiativity"
+name: "Precedence and associativity"
 
 # Tests are structured as follows:
 #
 # - Higher precedence level first.
 # - For each binary operator:
-#   - A test which demonstrates assoiativity.
-#   - A test with parenthesis forcing the opposite assoiativity.
+#   - A test which demonstrates associativity.
+#   - A test with parenthesis forcing the opposite associativity.
 # - Then, pick one operator from this level to compare against the next level:
 #   - A test which demonstrates precedence.
 #   - A test with parenthesis forcing the opposite precedence.
 #   - A test which flips the position of the operators.
 #
-# Note that there's a test even when the assoiativity doesn't matter.
+# Note that there's a test even when the associativity doesn't matter.
 
 tests:
 # Level 11 (compund expressions)
