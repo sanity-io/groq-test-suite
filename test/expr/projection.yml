@@ -390,3 +390,18 @@ tests:
         a: "c"
         b: "b"
         c: "a"
+
+- name: "Grand parent scoping"
+  query: |
+    *[_id == "a"]{
+      _id,
+      "reverse": *[_id == ^.other._ref]{
+        _id,
+        "grandparent": *[_id == ^.^._id][0]._id
+      }
+    }
+  result:
+  - _id: "a"
+    reverse:
+    - _id: "b"
+      grandparent: "a"
