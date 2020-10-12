@@ -24,7 +24,7 @@ tests:
   - variables:
       left: '{"a":1, "b":2}'
       right: '{"a":3, "c":4}'
-      result:
-        a: 3
-        b: 2
-        c: 4
+    result:
+      a: 3
+      b: 2
+      c: 4
