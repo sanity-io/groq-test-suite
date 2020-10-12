@@ -405,3 +405,10 @@ tests:
     reverse:
     - _id: "b"
       grandparent: "a"
+
+- name: "Projection after array traversal"
+  query: |
+    [[1, 2], [3, 4]][]{"values": @}
+  result:
+  - {values: [1, 2]}
+  - {values: [3, 4]}
