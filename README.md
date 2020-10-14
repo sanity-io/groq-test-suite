@@ -53,8 +53,8 @@ Use the provided `build` script to compile the test suite:
 # Install dependencies
 $ yarn
 
-# Build the test suite
-$ yarn -s build > suite.ndjson
+# Build the test suite (to suite.ndjson)
+$ yarn build
 ```
 
 ## Structure

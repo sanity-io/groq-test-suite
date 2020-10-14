@@ -2,7 +2,7 @@
   "name": "groq-test-suite",
   "private": true,
   "scripts": {
-    "build": "node src/build.js"
+    "build": "node src/build.js > suite.ndjson"
   },
   "dependencies": {
     "glob": "^7.1.4",
