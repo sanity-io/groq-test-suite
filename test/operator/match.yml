@@ -71,6 +71,7 @@ tests:
   - {variables: {text: '["abc"]'}, result: true}
   - {variables: {text: '["abc", "def"]'}, result: true}
   - {variables: {text: '["def"]'}, result: false}
+  - {variables: {text: '[]'}, result: false}
 
 - name: "Unsupported RHS"
   variables:
@@ -78,6 +79,7 @@ tests:
     - '123'
     - '{}'
     - '[1]'
+    - '["1", 2]'
     - '123'
     - '(1 => 2)'
     - '(1 .. 2)'
@@ -86,7 +88,7 @@ tests:
     - 'null'
   query: |
     "" match ~expr~
-  result: null
+  result: false
     
 - name: "Unsupported LHS"
   variables:
@@ -101,4 +103,4 @@ tests:
     - 'null'
   query: |
     ~expr~ match ""
-  result: null
+  result: false
