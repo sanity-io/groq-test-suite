@@ -244,11 +244,7 @@ tests:
     *[_id=="a"][0]{_id, others{_ref}}
   result:
     _id: a
-    others:
-    - _ref: e
-    - _ref: c
-    - _ref: b
-    - _ref: d
+    others: {}
 
 - name: "Documents nested 2"
   query: |
