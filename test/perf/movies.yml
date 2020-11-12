@@ -2,7 +2,147 @@ dataset: movies
 name: "perf / movies"
 
 tests:
-  - name: "Count"
+  - name: "Fetch by ID"
+    query: |
+      *[_id == "movie-54518"][0]
+    result:
+      {"_id":"movie-54518","_type":"movie","adult":false,"budget":13000000,"cast":[{"character":"himself","person":{"_ref":"person-150810","_type":"reference"}},{"character":"herself","person":{"_ref":"person-76594","_type":"reference"}},{"character":"himself","person":{"_ref":"person-57108","_type":"reference"}},{"character":"himself","person":{"_ref":"person-120724","_type":"reference"}},{"character":"","person":{"_ref":"person-219545","_type":"reference"}}],"collection":null,"crew":[{"department":"Directing","job":"Director","person":{"_ref":"person-54507","_type":"reference"}},{"department":"Costume & Make-Up","job":"Costume Design","person":{"_ref":"person-1594602","_type":"reference"}}],"genres":[{"_ref":"genre-99","_type":"reference"},{"_ref":"genre-10402","_type":"reference"},{"_ref":"genre-10751","_type":"reference"}],"homepage":"http://www.justinbieberneversaynever.com/","imdb_id":"tt1702443","keywords":["manager","canada","pop singer","star","prayer","music competition","tour bus","aftercreditsstinger","duringcreditsstinger","justin bieber"],"original_language":"en","original_title":"Justin Bieber: Never Say Never","overview":"Tells the story of Justin Bieber, the kid from Canada with the hair, the smile and the voice: It chronicles his unprecedented rise to fame, all the way from busking in the streets of Stratford, Canada to putting videos on YouTube to selling out Madison Square Garden in New York as the headline act during the My World Tour from 2010. It features Usher, Scooter Braun, Ludacris, Sean Kingston, Antonio \"L.A.\" Reid, Boyz II Men, Miley Cyrus, Jaden Smith, Justin's family members and parts of his crew and huge fanbase in a mix of interviews and guest performances. It was released in 3D in theaters all around the world and is the highest grossing concert movie of all time, beating the previous record held by Michael Jackson's This Is It from 2009.","popularity":5.892524,"poster":{"_ref":"asset-1f7DaSujt536oVcLT2SlOoNcwma.jpg","_type":"reference"},"production_companies":[{"_ref":"company-7377","_type":"reference"},{"_ref":"company-7378","_type":"reference"},{"_ref":"company-7379","_type":"reference"}],"production_countries":["US"],"release_date":"2011-02-11","revenue":98441954,"runtime":105,"spoken_languages":["en"],"status":"Released","tagline":"Find out what's possible if you never give up.","title":"Justin Bieber: Never Say Never","video":false,"vote_average":4.8,"vote_count":156}
+
+  - name: "Fetch selective by ID"
+    query: |
+      *[_id == "movie-54518"][0]{title,tagline,release_date,runtime,vote_average}
+    result:
+      title: "Justin Bieber: Never Say Never"
+      tagline: "Find out what's possible if you never give up."
+      release_date: "2011-02-11"
+      runtime: 105
+      vote_average: 4.8
+
+  - name: "Filtered and limited"
+    query: |
+      *[_type == "movie" && vote_average > 8.0][0...10]{title,tagline}
+    result:
+    - {title: "Baby Snakes", tagline: "A movie about people who do stuff that is not normal"}
+    - {title: "Nicky's Family"}
+    - {title: "The Hand"}
+    - {title: "The Laughing Woman"}
+    - {title: "Leon: The Professional", tagline: "If you want a job done well, hire a professional."}
+    - {title: "The Far Pavilions", tagline: "The 'Gone With The Wind' of the north-west frontier of India."}
+    - {title: "The Spousals of God"}
+    - {title: "Unguarded"}
+    - {title: "Whatever", tagline: "1981. In an era of just say no, they said yes."}
+    - {title: "A Child's Christmas in Wales"}
+
+  - name: "Custom ordering"
+    query: |
+      *[_type == "movie" && defined(vote_average)]|order(vote_average desc)[0...10][]{title,tagline}
+    result:
+    - {title: "The Far Pavilions", tagline: "The 'Gone With The Wind' of the north-west frontier of India."}
+    - {title: "The Union"}
+    - {title: "A Ticklish Affair", tagline: "It's more fun than marriage."}
+    - {title: "The Bride from Hades"}
+    - {title: "My Foolish Heart"}
+    - {title: "Stealing a Nation", tagline: "The shocking film Australian networks won't touch!"}
+    - {title: "Canal Zone"}
+    - {title: "Common Threads: Stories from the Quilt"}
+    - {title: "Macbeth"}
+    - {title: "Let No Man Write My Epitaph", tagline: "Ripped Raw and Roaring from Real Life!"}
+
+  - name: "Resolve references"
+    query: |
+      *[_type == "movie" && vote_average > 8.0][0...10]{
+        title,
+        tagline,
+        poster->{path,height,width},
+        "genres": genres[]->name
+      }
+    result:
+    - genres: []
+      poster:
+        height: 720
+        path: "/jP5sEYzb1yFNjBQNAuX0GhR9qwm.jpg"
+        width: 1280
+      tagline: A movie about people who do stuff that is not normal
+      title: Baby Snakes
+    - genres: []
+      poster:
+        height: 720
+        path: "/nixwAWMmumGxVdsijpBjqL4fQhF.jpg"
+        width: 720
+      title: Nicky's Family
+    - genres:
+      - Animation
+      - Drama
+      poster:
+        height: 1080
+        path: "/tW4cLjJGwLwUINUigYUYIoyPoKo.jpg"
+        width: 720
+      title: The Hand
+    - genres:
+      - Romance
+      - Drama
+      - Thriller
+      poster:
+        height: 1080
+        path: "/8Bv3Z5mOTrrmvh9onLv78aSa7wb.jpg"
+        width: 1920
+      title: The Laughing Woman
+    - genres:
+      - Thriller
+      - Crime
+      - Drama
+      poster:
+        height: 720
+        path: "/gE8S02QUOhVnAmYu4tcrBlMTujz.jpg"
+        width: 3840
+      tagline: If you want a job done well, hire a professional.
+      title: 'Leon: The Professional'
+    - genres:
+      - Drama
+      - History
+      - Romance
+      poster:
+        height: 576
+        path: "/28VU5f1k3KaXSPcsuX3LThh2nTx.jpg"
+        width: 1440
+      tagline: The 'Gone With The Wind' of the north-west frontier of India.
+      title: The Far Pavilions
+    - genres:
+      - Comedy
+      poster:
+        height: 1080
+        path: "/lsNfjz4VvM2djlby5fsX0kSEjCE.jpg"
+        width: 720
+      title: The Spousals of God
+    - genres: []
+      poster:
+        height: 2160
+        path: "/yU0C47jZNBvvBdzW5EsFY5lH59c.jpg"
+        width: 720
+      title: Unguarded
+    - genres:
+      - Drama
+      poster:
+        height: 720
+        path: "/dkVIN6LND6vTCw0MTnuRAbcEXJn.jpg"
+        width: 1920
+      tagline: 1981. In an era of just say no, they said yes.
+      title: Whatever
+    - genres:
+      - Drama
+      - Family
+      poster:
+        height: 2160
+        path: "/uhkzWHiWT03yncPwRbRV9S38nXI.jpg"
+        width: 3840
+      title: A Child's Christmas in Wales
+  
+  - name: "Count a lot"
     query: |
       count(*[_type == "movie"])
     result: 45430
+
+  - name: "Count a bit"
+    query: |
+      count(*[_type == "movie" && vote_average > 8.5])
+    result: 506
