@@ -170,7 +170,7 @@ class Builder {
       if (!DATASETS.hasOwnProperty(dataset)) {
         throw new Error(`[${extra.filename}] Unknown dataset: ${dataset}`);
       }
-      datasetId = this.createDatasetFromURL(DATASETS[dataset]);
+      datasetId = this.createDatasetFromURL(dataset, DATASETS[dataset]);
     }
 
     if (datasetId != null) {
@@ -185,6 +185,7 @@ class Builder {
     let entry = {
       _id,
       _type: "dataset",
+      name: "inline",
       documents,
       url: `file://${extra.filename}`,
     };
@@ -192,12 +193,13 @@ class Builder {
     return _id;
   }
 
-  createDatasetFromURL(url) {
+  createDatasetFromURL(name, url) {
     if (!this.datasetMapping.has(url)) {
       let _id = sha1(url);
       let entry = {
         _id,
         _type: "dataset",
+        name,
         url,
       };
       this.emit(entry);
@@ -214,6 +216,7 @@ class Builder {
       let entry = {
         _id,
         _type: "dataset",
+        name: "empty",
         url,
         documents: [],
       };

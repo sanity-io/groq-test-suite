@@ -26,6 +26,7 @@ type Dataset = {
   _type: "dataset"
   _id: string
 
+  name: string
   documents?: Array<any>
   url: string
 }
