@@ -41,6 +41,7 @@ type Test = {
   result: any
   valid: boolean
   dataset: {
+    _type: "reference"
     _ref: string
   }
 }

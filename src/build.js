@@ -142,7 +142,10 @@ class Builder {
   emitTest(test, query, extra) {
     let _id = this.idGenerator.generate("test", test.name);
 
-    let dataset = test.dataset || { _ref: this.createEmptyDataset() };
+    let dataset = test.dataset || {
+      _ref: this.createEmptyDataset(),
+      _type: "reference",
+    };
     let valid = test.valid != null ? test.valid : true;
 
     let entry = {
@@ -174,7 +177,7 @@ class Builder {
     }
 
     if (datasetId != null) {
-      dataset = { _ref: datasetId };
+      dataset = { _ref: datasetId, _type: "reference" };
     }
 
     return { dataset, ...rest };
