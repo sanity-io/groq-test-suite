@@ -44,7 +44,9 @@ tests:
       "a": null,
       "b": true && 1,
     }
-  result: {}
+  result:
+    a: null
+    b: null
 
 - name: "Splatting"
   query: |
@@ -99,6 +101,7 @@ tests:
     result:
       _id: "a"
       title: "CEO"
+      name: null
 
   - query: |
       ~obj~ {name, "name": "1"}
@@ -107,7 +110,8 @@ tests:
 
   - query: |
       ~obj~ {name, "name": null}
-    result: {}
+    result:
+      name: null
 
 - name: "Property key"
   variables:

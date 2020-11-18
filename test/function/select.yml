@@ -31,7 +31,7 @@ tests:
         age >= 18 => "adult",
         age >= 13 => "teen"
     result:
-    - {}
+    - category: null
     - category: "teen"
     - category: "adult"
 
@@ -41,7 +41,7 @@ tests:
         age >= 13 => "teen",
         age >= 18 => "adult"
     result:
-    - {}
+    - category: null
     - category: "teen"
     - category: "teen"
 

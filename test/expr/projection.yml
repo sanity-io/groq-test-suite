@@ -95,9 +95,11 @@ tests:
   - attr__id: id
     attr_array: [1, "string", true, null, [1, 2, 3], {"key": "value"}]
     attr_array_2: true
+    attr_array_6: null
     attr_decimal: 3.14
     attr_false: false
     attr_integer: 1
+    attr_missing: null
     attr_object:
       v_array: ["a", "b", "c"]
       v_boolean: true
@@ -107,11 +109,13 @@ tests:
       v_string: abc
     attr_object_array: ["a", "b", "c"]
     attr_object_array_2: "c"
+    attr_object_array_6: null
     attr_object_boolean: true
     attr_object_decimal: 2.718
     attr_object_integer: 2
     attr_object_object: {"k": "v"}
     attr_object_object_k: "v"
+    attr_object_object_missing: null
     attr_object_string: "abc"
     attr_string: "string"
     attr_true: true
@@ -165,8 +169,8 @@ tests:
   - {other: b}
   - {other: c}
   - {other: e}
-  - {}
-  - {}
+  - {other: null}
+  - {other: null}
 
 - name: "Splat"
   query: |
@@ -297,12 +301,15 @@ tests:
   - v: 1
     string: abc
     again: 1
+    missing: null
   - v: 2
     string: abc
     again: 2
+    missing: null
   - v: 3
     string: abc
     again: 3
+    missing: null
 
 - name: "Literals, missing"
   query: |
@@ -318,6 +325,7 @@ tests:
   - v: 1
     string: abc
     again: 1
+    missing: null
 
 - title: "Literals multiple"
   query: |
@@ -358,7 +366,7 @@ tests:
   query: |
     *[_id == "a"]{"a": ^.a}
   result:
-  - {}
+  - {a: null}
 
 - name: "Parent scoping"
   query: |
