@@ -23,29 +23,29 @@ tests:
       *[_type == "movie" && vote_average > 8.0][0...10]{title,tagline}
     result:
     - {title: "Baby Snakes", tagline: "A movie about people who do stuff that is not normal"}
-    - {title: "Nicky's Family"}
-    - {title: "The Hand"}
-    - {title: "The Laughing Woman"}
+    - {title: "Nicky's Family", tagline: null}
+    - {title: "The Hand", tagline: null}
+    - {title: "The Laughing Woman", tagline: null}
     - {title: "Leon: The Professional", tagline: "If you want a job done well, hire a professional."}
     - {title: "The Far Pavilions", tagline: "The 'Gone With The Wind' of the north-west frontier of India."}
-    - {title: "The Spousals of God"}
-    - {title: "Unguarded"}
+    - {title: "The Spousals of God", tagline: null}
+    - {title: "Unguarded", tagline: null}
     - {title: "Whatever", tagline: "1981. In an era of just say no, they said yes."}
-    - {title: "A Child's Christmas in Wales"}
+    - {title: "A Child's Christmas in Wales", tagline: null}
 
   - name: "Custom ordering"
     query: |
       *[_type == "movie" && defined(vote_average)]|order(vote_average desc)[0...10][]{title,tagline}
     result:
     - {title: "The Far Pavilions", tagline: "The 'Gone With The Wind' of the north-west frontier of India."}
-    - {title: "The Union"}
+    - {title: "The Union", tagline: null}
     - {title: "A Ticklish Affair", tagline: "It's more fun than marriage."}
-    - {title: "The Bride from Hades"}
-    - {title: "My Foolish Heart"}
+    - {title: "The Bride from Hades", tagline: null}
+    - {title: "My Foolish Heart", tagline: null}
     - {title: "Stealing a Nation", tagline: "The shocking film Australian networks won't touch!"}
-    - {title: "Canal Zone"}
-    - {title: "Common Threads: Stories from the Quilt"}
-    - {title: "Macbeth"}
+    - {title: "Canal Zone", tagline: null}
+    - {title: "Common Threads: Stories from the Quilt", tagline: null}
+    - {title: "Macbeth", tagline: null}
     - {title: "Let No Man Write My Epitaph", tagline: "Ripped Raw and Roaring from Real Life!"}
 
   - name: "Resolve references"
@@ -69,6 +69,7 @@ tests:
         height: 720
         path: "/nixwAWMmumGxVdsijpBjqL4fQhF.jpg"
         width: 720
+      tagline: null
       title: Nicky's Family
     - genres:
       - Animation
@@ -77,6 +78,7 @@ tests:
         height: 1080
         path: "/tW4cLjJGwLwUINUigYUYIoyPoKo.jpg"
         width: 720
+      tagline: null
       title: The Hand
     - genres:
       - Romance
@@ -86,6 +88,7 @@ tests:
         height: 1080
         path: "/8Bv3Z5mOTrrmvh9onLv78aSa7wb.jpg"
         width: 1920
+      tagline: null
       title: The Laughing Woman
     - genres:
       - Thriller
@@ -113,12 +116,14 @@ tests:
         height: 1080
         path: "/lsNfjz4VvM2djlby5fsX0kSEjCE.jpg"
         width: 720
+      tagline: null
       title: The Spousals of God
     - genres: []
       poster:
         height: 2160
         path: "/yU0C47jZNBvvBdzW5EsFY5lH59c.jpg"
         width: 720
+      tagline: null
       title: Unguarded
     - genres:
       - Drama
@@ -135,6 +140,7 @@ tests:
         height: 2160
         path: "/uhkzWHiWT03yncPwRbRV9S38nXI.jpg"
         width: 3840
+      tagline: null
       title: A Child's Christmas in Wales
   
   - name: "Count a lot"
