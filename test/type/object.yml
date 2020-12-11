@@ -1,8 +1,10 @@
 documents:
 - _id: "a"
+  _type: "doc"
   name: "Michael"
   title: "CEO"
 - _id: "b"
+  _type: "doc"
   ref:
     _ref: "a"
   arr:
@@ -64,7 +66,7 @@ tests:
   variables:
     obj:
     - '*[_id == "a"][0]'
-    - '{"_id": "a", "name":"Michael","title":"CEO"}'
+    - '{"_id": "a", "_type": "doc", "name":"Michael","title":"CEO"}'
 
   tests:
   - query: "~obj~ {name}"
@@ -78,6 +80,7 @@ tests:
       ~obj~ {..., "a": "1"}
     result:
       _id: "a"
+      _type: "doc"
       name: "Michael"
       title: "CEO"
       a: "1"
@@ -86,6 +89,7 @@ tests:
       ~obj~ {..., "name": "1"}
     result:
       _id: "a"
+      _type: "doc"
       name: "1"
       title: "CEO"
 
@@ -93,6 +97,7 @@ tests:
       ~obj~ {"name": "1", ...}
     result:
       _id: "a"
+      _type: "doc"
       name: "Michael"
       title: "CEO"
 
@@ -100,6 +105,7 @@ tests:
       ~obj~ {..., "name": null}
     result:
       _id: "a"
+      _type: "doc"
       title: "CEO"
       name: null
 

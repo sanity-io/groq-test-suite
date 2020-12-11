@@ -1,6 +1,7 @@
 name: Attribute
 documents:
   - _id: "doc"
+    _type: "doc"
     a: "a"
     b: "b"
     num: 1
