@@ -1,12 +1,15 @@
 name: "Range"
+
 documents:
 - _id: "a"
+  _type: "doc"
   v_string1: "a"
   v_string2: "b"
   v_num1: 1
   v_num2: 2
   v_true: true
   v_false: false
+
 tests:
 - name: "String construction"
   variables:
@@ -62,4 +65,4 @@ tests:
   tests:
   - query: '1 .. "a"'
   - query: '"a" .. 1'
-  
+
