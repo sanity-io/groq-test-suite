@@ -1,0 +1,70 @@
+name: "string() function"
+documents:
+- _id: "id"
+  _type: "values"
+  v_array: [1, "string", true, null, [1, 2, 3], {"key": "value"}]
+  v_decimal: 3.14
+  v_false: false
+  v_integer: 1
+  v_object: {
+    "v_array": ["a", "b", "c"],
+    "v_boolean": true,
+    "v_decimal": 2.718,
+    "v_integer": 2,
+    "v_object": {"k": "v"},
+    "v_string": "abc"
+  }
+  v_string: "string"
+  v_true: true
+
+tests:
+- query: |
+    string(true)
+  result: "true"
+
+- query: |
+    string(false)
+  result: "false"
+
+- query: |
+    string(1)
+  result: "1"
+
+- query: |
+    string(1.15)
+  result: "1.15"
+
+- query: |
+    string(1.15)
+  result: "1.15"
+
+- query: |
+    string(dateTime("1985-04-12T23:20:50.52Z"))
+  result: "1985-04-12T23:20:50.52Z"
+
+- name: "On documents"
+  query: |
+    string(*[_id == "id"][0].~attr~)
+  tests:
+    - variables: {attr: "v_string"}
+      result: "string"
+    - variables: {attr: "v_true"}
+      result: "true"
+    - variables: {attr: "v_integer"}
+      result: "1"
+    - variables: {attr: "v_decimal"}
+      result: "3.14"
+    - variables: {attr: "v_array"}
+      result: null
+
+- name: "Unknown types"
+  variables:
+    expr:
+    - 'null'
+    - '{"key": "value"}'
+    - '[1, 2]'
+    - '(1 => 2)'
+    - '(1 .. 3)'
+  query: |
+    string(~expr~)
+  result: null
