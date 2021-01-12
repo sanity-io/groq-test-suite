@@ -24,6 +24,56 @@ documents:
   _type: "doc"
   name: "E"
 
+
+- _id: "carrie-henn"
+  _type: "moviedb"
+  name: "Carrie Henn"
+  nationality: "us"
+- _id: "sigourney-weaver"
+  _type: "moviedb"
+  name: "Sigourney Weaver"
+  nationality: "us"
+  famousFor:
+    _ref: "aliens"
+    _weak: true
+  deeply:
+    famousFor:
+      _ref: "aliens"
+      _weak: true
+  deepArray:
+  - famousFor:
+      _ref: "aliens"
+      _weak: true
+  deepNestedArray:
+  - famousFor:
+      reason: "Awesome Movie"
+      movie:
+        _ref: "aliens"
+        _weak: true
+- _id: "james-cameron"
+  _type: "moviedb"
+  name: "James Cameron"
+  nationality: "ca"
+- _id: "aliens"
+  _type: "moviedb"
+  title: "Aliens"
+  directors:
+  - _ref: "james-cameron"
+  actors:
+  - character: Newt
+    actor:
+      _ref: "carrie-henn"
+  - character: Ellen Ripley
+    actor:
+      _ref: "sigourney-weaver"
+- _id: "gorillas-in-the-mist"
+  _type: "moviedb"
+  title: "Gorillas in the Mist"
+  actors:
+  - character: "Dian Fossey"
+    actor:
+      _ref: "sigourney-weaver"
+
 tests:
 - name: "Basic"
   query: |
@@ -45,6 +95,28 @@ tests:
   - {variables: {id: '"d"'}, result: []}
   - {variables: {id: '"e"'}, result: []}
 
+- name: "Multiple and nested arguments"
+  query: |
+    *[references(~args~)][]._id
+  result:
+  - a
+  - aliens
+  variables:
+    args:
+    - '"c", "james-cameron"'
+    - '["c", "james-cameron"]'
+    - '["c"], ["james-cameron"]'
+    - '1, null, ["c"], ["james-cameron"]'
+    - '1, null, "c", 5 => 7, ["james-cameron"]'
+
+- name: "Subquery"
+  query: |
+    *[references(*[_type == "moviedb"][]._id)][]._id|order(@)
+  result:
+  - aliens
+  - gorillas-in-the-mist
+  - sigourney-weaver
+
 - name: "Invalid arguments"
   query: |
     *[_type == "doc"]{"res": references(~id~)}
@@ -65,9 +137,5 @@ tests:
 
 - name: "Incorrect number of arguments"
   query: |
-    *[_type == "doc"]{"res": references(~id~)}
+    *[_type == "doc"]{"res": references()}
   valid: false
-  variables:
-    id:
-    - ''
-    - '1, 2'
