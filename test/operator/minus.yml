@@ -16,9 +16,44 @@ tests:
   query: |
     ~val~ - ~val~
 
-- name: "Supported types"
+- name: "number - number"
   query: |
     ~left~ - ~right~
   tests:
   - {variables: {left: '1', right: '1'}, result: 0}
   - {variables: {left: '1.5', right: '1'}, result: 0.5}
+
+
+- name: "datetime - datetime"
+  query: |
+    dateTime(~left~) - dateTime(~right~)
+  tests:
+  - variables:
+      left: '"2020-01-01T12:00:00Z"'
+      right: '"2020-01-01T11:00:00Z"'
+    result: 3600
+  - variables:
+      left: '"2020-01-01T12:00:00Z"'
+      right: '"2020-01-01T11:59:55Z"'
+    result: 5
+  - variables:
+      left: '"2020-01-01T12:00:00Z"'
+      right: '"2020-01-01T11:59:59.5Z"'
+    result: 0.5
+
+- name: "datetime - number"
+  query: |
+    dateTime(~left~) - ~right~
+  tests:
+  - variables:
+      left: '"2020-01-01T12:00:00Z"'
+      right: '3600'
+    result: "2020-01-01T11:00:00Z"
+  - variables:
+      left: '"2020-01-01T12:00:00Z"'
+      right: '5'
+    result: "2020-01-01T11:59:55Z"
+  - variables:
+      left: '"2020-01-01T12:00:00Z"'
+      right: '0.5'
+    result: "2020-01-01T11:59:59.500Z"

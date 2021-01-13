@@ -55,7 +55,15 @@ tests:
   - query: '"a" ~lt~ "ab"'
   - query: '"b" ~gt~ "a"'
   - query: '"ab" ~gt~ "a"'
-  
+
+- name: "Datetimes"
+  result: true
+  tests:
+  - query: 'dateTime("2020-01-01T12:00:00Z") ~eq~ dateTime("2020-01-01T12:00:00Z")'
+  - query: 'dateTime("2020-01-01T13:00:00+01:00") ~eq~ dateTime("2020-01-01T12:00:00Z")'
+  - query: 'dateTime("2020-01-01T12:00:00Z") ~lt~ dateTime("2020-01-01T13:00:00Z")'
+  - query: 'dateTime("2020-01-01T12:00:00.001Z") ~gt~ dateTime("2020-01-01T12:00:00Z")'
+
 - name: "Mixed types"
   result: null
   tests:
