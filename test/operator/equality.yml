@@ -8,6 +8,8 @@ tests:
   - query: 'true == true'
   - query: 'false == false'
   - query: 'null == null'
+  - query: 'dateTime("2020-01-01T12:00:00Z") == dateTime("2020-01-01T12:00:00Z")'
+  - query: 'dateTime("2020-01-01T12:00:00Z") == dateTime("2020-01-01T13:00:00+01:00")'
 
 - name: "Inequal values"
   result: false

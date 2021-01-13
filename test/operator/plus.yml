@@ -28,3 +28,21 @@ tests:
       a: 3
       b: 2
       c: 4
+
+
+- name: "datetime + number"
+  query: |
+    dateTime(~left~) + ~right~
+  tests:
+  - variables:
+      left: '"2020-01-01T11:00:00Z"'
+      right: '3600'
+    result: "2020-01-01T12:00:00Z"
+  - variables:
+      left: '"2020-01-01T11:59:55Z"'
+      right: '5'
+    result: "2020-01-01T12:00:00Z"
+  - variables:
+      left: '"2020-01-01T11:59:59.500Z"'
+      right: '0.5'
+    result: "2020-01-01T12:00:00Z"
