@@ -119,13 +119,13 @@ tests:
 
 - query: |
     1 + 2 .. 3
-  result: [3, 3]
+  result: "3..3"
 - query: |
     1 + (2 .. 3)
   result: null
 - query: |
     1 .. 2 + 3
-  result: [1, 5]
+  result: "1..5"
 
 # Level 5 (.., ...)
 
@@ -206,7 +206,7 @@ tests:
 
 - query: |
     true || true => false
-  result: [true, false]
+  result: "true => false"
 - query: |
     true || (true => false)
   result: true

@@ -1,54 +1,26 @@
 name: "Range"
 
-documents:
-- _id: "a"
-  _type: "doc"
-  v_string1: "a"
-  v_string2: "b"
-  v_num1: 1
-  v_num2: 2
-  v_true: true
-  v_false: false
-
 tests:
 - name: "String construction"
-  variables:
-    first:
-    - '*[_id == "a"][0].v_string1'
-    - '"a"'
-    last:
-    - '*[_id == "a"][0].v_string2'
-    - '"b"'
-  result: ["a", "b"]
   tests:
-  - query: "~first~ .. ~last~"
-  - query: "~first~ ... ~last~"
+  - query: '"a".."b"'
+    result: '"a".."b"'
+  - query: '"a"..."b"'
+    result: '"a"..."b"'
 
 - name: "Number construction"
-  variables:
-    first:
-    - '*[_id == "a"][0].v_num1'
-    - '1'
-    last:
-    - '*[_id == "a"][0].v_num2'
-    - '2'
-  result: [1, 2]
   tests:
-  - query: "~first~ .. ~last~"
-  - query: "~first~ ... ~last~"
+  - query: '1..2'
+    result: '1..2'
+  - query: '1...2'
+    result: '1...2'
 
 - name: "Boolean construction"
-  variables:
-    first:
-    - '*[_id == "a"][0].v_false'
-    - 'false'
-    last:
-    - '*[_id == "a"][0].v_true'
-    - 'true'
-  result: [false, true]
   tests:
-  - query: "~first~ .. ~last~"
-  - query: "~first~ ... ~last~"
+  - query: 'false..true'
+    result: 'false..true'
+  - query: 'false...true'
+    result: 'false...true'
 
 - name: "Un-rangable types"
   variables:
