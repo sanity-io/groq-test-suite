@@ -40,7 +40,7 @@ tests:
 
 - query: |
     string(dateTime("1985-04-12T23:20:50.52Z"))
-  result: "1985-04-12T23:20:50.52Z"
+  result: "1985-04-12T23:20:50.520Z"
 
 - name: "On documents"
   query: |
