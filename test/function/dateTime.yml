@@ -16,10 +16,10 @@ tests:
     dateTime("2002-10-02 12:34:56Z")
   result: null
 
-- name: "Preserves time offset"
+- name: "With time offset"
   query: |
     dateTime("2002-10-02T12:34:56+01:00")
-  result: "2002-10-02T12:34:56+01:00"
+  result: "2002-10-02T11:34:56Z"
 
 - name: "Normalizes to zulu"
   query: |
