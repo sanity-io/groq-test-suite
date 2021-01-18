@@ -1,0 +1,15 @@
+name: "Miscellaneous"
+
+documents:
+- _id: "a"
+  _type: "test"
+  v: 2.1
+
+tests:
+- query: |
+    *{..., "a": _id == "a" && round(v) == 2}{..., "v": 3}[a]
+  result:
+  - _id: "a"
+    _type: "test"
+    a: true
+    v: 3
