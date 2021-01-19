@@ -1,29 +1,12 @@
 name: "And operator"
-documents:
-- _id: "id"
-  _type: "test"
-  v_true: true
-  v_false: false
-  v_string: "string"
-  v_integer: 1
 
 tests:
 - variables:
-    T:
-    - "*[_id=='id'][0].v_true"
-    - "true"
-    F:
-    - "*[_id=='id'][0].v_false"
-    - "false"
-    N:
-    - "*[_id=='id'][0].v_null"
-    - "null"
-    S:
-    - "*[_id=='id'][0].v_string"
-    - "'abc'"
-    I:
-    - "*[_id=='id'][0].v_integer"
-    - "123"
+    T: "true"
+    F: "false"
+    N: "null"
+    S: '"abc"'
+    I: "123"
   tests:
 
   # Basic true/false
