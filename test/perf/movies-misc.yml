@@ -142,7 +142,7 @@ tests:
         width: 3840
       tagline: null
       title: A Child's Christmas in Wales
-  
+
   - name: "Count a lot"
     query: |
       count(*[_type == "movie"])

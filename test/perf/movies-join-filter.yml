@@ -1,0 +1,628 @@
+dataset: movies
+name: "perf / movies"
+
+tests:
+- name: Join with filter
+  query: |
+    *[_type == "movie"][0..10] {
+      _id,
+      "femaleCast": *[
+        _type == "person"
+        && _id in ^.cast[].person._ref
+        && gender == "f"] {
+        id, name
+      }
+    }
+  result:
+  - _id: movie-100
+    femaleCast:
+    - _id: person-236388
+  - _id: movie-10000
+    femaleCast: []
+  - _id: movie-10001
+    femaleCast: []
+  - _id: movie-100010
+    femaleCast:
+    - _id: person-14683
+  - _id: movie-100017
+    femaleCast:
+    - _id: person-1369452
+    - _id: person-31444
+    - _id: person-56820
+  - _id: movie-10002
+    femaleCast:
+    - _id: person-20771
+    - _id: person-3122
+    - _id: person-31951
+    - _id: person-61840
+    - _id: person-80147
+  - _id: movie-100024
+    femaleCast:
+    - _id: person-74423
+  - _id: movie-10003
+    femaleCast:
+    - _id: person-1246
+    - _id: person-146399
+    - _id: person-1951
+    - _id: person-7032
+    - _id: person-70883
+    - _id: person-87416
+    - _id: person-955006
+  - _id: movie-100032
+    femaleCast:
+    - _id: person-106702
+    - _id: person-26294
+    - _id: person-32479
+    - _id: person-51864
+    - _id: person-73036
+    - _id: person-87038
+  - _id: movie-100033
+    femaleCast: []
+  - _id: movie-10004
+    femaleCast:
+    - _id: person-49425
+    - _id: person-61829
+    - _id: person-61830
+    - _id: person-61831
+  - _id: movie-100042
+    femaleCast:
+    - _id: person-1020027
+    - _id: person-128207
+    - _id: person-1382356
+    - _id: person-1383482
+    - _id: person-1383491
+    - _id: person-1383527
+    - _id: person-1383534
+    - _id: person-1383536
+    - _id: person-176497
+    - _id: person-3391
+    - _id: person-51699
+    - _id: person-8332
+  - _id: movie-100046
+    femaleCast:
+    - _id: person-50463
+    - _id: person-51856
+    - _id: person-53335
+    - _id: person-66446
+    - _id: person-933578
+  - _id: movie-10005
+    femaleCast:
+    - _id: person-10691
+    - _id: person-61860
+  - _id: movie-100057
+    femaleCast:
+    - _id: person-83352
+    - _id: person-85143
+  - _id: movie-10006
+    femaleCast:
+    - _id: person-61880
+    - _id: person-61892
+  - _id: movie-100061
+    femaleCast: []
+  - _id: movie-100063
+    femaleCast:
+    - _id: person-105296
+    - _id: person-41216
+  - _id: movie-10007
+    femaleCast:
+    - _id: person-19538
+    - _id: person-61778
+    - _id: person-61904
+    - _id: person-61911
+    - _id: person-61914
+  - _id: movie-10008
+    femaleCast:
+    - _id: person-129050
+    - _id: person-5606
+    - _id: person-61938
+    - _id: person-61947
+    - _id: person-7577
+  - _id: movie-100085
+    femaleCast: []
+  - _id: movie-100086
+    femaleCast:
+    - _id: person-35777
+  - _id: movie-100088
+    femaleCast:
+    - _id: person-86367
+    - _id: person-9921
+  - _id: movie-100089
+    femaleCast:
+    - _id: person-1023427
+    - _id: person-11149
+    - _id: person-576163
+  - _id: movie-10009
+    femaleCast:
+    - _id: person-11680
+    - _id: person-31504
+    - _id: person-61964
+  - _id: movie-10010
+    femaleCast:
+    - _id: person-11074
+    - _id: person-16855
+    - _id: person-34983
+    - _id: person-61304
+    - _id: person-61980
+    - _id: person-8263
+  - _id: movie-10011
+    femaleCast:
+    - _id: person-61997
+    - _id: person-62000
+    - _id: person-62001
+  - _id: movie-100110
+    femaleCast:
+    - _id: person-2229
+    - _id: person-64062
+    - _id: person-72157
+  - _id: movie-10012
+    femaleCast:
+    - _id: person-17643
+    - _id: person-20750
+    - _id: person-21596
+    - _id: person-43443
+    - _id: person-62010
+    - _id: person-6886
+  - _id: movie-100122
+    femaleCast:
+    - _id: person-73269
+  - _id: movie-10013
+    femaleCast:
+    - _id: person-11148
+    - _id: person-1769
+    - _id: person-2022
+    - _id: person-30618
+    - _id: person-3391
+    - _id: person-41516
+    - _id: person-5148
+    - _id: person-9259
+    - _id: person-9994
+  - _id: movie-10014
+    femaleCast:
+    - _id: person-101301
+    - _id: person-156925
+    - _id: person-158739
+    - _id: person-3382
+    - _id: person-55958
+    - _id: person-92841
+  - _id: movie-10015
+    femaleCast:
+    - _id: person-106802
+    - _id: person-181343
+    - _id: person-1884030
+    - _id: person-1884031
+    - _id: person-19131
+    - _id: person-40618
+    - _id: person-61079
+    - _id: person-95857
+  - _id: movie-100152
+    femaleCast: []
+  - _id: movie-10016
+    femaleCast:
+    - _id: person-106728
+    - _id: person-20387
+    - _id: person-2230
+    - _id: person-49958
+    - _id: person-57395
+    - _id: person-57991
+    - _id: person-593
+    - _id: person-62037
+  - _id: movie-100167
+    femaleCast:
+    - _id: person-10130
+    - _id: person-13549
+  - _id: movie-10017
+    femaleCast:
+    - _id: person-6681
+  - _id: movie-100179
+    femaleCast: []
+  - _id: movie-10018
+    femaleCast:
+    - _id: person-10243
+    - _id: person-1859
+    - _id: person-678
+    - _id: person-7823
+    - _id: person-8790
+  - _id: movie-100183
+    femaleCast:
+    - _id: person-443865
+  - _id: movie-100185
+    femaleCast: []
+  - _id: movie-10019
+    femaleCast:
+    - _id: person-11073
+    - _id: person-165553
+    - _id: person-1719915
+    - _id: person-1719917
+    - _id: person-1719918
+    - _id: person-1719919
+    - _id: person-1719920
+    - _id: person-1719921
+    - _id: person-1719922
+    - _id: person-2109
+    - _id: person-59956
+    - _id: person-62042
+  - _id: movie-100196
+    femaleCast:
+    - _id: person-17346
+    - _id: person-19
+    - _id: person-1956
+  - _id: movie-10020
+    femaleCast:
+    - _id: person-14730
+    - _id: person-166994
+    - _id: person-30695
+    - _id: person-60739
+    - _id: person-62050
+    - _id: person-6727
+  - _id: movie-100205
+    femaleCast: []
+  - _id: movie-10021
+    femaleCast:
+    - _id: person-1212530
+    - _id: person-2167
+    - _id: person-33488
+    - _id: person-33665
+    - _id: person-60700
+  - _id: movie-100215
+    femaleCast:
+    - _id: person-1138528
+  - _id: movie-10022
+    femaleCast:
+    - _id: person-10556
+    - _id: person-1228361
+    - _id: person-1281022
+    - _id: person-1337815
+    - _id: person-1463851
+    - _id: person-148615
+    - _id: person-16858
+    - _id: person-1752070
+    - _id: person-1752074
+    - _id: person-1752076
+    - _id: person-1752079
+    - _id: person-1752081
+    - _id: person-1752082
+    - _id: person-1752085
+    - _id: person-1752086
+    - _id: person-1752087
+    - _id: person-1752089
+    - _id: person-1752093
+    - _id: person-1752097
+    - _id: person-1752103
+    - _id: person-1752109
+    - _id: person-29214
+    - _id: person-29221
+    - _id: person-62054
+    - _id: person-981162
+  - _id: movie-100224
+    femaleCast: []
+  - _id: movie-10023
+    femaleCast:
+    - _id: person-44845
+    - _id: person-45379
+    - _id: person-55567
+    - _id: person-60152
+    - _id: person-7210
+  - _id: movie-10024
+    femaleCast:
+    - _id: person-1109920
+    - _id: person-17140
+    - _id: person-25933
+    - _id: person-3234
+    - _id: person-55317
+    - _id: person-6941
+    - _id: person-95039
+  - _id: movie-100241
+    femaleCast:
+    - _id: person-145245
+    - _id: person-1519995
+    - _id: person-502
+    - _id: person-63312
+  - _id: movie-100243
+    femaleCast: []
+  - _id: movie-100246
+    femaleCast: []
+  - _id: movie-100247
+    femaleCast: []
+  - _id: movie-10025
+    femaleCast:
+    - _id: person-1294
+    - _id: person-1504712
+    - _id: person-19664
+    - _id: person-2139
+    - _id: person-228431
+    - _id: person-41640
+    - _id: person-49265
+    - _id: person-62065
+    - _id: person-62072
+  - _id: movie-100250
+    femaleCast: []
+  - _id: movie-100257
+    femaleCast:
+    - _id: person-55156
+    - _id: person-5827
+    - _id: person-9907
+  - _id: movie-10027
+    femaleCast:
+    - _id: person-17787
+    - _id: person-41547
+    - _id: person-62105
+  - _id: movie-100270
+    femaleCast:
+    - _id: person-1460265
+    - _id: person-33409
+  - _id: movie-100271
+    femaleCast: []
+  - _id: movie-100272
+    femaleCast: []
+  - _id: movie-100274
+    femaleCast:
+    - _id: person-1066283
+    - _id: person-188947
+  - _id: movie-100275
+    femaleCast:
+    - _id: person-1323877
+    - _id: person-225418
+    - _id: person-90683
+  - _id: movie-10028
+    femaleCast:
+    - _id: person-52847
+    - _id: person-557794
+    - _id: person-56731
+    - _id: person-60042
+    - _id: person-62125
+    - _id: person-62127
+    - _id: person-62135
+    - _id: person-62137
+  - _id: movie-100287
+    femaleCast: []
+  - _id: movie-100288
+    femaleCast:
+    - _id: person-3124
+    - _id: person-37506
+  - _id: movie-10029
+    femaleCast:
+    - _id: person-10478
+    - _id: person-6941
+  - _id: movie-100292
+    femaleCast: []
+  - _id: movie-10030
+    femaleCast:
+    - _id: person-1066283
+    - _id: person-1224825
+    - _id: person-1666302
+    - _id: person-27775
+    - _id: person-33053
+    - _id: person-56731
+    - _id: person-58393
+    - _id: person-59240
+    - _id: person-62168
+    - _id: person-62169
+    - _id: person-62171
+    - _id: person-8338
+    - _id: person-83423
+  - _id: movie-10032
+    femaleCast:
+    - _id: person-62220
+    - _id: person-62225
+    - _id: person-62230
+  - _id: movie-10033
+    femaleCast:
+    - _id: person-14415
+    - _id: person-1772
+    - _id: person-20189
+    - _id: person-62246
+  - _id: movie-10034
+    femaleCast:
+    - _id: person-1980
+    - _id: person-6613
+  - _id: movie-100341
+    femaleCast:
+    - _id: person-107943
+  - _id: movie-10035
+    femaleCast:
+    - _id: person-1074639
+    - _id: person-117823
+    - _id: person-1394552
+    - _id: person-1513679
+    - _id: person-1728875
+    - _id: person-1745630
+    - _id: person-1745632
+    - _id: person-1745633
+    - _id: person-1745634
+    - _id: person-1745635
+    - _id: person-1745638
+    - _id: person-1745641
+    - _id: person-1745649
+    - _id: person-1745653
+    - _id: person-1745657
+    - _id: person-1745659
+    - _id: person-1745662
+    - _id: person-1745668
+    - _id: person-1745669
+    - _id: person-1745672
+    - _id: person-1745673
+    - _id: person-1745675
+    - _id: person-1745676
+    - _id: person-1745677
+    - _id: person-1745680
+    - _id: person-1745683
+    - _id: person-1745685
+    - _id: person-1745686
+    - _id: person-1745687
+    - _id: person-1745688
+    - _id: person-1745690
+    - _id: person-25541
+    - _id: person-27727
+    - _id: person-35545
+    - _id: person-40978
+    - _id: person-43443
+    - _id: person-567122
+    - _id: person-56824
+    - _id: person-59192
+    - _id: person-62280
+    - _id: person-62281
+    - _id: person-62282
+    - _id: person-62283
+    - _id: person-62284
+    - _id: person-62285
+    - _id: person-62286
+    - _id: person-62287
+    - _id: person-62288
+    - _id: person-62289
+    - _id: person-85097
+  - _id: movie-100351
+    femaleCast:
+    - _id: person-14701
+    - _id: person-22137
+    - _id: person-30296
+    - _id: person-87685
+  - _id: movie-10036
+    femaleCast:
+    - _id: person-22652
+  - _id: movie-10037
+    femaleCast:
+    - _id: person-4604
+  - _id: movie-10040
+    femaleCast:
+    - _id: person-1212123
+    - _id: person-126932
+    - _id: person-18277
+    - _id: person-26716
+    - _id: person-39015
+    - _id: person-6944
+    - _id: person-9788
+  - _id: movie-100402
+    femaleCast:
+    - _id: person-1196879
+    - _id: person-1245
+    - _id: person-14464
+    - _id: person-1636801
+    - _id: person-164040
+    - _id: person-179012
+    - _id: person-39459
+    - _id: person-550843
+    - _id: person-71189
+    - _id: person-84247
+  - _id: movie-100409
+    femaleCast: []
+  - _id: movie-10041
+    femaleCast: []
+  - _id: movie-100416
+    femaleCast:
+    - _id: person-1000780
+    - _id: person-1000800
+    - _id: person-1240195
+    - _id: person-156204
+    - _id: person-1736438
+    - _id: person-1737719
+    - _id: person-1737722
+    - _id: person-1737723
+    - _id: person-1737746
+    - _id: person-1737749
+    - _id: person-1737751
+    - _id: person-1737754
+    - _id: person-1737762
+    - _id: person-1737766
+    - _id: person-1737769
+    - _id: person-1737774
+    - _id: person-1737779
+    - _id: person-1737780
+    - _id: person-1737784
+    - _id: person-1737789
+    - _id: person-1989
+    - _id: person-22121
+    - _id: person-63241
+    - _id: person-7574
+    - _id: person-78044
+  - _id: movie-100420
+    femaleCast:
+    - _id: person-13354
+    - _id: person-81798
+  - _id: movie-10044
+    femaleCast: []
+  - _id: movie-10045
+    femaleCast: []
+  - _id: movie-100450
+    femaleCast:
+    - _id: person-1026225
+  - _id: movie-10046
+    femaleCast:
+    - _id: person-3196
+    - _id: person-56402
+    - _id: person-59090
+  - _id: movie-100461
+    femaleCast: []
+  - _id: movie-100468
+    femaleCast: []
+  - _id: movie-10047
+    femaleCast:
+    - _id: person-63
+    - _id: person-6450
+  - _id: movie-10048
+    femaleCast:
+    - _id: person-10860
+    - _id: person-1232126
+    - _id: person-1291386
+    - _id: person-6164
+  - _id: movie-10049
+    femaleCast:
+    - _id: person-62497
+  - _id: movie-100490
+    femaleCast:
+    - _id: person-12656
+    - _id: person-13567
+    - _id: person-2750
+    - _id: person-49425
+  - _id: movie-100493
+    femaleCast:
+    - _id: person-54499
+    - _id: person-57674
+    - _id: person-84698
+  - _id: movie-10050
+    femaleCast:
+    - _id: person-12967
+    - _id: person-18973
+    - _id: person-205
+    - _id: person-28639
+    - _id: person-41555
+    - _id: person-62521
+    - _id: person-62523
+    - _id: person-8691
+  - _id: movie-10051
+    femaleCast:
+    - _id: person-17522
+    - _id: person-3591
+    - _id: person-51102
+    - _id: person-56654
+    - _id: person-62531
+  - _id: movie-10052
+    femaleCast:
+    - _id: person-12516
+    - _id: person-17358
+    - _id: person-25834
+    - _id: person-52878
+    - _id: person-55546
+    - _id: person-62547
+    - _id: person-62551
+    - _id: person-62553
+    - _id: person-77013
+    - _id: person-8534
+    - _id: person-95517
+  - _id: movie-100526
+    femaleCast:
+    - _id: person-27932
+    - _id: person-97242
+  - _id: movie-100528
+    femaleCast:
+    - _id: person-108432
+    - _id: person-20366
+    - _id: person-20369
+    - _id: person-33360
+    - _id: person-564934
+    - _id: person-7381
+    - _id: person-87519
+  - _id: movie-100529
+    femaleCast:
+    - _id: person-26513
+    - _id: person-45400
+    - _id: person-82885
