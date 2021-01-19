@@ -19,7 +19,7 @@ function sha1(s) {
 /**
  * Takes an object which can have array values and generates each "combination".
  *
- * eachCombination({a: [1, 2], b: [3, 4]}) will yield {a:1,b:3}, {a:1,b:4}, {a:2,b:3}, {a:2,b:4}.
+ * eachCombination({a: [1, 2], b: [3, 4]}, ['a', 'b']) will yield [1,3], [1,4], [2,3], [2,4].
  *
  * @param {object} obj
  */
@@ -29,7 +29,7 @@ function* eachCombination(obj, keys = Object.keys(obj)) {
   for (;;) {
     let didAdvance = false;
     let i = 0;
-    let alt = {};
+    let alt = [];
 
     for (let key of keys) {
       let value = obj[key];
@@ -52,9 +52,9 @@ function* eachCombination(obj, keys = Object.keys(obj)) {
         }
 
         i++;
-        alt[key] = value[current];
+        alt.push(value[current]);
       } else {
-        alt[key] = value;
+        alt.push(value);
       }
     }
 
@@ -71,15 +71,12 @@ function* eachCombination(obj, keys = Object.keys(obj)) {
  * Replaces variables in a query.
  *
  * @param {string} query
- * @param {Record<string, string>} variables
+ * @param {Array<string>} variables
  */
 function replaceVariables(query, variables) {
+  let idx = 0;
   return query.replace(/~(\w+)~/g, (_, name) => {
-    if (!variables.hasOwnProperty(name)) {
-      throw new Error(`Template variable '${name}' is missing`);
-    }
-
-    return variables[name];
+    return variables[idx++];
   });
 }
 
@@ -339,11 +336,13 @@ class Builder {
       // The test depends on an explicit dataset
       if (dataset) continue;
 
-      for (let key of keys) {
+      for (let i = 0; i < keys.length; i++) {
+        let key = keys[i];
+
         // The variable is not valid in top-level scope
         if (!isStandalone(key)) continue;
 
-        let genDoc = this.generatedDataset.addJSON(alt[key]);
+        let genDoc = this.generatedDataset.addJSON(alt[i]);
 
         // Not valid JSON
         if (!genDoc) continue;
@@ -351,7 +350,8 @@ class Builder {
         let fetchDocQuery = `*[_id == ${JSON.stringify(genDoc.docId)}]`;
 
         if (genFilter) {
-          let genAlt = { ...alt, [key]: genDoc.fieldId };
+          let genAlt = alt.slice();
+          genAlt[i] = genDoc.fieldId;
           let filter = replaceVariables(query, genAlt);
           let fullQuery = `${fetchDocQuery}[${filter}][]._id`;
           let expected = result === true ? [genDoc.docId] : [];
@@ -365,7 +365,9 @@ class Builder {
 
         if (genFetch) {
           let attr = `${fetchDocQuery}[0].${genDoc.fieldId}`;
-          let genAlt = { ...alt, [key]: attr };
+          let genAlt = alt.slice();
+          genAlt[i] = attr;
+
           yield {
             query: replaceVariables(query, genAlt),
             dataset: this.generatedDataset.ref(),
