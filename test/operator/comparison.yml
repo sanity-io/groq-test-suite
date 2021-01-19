@@ -65,11 +65,25 @@ tests:
 
 - name: "Datetimes"
   result: true
+  variables:
+    a: '"2020-01-01T12:00:00Z"'
+    a2: '"2020-01-01T13:00:00+01:00"'
+    b: '"2020-01-01T12:00:00.001Z"'
+    c: '"2020-01-01T13:00:00Z"'
   tests:
-  - query: 'dateTime("2020-01-01T12:00:00Z") ~eq~ dateTime("2020-01-01T12:00:00Z")'
-  - query: 'dateTime("2020-01-01T13:00:00+01:00") ~eq~ dateTime("2020-01-01T12:00:00Z")'
-  - query: 'dateTime("2020-01-01T12:00:00Z") ~lt~ dateTime("2020-01-01T13:00:00Z")'
-  - query: 'dateTime("2020-01-01T12:00:00.001Z") ~gt~ dateTime("2020-01-01T12:00:00Z")'
+  - query: 'dateTime(~a~) ~eq~ dateTime(~a~)'
+  - query: 'dateTime(~a2~) ~eq~ dateTime(~a~)'
+  - query: 'dateTime(~a~) ~lt~ dateTime(~c~)'
+  - query: 'dateTime(~b~) ~gt~ dateTime(~a~)'
+
+- name: "Datetimes against strings"
+  result: null
+  variables:
+    a: '"2020-01-01T12:00:00Z"'
+    b: '"2020-01-01T13:00:00Z"'
+  tests:
+  - query: 'dateTime(~a~) ~lt~ ~b~'
+  - query: '~a~ ~lt~ dateTime(~b~)'
 
 - name: "Mixed types"
   result: null
