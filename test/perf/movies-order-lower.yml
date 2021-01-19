@@ -1,0 +1,109 @@
+dataset: movies
+name: "perf / movies"
+
+tests:
+- name: Order by lower()
+  query: |
+    *[_type == "movie"] | order(lower(title))[0..100][].title
+  result:
+  - '!Women Art Revolution'
+  - '#1 Cheerleader Camp'
+  - '#chicagoGirl'
+  - '#Horror'
+  - $1,000 on the Black
+  - $100,000 for Ringo
+  - $5 a Day
+  - '$50K and a Call Girl: A Love Story'
+  - $9.99
+  - $ellebrity
+  - '''49-''17'
+  - '''71'
+  - '''D'''
+  - '''Gator Bait'
+  - '''Master Harold''... and the Boys'
+  - '''Neath the Arizona Skies'
+  - '''night, Mother'
+  - '''R Xmas'
+  - '''Til Madness Do Us Part'
+  - '''Tis the Season for Love'
+  - '''Twas the Night'
+  - '''Twas the Night Before Christmas'
+  - (500) Days of Summer
+  - (A)Sexual
+  - (Absolutions) Pipilotti's Mistakes
+  - '(Dis)Honesty: The Truth About Lies'
+  - (T)ERROR
+  - (Untitled)
+  - "+1"
+  - '...All the Marbles'
+  - '...And God Created Woman'
+  - '...And Justice for All'
+  - '...And the Pursuit of Happiness'
+  - '...E fuori nevica!'
+  - '...ing'
+  - '...tick... tick... tick...'
+  - ".45"
+  - '.hack Liminality: In the Case of Mai Minase'
+  - 00 Schneider - Jagd auf Nihil Baxter
+  - '008: Operation Exterminate'
+  - '009 Re: Cyborg'
+  - '009-1: The End of the Beginning'
+  - 06/05
+  - 08/15
+  - "1"
+  - 1 - Nenokkadine
+  - 1 Chance 2 Dance
+  - 1 Litre of Tears
+  - 1 Mile to You
+  - 1 Night
+  - 1 P.M.
+  - 1-900
+  - 1. Mai – Helden bei der Arbeit
+  - "10"
+  - 10 000 timmar
+  - 10 Attitudes
+  - '10 Billion: What''s On Your Plate'
+  - 10 Cent Pistol
+  - 10 Cloverfield Lane
+  - 10 Days in a Madhouse
+  - 10 Items or Less
+  - 10 Minutes
+  - 10 Minutes
+  - 10 MPH
+  - 10 Questions for the Dalai Lama
+  - 10 Rillington Place
+  - 10 Rules for Sleeping Around
+  - 10 Things I Hate About You
+  - 10 to Midnight
+  - 10 Years
+  - '10%: What Makes a Hero?'
+  - 10+10
+  - 10,000 BC
+  - 10,000 Black Men Named George
+  - 10,000 Days
+  - 10,000 Dollars for a Massacre
+  - 10,000 km
+  - 10.0 Earthquake
+  - "10.5"
+  - '10.5: Apocalypse'
+  - 100 Bloody Acres
+  - 100 Days
+  - 100 Days with Mr. Arrogant
+  - 100 Degrees Below Zero
+  - 100 Feet
+  - '100 Ghost Street: The Return of Richard Speck'
+  - 100 Girls
+  - 100 grams for Bravery
+  - 100 Meters
+  - 100 Million BC
+  - 100 Rifles
+  - 100 Streets
+  - 100 Ways to Murder Your Wife
+  - 100 Women
+  - 100 Years at the Movies
+  - 100 years of evil
+  - '100 Yen: The Japanese Arcade Experience'
+  - 100% Love
+  - 1000 Journals
+  - 1000 To 1
+  - 1001 Grams

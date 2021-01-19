@@ -1,0 +1,114 @@
+dataset: movies
+name: "perf / movies"
+
+tests:
+- name: "Semijoin with independent term"
+  query: |
+    *[_type == "movie" && (
+      "Music" in genres[]->name
+      || "person-488" in crew[].person._ref
+    )][0..100] {
+      _id
+    }
+  result:
+  - _id: movie-10020
+  - _id: movie-10028
+  - _id: movie-100776
+  - _id: movie-100825
+  - _id: movie-10110
+  - _id: movie-101125
+  - _id: movie-101267
+  - _id: movie-10174
+  - _id: movie-101801
+  - _id: movie-10186
+  - _id: movie-10197
+  - _id: movie-10198
+  - _id: movie-102242
+  - _id: movie-102410
+  - _id: movie-102428
+  - _id: movie-102622
+  - _id: movie-10269
+  - _id: movie-102812
+  - _id: movie-102814
+  - _id: movie-103475
+  - _id: movie-103688
+  - _id: movie-10373
+  - _id: movie-10380
+  - _id: movie-10419
+  - _id: movie-104549
+  - _id: movie-10466
+  - _id: movie-105
+  - _id: movie-105067
+  - _id: movie-105287
+  - _id: movie-10537
+  - _id: movie-105567
+  - _id: movie-10560
+  - _id: movie-10597
+  - _id: movie-105978
+  - _id: movie-10654
+  - _id: movie-106821
+  - _id: movie-106825
+  - _id: movie-10693
+  - _id: movie-107246
+  - _id: movie-107248
+  - _id: movie-10776
+  - _id: movie-10784
+  - _id: movie-107973
+  - _id: movie-108
+  - _id: movie-108010
+  - _id: movie-10805
+  - _id: movie-108055
+  - _id: movie-108209
+  - _id: movie-108213
+  - _id: movie-108220
+  - _id: movie-108224
+  - _id: movie-10840
+  - _id: movie-108639
+  - _id: movie-10874
+  - _id: movie-10875
+  - _id: movie-109048
+  - _id: movie-10910
+  - _id: movie-109235
+  - _id: movie-109264
+  - _id: movie-109417
+  - _id: movie-10947
+  - _id: movie-11009
+  - _id: movie-11031
+  - _id: movie-11049
+  - _id: movie-11054
+  - _id: movie-110669
+  - _id: movie-110733
+  - _id: movie-111031
+  - _id: movie-111042
+  - _id: movie-11113
+  - _id: movie-111344
+  - _id: movie-111477
+  - _id: movie-111479
+  - _id: movie-111625
+  - _id: movie-11172
+  - _id: movie-112072
+  - _id: movie-112083
+  - _id: movie-11239
+  - _id: movie-112699
+  - _id: movie-11314
+  - _id: movie-113217
+  - _id: movie-11326
+  - _id: movie-113347
+  - _id: movie-11335
+  - _id: movie-11352
+  - _id: movie-113757
+  - _id: movie-11401
+  - _id: movie-114065
+  - _id: movie-114150
+  - _id: movie-11424
+  - _id: movie-114575
+  - _id: movie-114955
+  - _id: movie-115161
+  - _id: movie-11519
+  - _id: movie-115199
+  - _id: movie-115214
+  - _id: movie-115306
+  - _id: movie-11548
+  - _id: movie-115626
+  - _id: movie-115656
+  - _id: movie-11568

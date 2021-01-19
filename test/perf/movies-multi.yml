@@ -1,0 +1,237 @@
+dataset: movies
+name: "perf / movies"
+
+tests:
+- name: Multiple queries
+  query: |
+    {
+      "movies": *[_type == "movie"][0..100].title,
+      "persons": *[_type == "person"][0..100].name,
+      "genres": *[_type == "genre"][0..100].name
+    }
+  result:
+    genres:
+    - Music
+    - Romance
+    - Family
+    - War
+    - Foreign
+    - TV Movie
+    - Adventure
+    - Fantasy
+    - Animation
+    - Drama
+    - Horror
+    - Action
+    - Comedy
+    - History
+    - Western
+    - Thriller
+    - Crime
+    - Science Fiction
+    - Mystery
+    - Documentary
+    movies:
+    - Lock, Stock and Two Smoking Barrels
+    - La estrategia del caracol
+    - Young Einstein
+    - Flight Command
+    - Hounded
+    - Mona Lisa
+    - Bloodwork
+    - The Saint
+    - The Great Los Angeles Earthquake
+    - Mr. Thank You
+    - Desperation
+    - Dumb and Dumber To
+    - The Giant Mechanical Man
+    - 'Behind Enemy Lines II: Axis of Evil'
+    - American Animal
+    - Wild Seven
+    - Son of a Lion
+    - Blackout
+    - See No Evil
+    - An American Haunting
+    - El tren de la memoria
+    - Silent Waters
+    - Black Gunn
+    - Nazis at the Center of the Earth
+    - Brother Bear
+    - Brother Bear 2
+    - Abominable
+    - Survival Quest
+    - Cursed
+    - The Art of Dying
+    - Peggy Sue Got Married
+    - 'A Nightmare on Elm Street Part 2: Freddy''s Revenge'
+    - Heartbreak Ridge
+    - Mars
+    - Ghosts of Mars
+    - No Way Home
+    - The Wraith
+    - London in the Raw
+    - Life Is All You Get
+    - 'Outpost: Black Sun'
+    - Return Home
+    - Mannequin
+    - Julian Po
+    - Beauty and the Beast
+    - Baby Snakes
+    - The Secret of My Success
+    - Another Way
+    - The Pacifier
+    - How Much Wood Would a Woodchuck Chuck
+    - Dragnet
+    - My Sister's Keeper
+    - I, Frankenstein
+    - Act of Violence
+    - Gertie the Dinosaur
+    - Winsor McCay, the Famous Cartoonist of the N.Y. Herald and His Moving Comics
+    - Just My Luck
+    - Tussenland
+    - Quartet
+    - Unleashed
+    - Game of Werewolves
+    - A Letter to Momo
+    - Harold's Going Stiff
+    - Comforting Skin
+    - 'Eddie: The Sleepwalking Cannibal'
+    - Honey
+    - My Avatar and Me
+    - Black Sun
+    - Very Bad Things
+    - 'Ain''t in It for My Health: A Film About Levon Helm'
+    - Good Luck Chuck
+    - 'Van Wilder 2: The Rise of Taj'
+    - Just Friends
+    - High Heels and Low Lifes
+    - Nicky's Family
+    - 100 Girls
+    - Sylvia
+    - '7 Dwarves: The Forest Is Not Enough'
+    - 'The Hunt for Eagle One: Crash Point'
+    - 'Miss Congeniality 2: Armed and Fabulous'
+    - 'Captain America: The Winter Soldier'
+    - Over Your Cities Grass Will Grow
+    - Broken
+    - Demoted
+    - Gabriel Over the White House
+    - My Lucky Stars
+    - District B13
+    - 'Trapped in the Closet: Chapters 1-12'
+    - Blueberry
+    - The Christian Revolt
+    - They Have Changed Their Face
+    - 'The Messenger: The Story of Joan of Arc'
+    - Stealth
+    - Attack Force
+    - Scarlett
+    - The Devil's Carnival
+    - Get Over It
+    - Avenue Montaigne
+    - Dragonfly
+    - Thunder Rock
+    - The War Against Mrs. Hadley
+    - Lola Versus
+    persons:
+    - George Lucas
+    - Bob Peterson
+    - Scott Speedman
+    - Dan Weil
+    - Gregory Sporleder
+    - Tyrell Davis
+    - Eli Kabillio
+    - Haylee Wanstall
+    - Herbert Heywood
+    - Alden Ray
+    - Justin Lee
+    - William Wyler
+    - Duffy Hecht
+    - Wan Chi-Keung
+    - Behroz Shahamat
+    - Faroukh Fadace
+    - Mojtaba Mirtahasebi
+    - Kaveh Moinfar
+    - Henrietta Barry
+    - Akbar Meshkini
+    - Newton Blick
+    - Howard Burkons
+    - Hossein Amiri
+    - Golda Casimir
+    - Hashem Gerami
+    - Mastaneh Mohajer
+    - Bob Davis
+    - Wally Cox
+    - Kathryn Crawford
+    - Hilary Eaves
+    - Lew Wallace
+    - M. R. Sharifiniya
+    - Siamak Alagheband
+    - Len Kabasinski
+    - Craig Haines
+    - Jerry Haleva
+    - Abbas Sagharisaz
+    - Brian Daniel Heffron
+    - William C. Hulley
+    - Mollie Israel
+    - Jasmin St. Claire
+    - Mohammad Reza Darvishi
+    - Ken Larson
+    - Annabelle Logan
+    - Jean Epstein
+    - Ted Lune
+    - Ilona Margolis
+    - Marguerite Gance
+    - Karl Tunberg
+    - Charles Lamy
+    - Brandon Obray
+    - Fournez-Goffard
+    - Simon Schiffrin
+    - Chamila Rodríguez
+    - Françoise Rosay
+    - Irene Seidner
+    - Marie-Claire Olivia
+    - Raju Srivastava
+    - Didier d'Yd
+    - D.W. Griffith
+    - Adrienne Wehr
+    - Charles M. Kirk
+    - Ramon Saunders
+    - Hendrik Sartov
+    - Ibrahim Ferrer
+    - Sam Zimbalist
+    - Carol Dempster
+    - Peter Wooley
+    - Porter Strong
+    - Charles Croker-King
+    - Maurice Pelling
+    - Kathy Strachan
+    - Blanche Sweet
+    - Maurice Seiderman
+    - Theo Sena
+    - Mary Pickford
+    - Emil Rameau
+    - Byron Vreeland
+    - Robert Surtees
+    - Alfred Hansen
+    - Pola Negri
+    - Barbara Hanley
+    - Mario Caiano
+    - Angelo Scibetta
+    - María Fiorentino
+    - Maurizio Lucidi
+    - Barbara De Rossi
+    - M. Steven Felty
+    - Bobby Johnston
+    - Anne Knecht
+    - Tim Murrell
+    - Elvire Audray
+    - Clara Colosimo
+    - John D. Dunning
+    - Susan Ruttan
+    - Tim Cutt
+    - Philip Chan Fei-Lit
+    - Prashant Pandey
+    - Del Zamora
+    - John Edginton
+    - Curley Dresden

@@ -1,0 +1,745 @@
+dataset: movies
+name: "perf / movies"
+
+tests:
+- name: "references() with one ID"
+  query: |
+    *[_type == "person"][0..100] {
+      _id,
+      "movies": *[_type == "movie" && references(^._id)] { _id }
+    }
+  result:
+  - _id: person-1
+    movies:
+    - _id: movie-10372
+    - _id: movie-10658
+    - _id: movie-11
+    - _id: movie-110354
+    - _id: movie-11953
+    - _id: movie-12144
+    - _id: movie-12180
+    - _id: movie-13155
+    - _id: movie-13597
+    - _id: movie-13611
+    - _id: movie-140607
+    - _id: movie-140979
+    - _id: movie-15302
+    - _id: movie-173467
+    - _id: movie-1884
+    - _id: movie-1891
+    - _id: movie-1892
+    - _id: movie-1893
+    - _id: movie-1894
+    - _id: movie-1895
+    - _id: movie-19492
+    - _id: movie-213831
+    - _id: movie-217
+    - _id: movie-22588
+    - _id: movie-2359
+    - _id: movie-27064
+    - _id: movie-28176
+    - _id: movie-298664
+    - _id: movie-302429
+    - _id: movie-306
+    - _id: movie-326591
+    - _id: movie-330459
+    - _id: movie-33258
+    - _id: movie-36751
+    - _id: movie-42979
+    - _id: movie-44345
+    - _id: movie-4539
+    - _id: movie-55676
+    - _id: movie-57409
+    - _id: movie-636
+    - _id: movie-75311
+    - _id: movie-76180
+    - _id: movie-82866
+    - _id: movie-838
+    - _id: movie-847
+    - _id: movie-85
+    - _id: movie-87
+    - _id: movie-879
+    - _id: movie-89
+    - _id: movie-95758
+  - _id: person-10
+    movies:
+    - _id: movie-10193
+    - _id: movie-105864
+    - _id: movie-12
+    - _id: movie-127380
+    - _id: movie-13929
+    - _id: movie-14160
+    - _id: movie-150540
+    - _id: movie-24589
+    - _id: movie-260514
+    - _id: movie-585
+    - _id: movie-62211
+    - _id: movie-72962
+    - _id: movie-9806
+  - _id: person-100
+    movies:
+    - _id: movie-10665
+    - _id: movie-112422
+    - _id: movie-11679
+    - _id: movie-124298
+    - _id: movie-14000
+    - _id: movie-14251
+    - _id: movie-18074
+    - _id: movie-18165
+    - _id: movie-20
+    - _id: movie-223389
+    - _id: movie-242042
+    - _id: movie-244761
+    - _id: movie-277
+    - _id: movie-283686
+    - _id: movie-285843
+    - _id: movie-340103
+    - _id: movie-46562
+    - _id: movie-46829
+    - _id: movie-4911
+    - _id: movie-52520
+    - _id: movie-64320
+    - _id: movie-72570
+    - _id: movie-834
+    - _id: movie-8895
+    - _id: movie-91549
+    - _id: movie-92493
+  - _id: person-1000
+    movies:
+    - _id: movie-101
+    - _id: movie-1372
+    - _id: movie-13813
+    - _id: movie-14791
+    - _id: movie-175
+    - _id: movie-18
+    - _id: movie-215211
+    - _id: movie-231
+    - _id: movie-2501
+    - _id: movie-36834
+    - _id: movie-9477
+  - _id: person-10000
+    movies:
+    - _id: movie-11858
+    - _id: movie-12634
+    - _id: movie-16996
+    - _id: movie-18129
+    - _id: movie-26618
+    - _id: movie-29427
+    - _id: movie-319
+    - _id: movie-320011
+    - _id: movie-492
+    - _id: movie-54845
+    - _id: movie-664
+    - _id: movie-855
+    - _id: movie-9802
+  - _id: person-1000007
+    movies:
+    - _id: movie-162862
+    - _id: movie-162928
+    - _id: movie-166007
+    - _id: movie-86457
+    - _id: movie-96771
+    - _id: movie-99319
+  - _id: person-1000059
+    movies:
+    - _id: movie-77829
+  - _id: person-1000061
+    movies:
+    - _id: movie-36799
+  - _id: person-1000083
+    movies:
+    - _id: movie-109716
+    - _id: movie-132928
+    - _id: movie-1585
+    - _id: movie-16442
+    - _id: movie-17058
+    - _id: movie-17382
+    - _id: movie-183825
+    - _id: movie-262536
+    - _id: movie-27966
+    - _id: movie-372691
+    - _id: movie-37698
+    - _id: movie-38727
+    - _id: movie-39459
+    - _id: movie-43522
+    - _id: movie-43838
+    - _id: movie-50155
+    - _id: movie-56152
+    - _id: movie-596
+    - _id: movie-77775
+    - _id: movie-95504
+  - _id: person-1000089
+    movies:
+    - _id: movie-9615
+  - _id: person-1000094
+    movies:
+    - _id: movie-263794
+  - _id: person-10001
+    movies:
+    - _id: movie-108155
+    - _id: movie-12501
+    - _id: movie-14710
+    - _id: movie-16085
+    - _id: movie-17801
+    - _id: movie-18612
+    - _id: movie-1976
+    - _id: movie-20139
+    - _id: movie-20853
+    - _id: movie-27367
+    - _id: movie-27973
+    - _id: movie-28571
+    - _id: movie-3001
+    - _id: movie-3084
+    - _id: movie-31507
+    - _id: movie-41355
+    - _id: movie-42740
+    - _id: movie-43258
+    - _id: movie-43358
+    - _id: movie-43802
+    - _id: movie-47758
+    - _id: movie-53792
+    - _id: movie-54569
+    - _id: movie-54570
+    - _id: movie-665
+    - _id: movie-804
+    - _id: movie-887
+    - _id: movie-93313
+    - _id: movie-95556
+  - _id: person-1000102
+    movies:
+    - _id: movie-18191
+    - _id: movie-21619
+  - _id: person-1000109
+    movies:
+    - _id: movie-10775
+    - _id: movie-11647
+    - _id: movie-14310
+  - _id: person-100011
+    movies:
+    - _id: movie-28171
+    - _id: movie-43978
+    - _id: movie-44069
+  - _id: person-100012
+    movies:
+    - _id: movie-28171
+  - _id: person-100013
+    movies:
+    - _id: movie-28171
+  - _id: person-100014
+    movies:
+    - _id: movie-28171
+  - _id: person-1000145
+    movies:
+    - _id: movie-136336
+  - _id: person-100015
+    movies:
+    - _id: movie-14757
+    - _id: movie-28171
+    - _id: movie-43978
+    - _id: movie-44069
+  - _id: person-1000152
+    movies:
+    - _id: movie-169726
+  - _id: person-1000157
+    movies:
+    - _id: movie-81438
+    - _id: movie-8470
+  - _id: person-100016
+    movies:
+    - _id: movie-28171
+  - _id: person-1000163
+    movies:
+    - _id: movie-42689
+  - _id: person-100017
+    movies:
+    - _id: movie-28171
+  - _id: person-100018
+    movies:
+    - _id: movie-28171
+  - _id: person-1000180
+    movies:
+    - _id: movie-31287
+  - _id: person-100019
+    movies:
+    - _id: movie-102286
+    - _id: movie-17744
+    - _id: movie-20173
+    - _id: movie-28187
+    - _id: movie-32021
+    - _id: movie-42737
+    - _id: movie-44916
+    - _id: movie-47616
+    - _id: movie-4932
+  - _id: person-1000195
+    movies:
+    - _id: movie-104221
+    - _id: movie-108213
+    - _id: movie-162042
+  - _id: person-1000197
+    movies:
+    - _id: movie-17185
+  - _id: person-10002
+    movies:
+    - _id: movie-271969
+    - _id: movie-31510
+    - _id: movie-665
+  - _id: person-100020
+    movies:
+    - _id: movie-28171
+  - _id: person-100021
+    movies:
+    - _id: movie-28171
+    - _id: movie-43969
+  - _id: person-100022
+    movies:
+    - _id: movie-227871
+    - _id: movie-280617
+    - _id: movie-28188
+    - _id: movie-67988
+  - _id: person-1000227
+    movies:
+    - _id: movie-824
+  - _id: person-1000228
+    movies:
+    - _id: movie-115
+    - _id: movie-28730
+    - _id: movie-9255
+  - _id: person-100023
+    movies:
+    - _id: movie-28171
+  - _id: person-100024
+    movies:
+    - _id: movie-28188
+    - _id: movie-298445
+    - _id: movie-67988
+  - _id: person-1000240
+    movies:
+    - _id: movie-43664
+  - _id: person-1000241
+    movies:
+    - _id: movie-10642
+  - _id: person-100025
+    movies:
+    - _id: movie-109581
+    - _id: movie-28188
+    - _id: movie-51182
+  - _id: person-100026
+    movies:
+    - _id: movie-14757
+    - _id: movie-28171
+    - _id: movie-43969
+    - _id: movie-44069
+  - _id: person-1000262
+    movies:
+    - _id: movie-18773
+  - _id: person-1000268
+    movies:
+    - _id: movie-11896
+  - _id: person-100027
+    movies:
+    - _id: movie-28189
+  - _id: person-1000273
+    movies:
+    - _id: movie-42689
+  - _id: person-1000276
+    movies:
+    - _id: movie-19158
+  - _id: person-100029
+    movies:
+    - _id: movie-28189
+    - _id: movie-42536
+  - _id: person-10003
+    movies:
+    - _id: movie-103205
+    - _id: movie-106882
+    - _id: movie-109933
+    - _id: movie-118517
+    - _id: movie-119094
+    - _id: movie-184802
+    - _id: movie-193873
+    - _id: movie-208434
+    - _id: movie-249567
+    - _id: movie-296104
+    - _id: movie-38716
+    - _id: movie-43012
+    - _id: movie-43781
+    - _id: movie-43810
+    - _id: movie-49609
+    - _id: movie-665
+    - _id: movie-68013
+    - _id: movie-85763
+    - _id: movie-94251
+  - _id: person-100030
+    movies:
+    - _id: movie-28189
+  - _id: person-1000304
+    movies:
+    - _id: movie-8844
+  - _id: person-100031
+    movies:
+    - _id: movie-28189
+    - _id: movie-780
+  - _id: person-100032
+    movies:
+    - _id: movie-28190
+  - _id: person-1000325
+    movies:
+    - _id: movie-111667
+  - _id: person-100033
+    movies:
+    - _id: movie-114060
+    - _id: movie-166883
+    - _id: movie-238436
+    - _id: movie-28190
+    - _id: movie-32543
+    - _id: movie-39306
+    - _id: movie-55317
+    - _id: movie-59434
+    - _id: movie-59950
+    - _id: movie-66568
+    - _id: movie-66897
+    - _id: movie-74878
+    - _id: movie-76651
+    - _id: movie-92257
+    - _id: movie-94108
+  - _id: person-1000336
+    movies:
+    - _id: movie-37036
+    - _id: movie-79521
+  - _id: person-100034
+    movies:
+    - _id: movie-28190
+  - _id: person-1000340
+    movies:
+    - _id: movie-27624
+  - _id: person-100035
+    movies:
+    - _id: movie-28190
+  - _id: person-100036
+    movies:
+    - _id: movie-104067
+    - _id: movie-116857
+    - _id: movie-118943
+    - _id: movie-125673
+    - _id: movie-127105
+    - _id: movie-128671
+    - _id: movie-130450
+    - _id: movie-130816
+    - _id: movie-131455
+    - _id: movie-182548
+    - _id: movie-189584
+    - _id: movie-189586
+    - _id: movie-190883
+    - _id: movie-191068
+    - _id: movie-191427
+    - _id: movie-192301
+    - _id: movie-193827
+    - _id: movie-193899
+    - _id: movie-200324
+    - _id: movie-20650
+    - _id: movie-28196
+    - _id: movie-3059
+    - _id: movie-31509
+    - _id: movie-36106
+    - _id: movie-36874
+    - _id: movie-42511
+    - _id: movie-42553
+    - _id: movie-43881
+    - _id: movie-49270
+    - _id: movie-618
+    - _id: movie-899
+    - _id: movie-98078
+  - _id: person-1000369
+    movies:
+    - _id: movie-43664
+  - _id: person-100037
+    movies:
+    - _id: movie-111623
+    - _id: movie-188465
+    - _id: movie-196802
+    - _id: movie-37581
+    - _id: movie-42511
+  - _id: person-1000385
+    movies:
+    - _id: movie-39342
+  - _id: person-100039
+    movies:
+    - _id: movie-110253
+    - _id: movie-134475
+    - _id: movie-31509
+    - _id: movie-42511
+  - _id: person-1000391
+    movies:
+    - _id: movie-11779
+  - _id: person-10004
+    movies:
+    - _id: movie-109891
+    - _id: movie-11620
+    - _id: movie-18281
+    - _id: movie-18770
+    - _id: movie-205410
+    - _id: movie-247604
+    - _id: movie-25009
+    - _id: movie-40044
+    - _id: movie-47508
+    - _id: movie-55604
+    - _id: movie-59828
+    - _id: movie-65203
+    - _id: movie-665
+    - _id: movie-79372
+  - _id: person-100040
+    movies:
+    - _id: movie-104067
+    - _id: movie-3059
+    - _id: movie-31509
+    - _id: movie-36106
+    - _id: movie-53800
+  - _id: person-1000406
+    movies:
+    - _id: movie-12535
+    - _id: movie-19065
+    - _id: movie-21554
+    - _id: movie-33670
+    - _id: movie-38922
+    - _id: movie-69848
+    - _id: movie-7012
+  - _id: person-100041
+    movies:
+    - _id: movie-31509
+  - _id: person-100042
+    movies:
+    - _id: movie-31773
+  - _id: person-1000433
+    movies:
+    - _id: movie-42689
+    - _id: movie-8095
+  - _id: person-1000449
+    movies:
+    - _id: movie-174378
+    - _id: movie-412202
+  - _id: person-100045
+    movies:
+    - _id: movie-116857
+    - _id: movie-130450
+    - _id: movie-190883
+    - _id: movie-191068
+    - _id: movie-217763
+    - _id: movie-28196
+    - _id: movie-415021
+    - _id: movie-91208
+    - _id: movie-98078
+  - _id: person-1000458
+    movies:
+    - _id: movie-140032
+    - _id: movie-1480
+    - _id: movie-15
+    - _id: movie-27130
+    - _id: movie-36489
+    - _id: movie-47697
+  - _id: person-1000467
+    movies:
+    - _id: movie-12163
+    - _id: movie-180296
+    - _id: movie-24397
+    - _id: movie-84188
+  - _id: person-100047
+    movies:
+    - _id: movie-105548
+    - _id: movie-127105
+    - _id: movie-128671
+    - _id: movie-136842
+    - _id: movie-143277
+    - _id: movie-156356
+    - _id: movie-175334
+    - _id: movie-182548
+    - _id: movie-189584
+    - _id: movie-192301
+    - _id: movie-193827
+    - _id: movie-20650
+    - _id: movie-319352
+    - _id: movie-36874
+    - _id: movie-50075
+    - _id: movie-70753
+    - _id: movie-70801
+    - _id: movie-71067
+    - _id: movie-73575
+    - _id: movie-73969
+    - _id: movie-85507
+    - _id: movie-91715
+    - _id: movie-92349
+    - _id: movie-95866
+  - _id: person-100049
+    movies:
+    - _id: movie-13528
+  - _id: person-1000493
+    movies:
+    - _id: movie-50153
+  - _id: person-10005
+    movies:
+    - _id: movie-11085
+    - _id: movie-114096
+    - _id: movie-11620
+    - _id: movie-11916
+    - _id: movie-13936
+    - _id: movie-147106
+    - _id: movie-15573
+    - _id: movie-16081
+    - _id: movie-17599
+    - _id: movie-18770
+    - _id: movie-19610
+    - _id: movie-19740
+    - _id: movie-212713
+    - _id: movie-23194
+    - _id: movie-25009
+    - _id: movie-25188
+    - _id: movie-26170
+    - _id: movie-27709
+    - _id: movie-31602
+    - _id: movie-32499
+    - _id: movie-32850
+    - _id: movie-35280
+    - _id: movie-37247
+    - _id: movie-37672
+    - _id: movie-38151
+    - _id: movie-41357
+    - _id: movie-42618
+    - _id: movie-42740
+    - _id: movie-43388
+    - _id: movie-46623
+    - _id: movie-48612
+    - _id: movie-61280
+    - _id: movie-65488
+    - _id: movie-665
+    - _id: movie-83099
+    - _id: movie-9277
+    - _id: movie-95556
+    - _id: movie-95949
+    - _id: movie-97519
+  - _id: person-100050
+    movies:
+    - _id: movie-174928
+  - _id: person-100051
+    movies:
+    - _id: movie-174928
+    - _id: movie-175339
+    - _id: movie-42795
+    - _id: movie-55648
+    - _id: movie-90799
+  - _id: person-1000515
+    movies:
+    - _id: movie-35106
+  - _id: person-100053
+    movies:
+    - _id: movie-129062
+    - _id: movie-28198
+    - _id: movie-28673
+    - _id: movie-391
+    - _id: movie-74071
+    - _id: movie-99332
+  - _id: person-1000532
+    movies:
+    - _id: movie-50153
+  - _id: person-1000538
+    movies:
+    - _id: movie-90171
+  - _id: person-100054
+    movies:
+    - _id: movie-103067
+    - _id: movie-112601
+    - _id: movie-128780
+    - _id: movie-156145
+    - _id: movie-193732
+    - _id: movie-28198
+    - _id: movie-42576
+    - _id: movie-46567
+    - _id: movie-67883
+  - _id: person-100055
+    movies:
+    - _id: movie-109279
+    - _id: movie-28198
+    - _id: movie-31214
+  - _id: person-1000555
+    movies:
+    - _id: movie-12594
+    - _id: movie-200462
+  - _id: person-1000559
+    movies:
+    - _id: movie-101669
+    - _id: movie-13198
+    - _id: movie-135368
+    - _id: movie-13848
+    - _id: movie-18191
+    - _id: movie-21619
+    - _id: movie-30873
+  - _id: person-100056
+    movies:
+    - _id: movie-28198
+  - _id: person-1000569
+    movies:
+    - _id: movie-15069
+    - _id: movie-16342
+    - _id: movie-41592
+    - _id: movie-59726
+  - _id: person-100057
+    movies:
+    - _id: movie-28198
+    - _id: movie-28678
+    - _id: movie-64666
+    - _id: movie-82080
+  - _id: person-100058
+    movies:
+    - _id: movie-107052
+    - _id: movie-108437
+    - _id: movie-157683
+    - _id: movie-260893
+    - _id: movie-26285
+    - _id: movie-281783
+    - _id: movie-28198
+    - _id: movie-38285
+    - _id: movie-47850
+    - _id: movie-50197
+    - _id: movie-67219
+  - _id: person-10006
+    movies:
+    - _id: movie-18019
+    - _id: movie-202198
+    - _id: movie-260064
+    - _id: movie-31623
+    - _id: movie-43138
+    - _id: movie-46623
+    - _id: movie-65488
+    - _id: movie-665
+    - _id: movie-83665
+  - _id: person-100060
+    movies:
+    - _id: movie-24963
+    - _id: movie-39140
+    - _id: movie-59797
+  - _id: person-100061
+    movies:
+    - _id: movie-14750
+  - _id: person-1000614
+    movies:
+    - _id: movie-17467
+    - _id: movie-40213
+    - _id: movie-60898
+  - _id: person-1000619
+    movies:
+    - _id: movie-49028
+  - _id: person-100062
+    movies:
+    - _id: movie-13820
+    - _id: movie-237584
+    - _id: movie-456781
+    - _id: movie-5548
+    - _id: movie-9698
+  - _id: person-1000620
+    movies:
+    - _id: movie-183871
+    - _id: movie-31557
+  - _id: person-1000660
+    movies:
+    - _id: movie-209367
+    - _id: movie-242628
+    - _id: movie-33541
+    - _id: movie-43832
