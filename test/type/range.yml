@@ -27,6 +27,7 @@ tests:
     t:
     - "[]"
     - "{}"
+  genFilter: false
   result: null
   tests:
   - query: "~t~ .. ~t~"
@@ -34,6 +35,7 @@ tests:
 
 - name: "Mixed type"
   result: null
+  genFilter: false
   tests:
   - query: '1 .. "a"'
   - query: '"a" .. 1'

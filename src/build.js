@@ -5,6 +5,7 @@ const { promisify } = require("util");
 const glob = promisify(require("glob"));
 const ndjson = require("ndjson");
 const crypto = require("crypto");
+const { doc } = require("prettier");
 
 const DATASETS = {
   movies:
@@ -15,20 +16,23 @@ function sha1(s) {
   return crypto.createHash("sha1").update(s).digest("hex");
 }
 
-function* expandQueryVariables(query, variables) {
+/**
+ * Takes an object which can have array values and generates each "combination".
+ *
+ * eachCombination({a: [1, 2], b: [3, 4]}) will yield {a:1,b:3}, {a:1,b:4}, {a:2,b:3}, {a:2,b:4}.
+ *
+ * @param {object} obj
+ */
+function* eachCombination(obj, keys = Object.keys(obj)) {
   let state = [];
-  let isDone = false;
 
-  while (!isDone) {
+  for (;;) {
     let didAdvance = false;
     let i = 0;
+    let alt = {};
 
-    let fullQuery = query.replace(/~(\w+)~/g, (_, name) => {
-      if (!variables.hasOwnProperty(name)) {
-        throw new Error(`Template variable '${name}' is missing`);
-      }
-
-      let value = variables[name];
+    for (let key of keys) {
+      let value = obj[key];
 
       if (Array.isArray(value)) {
         if (!(i in state)) state.push(0);
@@ -48,19 +52,44 @@ function* expandQueryVariables(query, variables) {
         }
 
         i++;
-        return value[current];
+        alt[key] = value[current];
       } else {
-        return value;
+        alt[key] = value;
       }
-    });
+    }
 
-    yield fullQuery;
+    yield alt;
 
     if (!didAdvance) {
       // There were no more alternatives *anywhere*
       break;
     }
   }
+}
+
+/**
+ * Replaces variables in a query.
+ *
+ * @param {string} query
+ * @param {Record<string, string>} variables
+ */
+function replaceVariables(query, variables) {
+  return query.replace(/~(\w+)~/g, (_, name) => {
+    if (!variables.hasOwnProperty(name)) {
+      throw new Error(`Template variable '${name}' is missing`);
+    }
+
+    return variables[name];
+  });
+}
+
+/**
+ * Returns all variables used in a query.
+ *
+ * @param {string} query
+ */
+function variableKeys(query) {
+  return [...query.matchAll(/~(\w+)~/g)].map((x) => x[1]);
 }
 
 function containsVariables(query) {
@@ -96,11 +125,68 @@ class IdGenerator {
   }
 }
 
+class GeneratedDataset {
+  constructor() {
+    this.idGenerator = new IdGenerator();
+    this.documents = [];
+    this.json = new Map();
+  }
+
+  /**
+   * Adds a value to the generated dataset with an unique field.
+   */
+  addValue(v) {
+    let docId = this.idGenerator.generate("d");
+    let fieldId = this.idGenerator.generate("f").replace(/-/g, "_");
+    this.documents.push({ _id: docId, [fieldId]: v });
+    return { docId, fieldId };
+  }
+
+  /**
+   * Attempts to parse the string as a JSON value and adds it to the dataset if it's unique.
+   */
+  addJSON(s) {
+    if (this.json.has(s)) return this.json.get(s);
+
+    let res;
+    try {
+      res = this.addValue(JSON.parse(s));
+    } catch (err) {
+      res = null;
+    }
+
+    this.json.set(s, res);
+    return res;
+  }
+
+  entry() {
+    return {
+      _id: "dataset-generated",
+      _type: "dataset",
+      name: "Generated",
+      url: "generated",
+      documents: this.documents,
+    };
+  }
+
+  ref() {
+    return {
+      _type: "reference",
+      _ref: "dataset-generated",
+    };
+  }
+}
+
 class Builder {
   constructor(emitter) {
     this.idGenerator = new IdGenerator();
     this.datasetMapping = new Map();
+    this.generatedDataset = new GeneratedDataset();
     this.emit = emitter;
+  }
+
+  finalize() {
+    this.emit(this.generatedDataset.entry());
   }
 
   process(test, extra) {
@@ -112,11 +198,11 @@ class Builder {
 
     if (hasQuery && (hasResult || isInvalid)) {
       if (test.variables != null) {
-        for (let query of expandQueryVariables(test.query, test.variables)) {
-          this.emitTest(test, query, extra);
+        for (let expanded of this.expandQueryVariables(test)) {
+          this.emitTest({ ...test, ...expanded }, extra);
         }
       } else if (!containsVariables(test.query)) {
-        this.emitTest(test, test.query, extra);
+        this.emitTest(test, extra);
       }
     }
 
@@ -139,7 +225,7 @@ class Builder {
     }
   }
 
-  emitTest(test, query, extra) {
+  emitTest(test, extra) {
     let _id = this.idGenerator.generate("test", test.name);
 
     let dataset = test.dataset || {
@@ -153,7 +239,7 @@ class Builder {
       _type: "test",
       dataset,
       name: test.name,
-      query,
+      query: test.query,
       result: valid ? test.result : null,
       valid,
       ...extra,
@@ -228,6 +314,66 @@ class Builder {
     }
     return this.datasetMapping.get(url);
   }
+
+  *expandQueryVariables({
+    query,
+    variables,
+    result,
+    dataset,
+    standaloneVariables,
+    genFilter = true,
+    genFetch = true,
+  }) {
+    let keys = variableKeys(query);
+
+    function isStandalone(varName) {
+      return standaloneVariables ? standaloneVariables.includes(varName) : true;
+    }
+
+    for (let alt of eachCombination(variables, keys)) {
+      yield { query: replaceVariables(query, alt), result };
+
+      // Nothing to generate at all
+      if (!(genFetch || genFilter)) continue;
+
+      // The test depends on an explicit dataset
+      if (dataset) continue;
+
+      for (let key of keys) {
+        // The variable is not valid in top-level scope
+        if (!isStandalone(key)) continue;
+
+        let genDoc = this.generatedDataset.addJSON(alt[key]);
+
+        // Not valid JSON
+        if (!genDoc) continue;
+
+        let fetchDocQuery = `*[_id == ${JSON.stringify(genDoc.docId)}]`;
+
+        if (genFilter) {
+          let genAlt = { ...alt, [key]: genDoc.fieldId };
+          let filter = replaceVariables(query, genAlt);
+          let fullQuery = `${fetchDocQuery}[${filter}][]._id`;
+          let expected = result === true ? [genDoc.docId] : [];
+
+          yield {
+            query: fullQuery,
+            result: expected,
+            dataset: this.generatedDataset.ref(),
+          };
+        }
+
+        if (genFetch) {
+          let attr = `${fetchDocQuery}[0].${genDoc.fieldId}`;
+          let genAlt = { ...alt, [key]: attr };
+          yield {
+            query: replaceVariables(query, genAlt),
+            dataset: this.generatedDataset.ref(),
+          };
+        }
+      }
+    }
+  }
 }
 
 const BASEDIR = path.resolve(__dirname + "/../test");
@@ -244,6 +390,8 @@ async function build(emitter) {
     let extra = { filename };
     builder.process(test, extra);
   }
+
+  builder.finalize();
 }
 
 async function main() {

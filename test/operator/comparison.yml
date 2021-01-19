@@ -41,20 +41,27 @@ tests:
 
 - name: "Boolean"
   result: true
+  variables:
+    true: "true"
+    false: "false"
   tests:
-  - query: 'true ~gt~ false'
-  - query: 'false ~lt~ true'
-  - query: 'true ~eq~ true'
-  - query: 'false ~eq~ false'
+  - query: '~true~ ~gt~ ~false~'
+  - query: '~false~ ~lt~ ~true~'
+  - query: '~true~ ~eq~ ~true~'
+  - query: '~false~ ~eq~ ~false~'
 
 - name: "Strings"
   result: true
+  variables:
+    a: '"a"'
+    b: '"b"'
+    ab: '"ab"'
   tests:
-  - query: '"a" ~eq~ "a"'
-  - query: '"a" ~lt~ "b"'
-  - query: '"a" ~lt~ "ab"'
-  - query: '"b" ~gt~ "a"'
-  - query: '"ab" ~gt~ "a"'
+  - query: '~a~ ~eq~ ~a~'
+  - query: '~a~ ~lt~ ~b~'
+  - query: '~a~ ~lt~ ~ab~'
+  - query: '~b~ ~gt~ ~a~'
+  - query: '~ab~ ~gt~ ~a~'
 
 - name: "Datetimes"
   result: true

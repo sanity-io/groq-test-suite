@@ -129,7 +129,7 @@ tests:
 
 ### Variables
 
-Queries can use the syntax `${name}` for referring to variables.
+Queries can use the syntax `~name~` for referring to variables.
 Together with test inheritance this can be used to succinctly test many different cases.
 
 ```yaml
@@ -141,7 +141,7 @@ documents:
 tests:
   - name: "Filtering"
     query: |
-      count(*[${filter}])
+      count(*[~filter~])
     tests:
       - result: 1
         variables:
@@ -150,6 +150,35 @@ tests:
         variables:
           filter: '_id >= "b"'
 ```
+
+### Automatic test generation based on variables
+
+To increase the test coverage we automatically generate extra test cases.
+The follwing test case,
+
+```yaml
+tests:
+  - name: "Compare"
+    query: |
+      ~str~ < "z"
+    variables:
+      str: ["a", "b"]
+```
+
+will generate the following additional test queries:
+
+- Plain: `"a" < "z"`
+- GenFilter: `*[_id == "foo"][bar < "z"][]._id` (and create the needed documents)
+- GenFetch: `*[_id == "foo"][0].bar < "z"` (and create the needed documents)
+
+The rules of how the tests are generated are as follows:
+
+- If a test case has an explicit dataset (either `documents` or `dataset`) then nothing will be generated.
+- Every variable which contains valid JSON is eligable for automatic test generation.
+- We assume that every variable is *standalone* (e.g. we can safely pull them out).
+  You can use `standloneVariables: ["var1"]` in case there are some variables which are not standalone.
+- Set `genFilter: false` or `genFetch: false` to disable the generated tests.
+  
 
 ### Specifying datasets
 
