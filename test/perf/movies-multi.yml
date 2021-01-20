@@ -5,9 +5,9 @@ tests:
 - name: Multiple queries
   query: |
     {
-      "movies": *[_type == "movie"][0..100].title,
-      "persons": *[_type == "person"][0..100].name,
-      "genres": *[_type == "genre"][0..100].name
+      "movies": *[_type == "movie"][0..100][].title,
+      "persons": *[_type == "person"][0..100][].name,
+      "genres": *[_type == "genre"][0..100][].name
     }
   result:
     genres:

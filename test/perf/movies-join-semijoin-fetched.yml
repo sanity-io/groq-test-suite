@@ -10,103 +10,525 @@ tests:
     }
   result:
   - _id: movie-100
+    genres:
+    - Comedy
+    - Crime
   - _id: movie-10002
+    genres:
+    - Drama
+    - Crime
+    - Romance
   - _id: movie-10006
+    genres:
+    - Action
+    - Crime
+    - Drama
   - _id: movie-100088
+    genres:
+    - Action
+    - Thriller
+    - Crime
   - _id: movie-10017
+    genres:
+    - Romance
+    - Science Fiction
+    - Horror
+    - Action
+    - Crime
   - _id: movie-10023
+    genres:
+    - Action
+    - Comedy
+    - Crime
   - _id: movie-10027
+    genres:
+    - Action
+    - Crime
   - _id: movie-10029
+    genres:
+    - Comedy
+    - Crime
+    - Thriller
   - _id: movie-10034
+    genres:
+    - Action
+    - Crime
+    - Comedy
   - _id: movie-100544
+    genres:
+    - Crime
+    - Drama
   - _id: movie-10056
+    genres:
+    - Crime
+    - Drama
+    - Thriller
   - _id: movie-100683
+    genres:
+    - Drama
+    - Action
+    - Thriller
+    - Crime
   - _id: movie-10081
+    genres:
+    - Action
+    - Adventure
+    - Crime
+    - Drama
   - _id: movie-10086
+    genres:
+    - Comedy
+    - Crime
+    - Drama
+    - Horror
   - _id: movie-100894
+    genres:
+    - Crime
+    - Drama
   - _id: movie-10090
+    genres:
+    - Action
+    - Adventure
+    - Comedy
+    - Crime
   - _id: movie-10094
+    genres:
+    - Crime
+    - Drama
+    - Horror
+    - Mystery
+    - Thriller
   - _id: movie-10097
+    genres:
+    - Drama
+    - Comedy
+    - Crime
   - _id: movie-101
+    genres:
+    - Thriller
+    - Crime
+    - Drama
   - _id: movie-10117
+    genres:
+    - Action
+    - Adventure
+    - Comedy
+    - Crime
+    - Drama
   - _id: movie-101190
+    genres:
+    - Action
+    - Comedy
+    - Crime
   - _id: movie-10126
+    genres:
+    - Action
+    - Crime
+    - Drama
   - _id: movie-10128
+    genres:
+    - Crime
+    - Science Fiction
+    - Thriller
   - _id: movie-101293
+    genres:
+    - Drama
+    - Thriller
+    - Action
+    - Crime
   - _id: movie-101362
+    genres:
+    - Comedy
+    - Adventure
+    - Crime
   - _id: movie-10141
+    genres:
+    - Crime
+    - Comedy
   - _id: movie-101444
+    genres:
+    - Crime
+    - Adventure
+    - Action
+    - War
   - _id: movie-10145
+    genres:
+    - Crime
+    - Drama
+    - Horror
+    - Mystery
+    - Science Fiction
+    - Thriller
   - _id: movie-10147
+    genres:
+    - Drama
+    - Comedy
+    - Crime
   - _id: movie-10154
+    genres:
+    - Comedy
+    - Crime
+    - Romance
   - _id: movie-10157
+    genres:
+    - Comedy
+    - Crime
   - _id: movie-101669
+    genres:
+    - Crime
+    - Drama
+    - Horror
+    - Thriller
   - _id: movie-10167
+    genres:
+    - Crime
+    - Action
+    - Thriller
   - _id: movie-10168
+    genres:
+    - Comedy
+    - Crime
   - _id: movie-10169
+    genres:
+    - Comedy
+    - Crime
   - _id: movie-101740
+    genres:
+    - Crime
+    - Drama
   - _id: movie-10180
+    genres:
+    - Action
+    - Comedy
+    - Crime
   - _id: movie-101838
+    genres:
+    - Crime
+    - Drama
+    - Thriller
   - _id: movie-10185
+    genres:
+    - Mystery
+    - Drama
+    - Crime
+    - Thriller
+    - Horror
   - _id: movie-101929
+    genres:
+    - Crime
+    - Drama
   - _id: movie-10220
+    genres:
+    - Drama
+    - Crime
   - _id: movie-10223
+    genres:
+    - Drama
+    - Crime
+    - Thriller
   - _id: movie-102234
+    genres:
+    - Action
+    - Crime
   - _id: movie-1023
+    genres:
+    - Drama
+    - Comedy
+    - Crime
   - _id: movie-102362
+    genres:
+    - Thriller
+    - Action
+    - Crime
+    - Drama
   - _id: movie-10237
+    genres:
+    - Crime
+    - Drama
+    - Thriller
   - _id: movie-10254
+    genres:
+    - Crime
+    - Action
+    - Thriller
   - _id: movie-102699
+    genres:
+    - Drama
+    - Crime
+    - Thriller
   - _id: movie-10274
+    genres:
+    - Thriller
+    - Crime
+    - Drama
   - _id: movie-102784
+    genres:
+    - Action
+    - Crime
+    - Drama
   - _id: movie-10279
+    genres:
+    - Thriller
+    - Drama
+    - Crime
+    - Romance
   - _id: movie-102870
+    genres:
+    - Crime
+    - Drama
+    - Comedy
   - _id: movie-102931
+    genres:
+    - TV Movie
+    - Drama
+    - Crime
   - _id: movie-102935
+    genres:
+    - Crime
+    - Documentary
   - _id: movie-10299
+    genres:
+    - Crime
+    - Drama
+    - Horror
+    - Mystery
+    - Thriller
   - _id: movie-103
+    genres:
+    - Crime
+    - Drama
   - _id: movie-10305
+    genres:
+    - Drama
+    - Crime
+    - Mystery
   - _id: movie-103073
+    genres:
+    - Drama
+    - Crime
+    - Foreign
   - _id: movie-103210
+    genres:
+    - Action
+    - Thriller
+    - Crime
   - _id: movie-103299
+    genres:
+    - Drama
+    - Action
+    - Thriller
+    - Crime
+    - Mystery
   - _id: movie-10337
+    genres:
+    - Drama
+    - Crime
   - _id: movie-103370
+    genres:
+    - Drama
+    - Comedy
+    - Crime
   - _id: movie-103396
+    genres:
+    - Drama
+    - Crime
   - _id: movie-103432
+    genres:
+    - TV Movie
+    - Thriller
+    - Crime
+    - Drama
   - _id: movie-103433
+    genres:
+    - Horror
+    - Comedy
+    - Crime
   - _id: movie-10345
+    genres:
+    - Action
+    - Comedy
+    - Crime
   - _id: movie-10347
+    genres:
+    - Action
+    - Crime
   - _id: movie-10354
+    genres:
+    - Crime
+    - Drama
   - _id: movie-103612
+    genres:
+    - Comedy
+    - Crime
+    - Family
   - _id: movie-10363
+    genres:
+    - Crime
+    - Drama
+    - Thriller
   - _id: movie-10388
+    genres:
+    - Action
+    - Crime
+    - Drama
+    - Mystery
+    - Thriller
   - _id: movie-10391
+    genres:
+    - Drama
+    - Horror
+    - Thriller
+    - Crime
   - _id: movie-10396
+    genres:
+    - Action
+    - Adventure
+    - Crime
+    - Romance
+    - Thriller
   - _id: movie-10398
+    genres:
+    - Crime
+    - Drama
+    - Mystery
+    - Thriller
   - _id: movie-10410
+    genres:
+    - Crime
+    - History
   - _id: movie-104193
+    genres:
+    - Crime
+    - Drama
   - _id: movie-10424
+    genres:
+    - Crime
+    - Drama
+    - Mystery
   - _id: movie-104244
+    genres:
+    - Mystery
+    - Crime
+    - Drama
   - _id: movie-10425
+    genres:
+    - Drama
+    - Action
+    - Thriller
+    - Crime
   - _id: movie-104259
+    genres:
+    - Action
+    - Thriller
+    - Crime
   - _id: movie-10427
+    genres:
+    - Crime
+    - Drama
+    - Thriller
   - _id: movie-104274
+    genres:
+    - Action
+    - Drama
+    - Crime
   - _id: movie-10428
+    genres:
+    - Action
+    - Crime
+    - Thriller
+    - Drama
   - _id: movie-10431
+    genres:
+    - Action
+    - Thriller
+    - Crime
   - _id: movie-10433
+    genres:
+    - Comedy
+    - Crime
+    - Romance
+    - Drama
   - _id: movie-10442
+    genres:
+    - Comedy
+    - Crime
+    - Romance
   - _id: movie-104439
+    genres:
+    - Adventure
+    - Crime
+    - Romance
   - _id: movie-10458
+    genres:
+    - Action
+    - Thriller
+    - Crime
   - _id: movie-10461
+    genres:
+    - Action
+    - Drama
+    - Thriller
+    - Crime
   - _id: movie-10474
+    genres:
+    - Drama
+    - Crime
   - _id: movie-10480
+    genres:
+    - Comedy
+    - Crime
+    - Thriller
   - _id: movie-10493
+    genres:
+    - Crime
+    - Thriller
+    - Horror
+    - Drama
   - _id: movie-10498
+    genres:
+    - Crime
+    - Drama
+    - Thriller
   - _id: movie-105033
+    genres:
+    - Action
+    - Crime
   - _id: movie-105087
+    genres:
+    - Crime
+    - Horror
+    - Thriller
   - _id: movie-1051
+    genres:
+    - Action
+    - Crime
+    - Thriller
   - _id: movie-105114
+    genres:
+    - Crime
+    - Drama
+    - Horror
+    - Mystery
+    - Romance
+    - Thriller
   - _id: movie-105130
+    genres:
+    - Crime
+    - Comedy
+    - Action
   - _id: movie-10528
+    genres:
+    - Action
+    - Adventure
+    - Crime
+    - Mystery
   - _id: movie-10536
+    genres:
+    - Action
+    - Crime
+    - Comedy
+    - Thriller
   - _id: movie-105384
+    genres:
+    - Thriller
+    - Crime
