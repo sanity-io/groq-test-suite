@@ -4,13 +4,13 @@ name: "perf / movies"
 tests:
 - name: Join with filter
   query: |
-    *[_type == "movie"][0..10] {
+    *[_type == "movie"][0..100] {
       _id,
       "femaleCast": *[
         _type == "person"
         && _id in ^.cast[].person._ref
         && gender == "f"] {
-        id, name
+        _id
       }
     }
   result:
