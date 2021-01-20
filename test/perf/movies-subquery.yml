@@ -3,10 +3,11 @@ name: "perf / movies"
 
 tests:
 - name: Subquery
+  # Note: Using lower() here to make sorting consistent with v1 engine
   query: |
     *[_type == "movie"][0..100] {
       _id,
-      "allGenres": *[_type == 'genre'] | order(name)[].name
+      "allGenres": *[_type == 'genre'] | order(lower(name))[].name
     }
   result:
   - _id: movie-100
