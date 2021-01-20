@@ -11,9 +11,31 @@ import json
 import os
 import hashlib
 import struct
+import pytz
+import datetime
 
 def eprint(*args, **kwargs):
     print(*args, file=sys.stderr, **kwargs)
+
+def random_date(id):
+    start_date = 1601171974
+    range = 1e07
+    hstr = hashlib.sha1(str(id).encode('utf-8')).digest()
+    h, = struct.unpack('l', hstr[0:8])
+    epoch = start_date + h % range
+    return datetime.datetime.fromtimestamp(epoch, pytz.UTC).isoformat()
+
+def random_revision(id):
+    return hashlib.sha1(str(id).encode('utf-8')).hexdigest()
+
+def random_int(id, min, max):
+    hstr = hashlib.sha1(str(id).encode('utf-8')).digest()
+    h, = struct.unpack('l', hstr[0:8])
+    return min + int(h % (max - min))
+
+def random_elem(id, arr):
+    idx = random_int(id, 0, len(arr))
+    return arr[idx]
 
 class Converter:
     def __init__(self):
@@ -40,17 +62,17 @@ class Converter:
         # by hashing the ID
         widths = [720, 1280, 1440, 1920, 3840]
         heights = [576, 720, 1080, 2160]
-        max_size = 10e6
-        hstr = hashlib.sha1(id.encode('utf-8')).digest()
-        h, = struct.unpack('l', hstr[0:8])
         self.assets[id] = {
             '_id': id,
             '_type': 'asset',
+            '_createdAt': random_date(id),
+            '_updatedAt': random_date(id),
+            '_rev': random_revision(id),
             'path': path,
             'mimetype': mimetype,
-            'size': int(h % max_size),
-            'width': widths[h % len(widths)],
-            'height': heights[h % len(heights)],
+            'size': random_int(id, 0, 10e6),
+            'width': random_elem(id, widths),
+            'height': random_elem(id, heights),
         }
         return {
             '_type': 'reference',
@@ -60,13 +82,16 @@ class Converter:
     def read(self, inputpath):
         with open(os.path.join(inputpath, "movies_metadata.csv")) as file:
             for row in csv.DictReader(file, strict=True):
-                if row['vote_count'] == None:
+                if row['vote_count'] is None:
                     eprint("{}: incomplete record, skipping ".format(file.name), row)
                     continue
 
                 self.movies[row['id']] = movie = {
                     '_id': 'movie-{}'.format(row['id']),
                     '_type': 'movie',
+                    '_createdAt': random_date(row['id']),
+                    '_updatedAt': random_date(row['id']),
+                    '_rev': random_revision(row['id']),
                     'imdb_id': row['imdb_id'] not in ('', '0') and row['imdb_id'] or None,
                     'title': row['title'],
                     'original_title': row['original_title'] or None,
@@ -100,6 +125,9 @@ class Converter:
                     self.collections[c['id']] = {
                         '_id': 'collection-{}'.format(c['id']),
                         '_type': 'collection',
+                        '_createdAt': random_date(c['id']),
+                        '_updatedAt': random_date(c['id']),
+                        '_rev': random_revision(c['id']),
                         'name': c['name'],
                         'poster': self.ref_asset(c['poster_path']),
                         'backdrop': self.ref_asset(c['backdrop_path'])
@@ -113,6 +141,9 @@ class Converter:
                     self.genres[g['id']] = {
                         '_id': 'genre-{}'.format(g['id']),
                         '_type': 'genre',
+                        '_createdAt': random_date(g['id']),
+                        '_updatedAt': random_date(g['id']),
+                        '_rev': random_revision(g['id']),
                         'name': g['name']
                     }
                     movie['genres'].append({
@@ -124,6 +155,9 @@ class Converter:
                     self.companies[c['id']] = {
                         '_id': 'company-{}'.format(c['id']),
                         '_type': 'company',
+                        '_createdAt': random_date(c['id']),
+                        '_updatedAt': random_date(c['id']),
+                        '_rev': random_revision(c['id']),
                         'name': c['name']
                     }
                     movie['production_companies'].append({
@@ -158,6 +192,9 @@ class Converter:
                     self.persons[c['id']] = {
                         '_id': 'person-{}'.format(c['id']),
                         '_type': 'person',
+                        '_createdAt': random_date(c['id']),
+                        '_updatedAt': random_date(c['id']),
+                        '_rev': random_revision(c['id']),
                         'name': c['name'],
                         'gender': {1: 'f', 2: 'm'}.get(c['gender'], None),
                         'profile': self.ref_asset(c['profile_path'])
@@ -174,6 +211,9 @@ class Converter:
                     self.persons[c['id']] = {
                         '_id': 'person-{}'.format(c['id']),
                         '_type': 'person',
+                        '_createdAt': random_date(c['id']),
+                        '_updatedAt': random_date(c['id']),
+                        '_rev': random_revision(c['id']),
                         'name': c['name'],
                         'gender': {1: 'f', 2: 'm'}.get(c['gender'], None),
                         'profile': self.ref_asset(c['profile_path'])
