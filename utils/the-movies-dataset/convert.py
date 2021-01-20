@@ -27,7 +27,7 @@ class Converter:
     def ref_asset(self, path):
         if path == None or path == '':
             return None
-        id = 'asset-{}'.format(path[0] == '/' and path[1:] or path) # Strip /
+        id = 'asset-{}'.format(path[0] == '/' and path[1:] or path)  # Strip /
         ext = "." in path and path.split('.')[-1] or None
         mimetype = {
             "jpg": "image/jpeg",
@@ -65,43 +65,43 @@ class Converter:
                     continue
 
                 self.movies[row['id']] = movie = {
-                    '_id':          'movie-{}'.format(row['id']),
-                    '_type':        'movie',
-                    'imdb_id':      row['imdb_id'] not in ('', '0') and row['imdb_id'] or None,
-                    'title':        row['title'],
+                    '_id': 'movie-{}'.format(row['id']),
+                    '_type': 'movie',
+                    'imdb_id': row['imdb_id'] not in ('', '0') and row['imdb_id'] or None,
+                    'title': row['title'],
                     'original_title': row['original_title'] or None,
                     'original_language': row['original_language'] or None,
-                    'tagline':      row['tagline'] or None,
-                    'poster':       self.ref_asset(row['poster_path']),
-                    'homepage':     row['homepage'] or None,
-                    'overview':     row['overview'] or None,
-                    'status':       row['status'] or None,
+                    'tagline': row['tagline'] or None,
+                    'poster': self.ref_asset(row['poster_path']),
+                    'homepage': row['homepage'] or None,
+                    'overview': row['overview'] or None,
+                    'status': row['status'] or None,
                     'release_date': row['release_date'] or None,
-                    'runtime':      row['runtime'] and int(row['runtime'].split('.')[0]) or None,
-                    'collection':   None,
-                    'genres':       [],
-                    'keywords':     [],
+                    'runtime': row['runtime'] and int(row['runtime'].split('.')[0]) or None,
+                    'collection': None,
+                    'genres': [],
+                    'keywords': [],
                     'spoken_languages': [],
-                    'cast':         [],
-                    'crew':         [],
+                    'cast': [],
+                    'crew': [],
                     'production_countries': [],
                     'production_companies': [],
-                    'budget':       int(row['budget']) or None,
-                    'revenue':      int(row['revenue']) or None,
-                    'adult':        bool(ast.literal_eval(row['adult'])),
-                    'video':        bool(ast.literal_eval(row['video'])),
-                    'popularity':   float(row['popularity']),
+                    'budget': int(row['budget']) or None,
+                    'revenue': int(row['revenue']) or None,
+                    'adult': bool(ast.literal_eval(row['adult'])),
+                    'video': bool(ast.literal_eval(row['video'])),
+                    'popularity': float(row['popularity']),
                     'vote_average': row['vote_count'] != '0' and float(row['vote_average']) or None,
-                    'vote_count':   int(row['vote_count'])
+                    'vote_count': int(row['vote_count'])
                 }
 
                 if row['belongs_to_collection']:
                     c = ast.literal_eval(row['belongs_to_collection'])
                     self.collections[c['id']] = {
-                        '_id':      'collection-{}'.format(c['id']),
-                        '_type':    'collection',
-                        'name':     c['name'],
-                        'poster':   self.ref_asset(c['poster_path']),
+                        '_id': 'collection-{}'.format(c['id']),
+                        '_type': 'collection',
+                        'name': c['name'],
+                        'poster': self.ref_asset(c['poster_path']),
                         'backdrop': self.ref_asset(c['backdrop_path'])
                     }
                     movie['collection'] = {
@@ -111,9 +111,9 @@ class Converter:
 
                 for g in ast.literal_eval(row['genres']):
                     self.genres[g['id']] = {
-                        '_id':      'genre-{}'.format(g['id']),
-                        '_type':    'genre',
-                        'name':     g['name']
+                        '_id': 'genre-{}'.format(g['id']),
+                        '_type': 'genre',
+                        'name': g['name']
                     }
                     movie['genres'].append({
                         '_type': 'reference',
@@ -122,9 +122,9 @@ class Converter:
 
                 for c in ast.literal_eval(row['production_companies']):
                     self.companies[c['id']] = {
-                        '_id':      'company-{}'.format(c['id']),
-                        '_type':    'company',
-                        'name':     c['name']
+                        '_id': 'company-{}'.format(c['id']),
+                        '_type': 'company',
+                        'name': c['name']
                     }
                     movie['production_companies'].append({
                         '_type': 'reference',
@@ -156,34 +156,34 @@ class Converter:
 
                 for c in ast.literal_eval(row['cast']):
                     self.persons[c['id']] = {
-                        '_id':      'person-{}'.format(c['id']),
-                        '_type':    'person',
-                        'name':     c['name'],
-                        'gender':   {1: 'f', 2: 'm'}.get(c['gender'], None),
-                        'profile':  self.ref_asset(c['profile_path'])
+                        '_id': 'person-{}'.format(c['id']),
+                        '_type': 'person',
+                        'name': c['name'],
+                        'gender': {1: 'f', 2: 'm'}.get(c['gender'], None),
+                        'profile': self.ref_asset(c['profile_path'])
                     }
                     movie['cast'].append({
                         'character': c['character'],
                         'person': {
-                            '_type':    'reference',
-                            '_ref':     'person-{}'.format(c['id'])
+                            '_type': 'reference',
+                            '_ref': 'person-{}'.format(c['id'])
                         }
                     })
 
                 for c in ast.literal_eval(row['crew']):
                     self.persons[c['id']] = {
-                        '_id':      'person-{}'.format(c['id']),
-                        '_type':    'person',
-                        'name':     c['name'],
-                        'gender':   {1: 'f', 2: 'm'}.get(c['gender'], None),
-                        'profile':  self.ref_asset(c['profile_path'])
+                        '_id': 'person-{}'.format(c['id']),
+                        '_type': 'person',
+                        'name': c['name'],
+                        'gender': {1: 'f', 2: 'm'}.get(c['gender'], None),
+                        'profile': self.ref_asset(c['profile_path'])
                     }
                     movie['crew'].append({
-                        'job':      c['job'],
-                        'department':   c['department'],
+                        'job': c['job'],
+                        'department': c['department'],
                         'person': {
-                            '_type':    'reference',
-                            '_ref':     'person-{}'.format(c['id'])
+                            '_type': 'reference',
+                            '_ref': 'person-{}'.format(c['id'])
                         }
                     })
 
