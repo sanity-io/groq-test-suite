@@ -25,7 +25,7 @@ class Converter:
         self.persons = {}
 
     def ref_asset(self, path):
-        if path == None or path == '':
+        if path is None or path == '':
             return None
         id = 'asset-{}'.format(path[0] == '/' and path[1:] or path)  # Strip /
         ext = "." in path and path.split('.')[-1] or None
@@ -33,7 +33,7 @@ class Converter:
             "jpg": "image/jpeg",
             "png": "image/png",
         }.get(ext)
-        if mimetype == None:
+        if mimetype is None:
             print('Could not find MIME type for extension {}'.format(ext))
 
         # We just generate fictional but deterministic asset properties
@@ -134,8 +134,8 @@ class Converter:
                 for c in ast.literal_eval(row['production_countries']):
                     movie['production_countries'].append(c['iso_3166_1'])
 
-                for l in ast.literal_eval(row['spoken_languages']):
-                    movie['spoken_languages'].append(l['iso_639_1'])
+                for lang in ast.literal_eval(row['spoken_languages']):
+                    movie['spoken_languages'].append(lang['iso_639_1'])
 
         with open(os.path.join(inputpath, 'keywords.csv')) as file:
             for row in csv.DictReader(file, strict=True):
