@@ -28,6 +28,7 @@ tests:
     - "[]"
     - "{}"
   genFilter: false
+  genJoin: false
   result: null
   tests:
   - query: "~t~ .. ~t~"

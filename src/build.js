@@ -320,6 +320,7 @@ class Builder {
     standaloneVariables,
     genFilter = true,
     genFetch = true,
+    genJoin = true,
   }) {
     let keys = variableKeys(query);
 
@@ -331,7 +332,7 @@ class Builder {
       yield { query: replaceVariables(query, alt), result };
 
       // Nothing to generate at all
-      if (!(genFetch || genFilter)) continue;
+      if (!(genFetch || genFilter || genJoin)) continue;
 
       // The test depends on an explicit dataset
       if (dataset) continue;
@@ -372,6 +373,38 @@ class Builder {
             query: replaceVariables(query, genAlt),
             dataset: this.generatedDataset.ref(),
           };
+        }
+
+        if (genJoin && (typeof result === 'boolean' || result === null)) {
+          for (let j = i + 1; j < keys.length; j++) {
+            let otherKey = keys[j];
+
+            // The variable is not valid in top-level scope
+            if (!isStandalone(otherKey)) continue;
+
+            let genDoc2 = this.generatedDataset.addJSON(alt[j]);
+
+            // Not valid JSON
+            if (!genDoc2) continue;
+
+            let genAlt = alt.slice();
+            genAlt[i] = `^.${genDoc.fieldId}`;
+            genAlt[j] = genDoc2.fieldId;
+            let filter = replaceVariables(query, genAlt);
+
+            let fetchDoc2Query = `*[_id == ${JSON.stringify(genDoc2.docId)}]`
+            let innerQuery = `${fetchDoc2Query}[${filter}]`
+            let fullQuery = `${fetchDocQuery}{"children":${innerQuery}[]._id}`;
+
+            let innerExpeced = result === true ? [genDoc2.docId] : []
+            let expected = [{children: innerExpeced}];
+
+            yield {
+              query: fullQuery,
+              result: expected,
+              dataset: this.generatedDataset.ref(),
+            };
+          }
         }
       }
     }
