@@ -1,19 +1,30 @@
 name: "Comparison operators"
 variables:
+
+  # True when LHS is strictly smaller than RHS.
   lt:
+  - "!="
   - "<"
   - "<="
+
+  # True when LHS is strictly bigger than RHS.
   gt:
+  - "!="
   - ">"
   - ">="
+
+  # False when LHS is equal to RHS.
   eq:
   - "=="
   - ">="
   - "<="
+
+  # False when LHS is equal to RHS.
   ne:
   - "!="
   - "<"
   - ">"
+
   op:
   - "<"
   - "<="
@@ -40,6 +51,8 @@ tests:
   - query: '1 ~eq~ 1'
   - query: '1 ~lt~ 2'
   - query: '2 ~gt~ 1'
+  - query: '1 ~ne~ 1'
+    result: false
 
 - name: "Boolean"
   result: true
@@ -51,6 +64,8 @@ tests:
   - query: '~false~ ~lt~ ~true~'
   - query: '~true~ ~eq~ ~true~'
   - query: '~false~ ~eq~ ~false~'
+  - query: '~false~ ~ne~ ~false~'
+    result: false
 
 - name: "Strings"
   result: true
@@ -64,6 +79,8 @@ tests:
   - query: '~a~ ~lt~ ~ab~'
   - query: '~b~ ~gt~ ~a~'
   - query: '~ab~ ~gt~ ~a~'
+  - query: '~a~ ~ne~ ~a~'
+    result: false
 
 - name: "Datetimes"
   result: true
@@ -77,6 +94,8 @@ tests:
   - query: 'dateTime(~a2~) ~eq~ dateTime(~a~)'
   - query: 'dateTime(~a~) ~lt~ dateTime(~c~)'
   - query: 'dateTime(~b~) ~gt~ dateTime(~a~)'
+  - query: 'dateTime(~a~) ~ne~ dateTime(~a~)'
+    result: false
 
 - name: "Datetimes against strings"
   result: null
@@ -84,8 +103,8 @@ tests:
     a: '"2020-01-01T12:00:00Z"'
     b: '"2020-01-01T13:00:00Z"'
   tests:
-  - query: 'dateTime(~a~) ~lt~ ~b~'
-  - query: '~a~ ~lt~ dateTime(~b~)'
+  - query: 'dateTime(~a~) ~op~ ~b~'
+  - query: '~a~ ~op~ dateTime(~b~)'
 
 - name: "Mixed types"
   result: null
