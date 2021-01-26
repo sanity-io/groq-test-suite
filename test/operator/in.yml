@@ -112,6 +112,7 @@ tests:
 - name: "Path"
   query: |
     ~el~ in path(~path~)
+  genFilter: false
   tests:
 
   - result: true
