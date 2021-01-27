@@ -178,7 +178,7 @@ The rules of how the tests are generated are as follows:
 - We assume that every variable is *standalone* (e.g. we can safely pull them out).
   You can use `standloneVariables: ["var1"]` in case there are some variables which are not standalone.
 - Set `genFilter: false` or `genFetch: false` to disable the generated tests.
-  
+
 
 ### Specifying datasets
 
@@ -197,7 +197,7 @@ Currently the following named datasets are available:
 
 | Name | Size | Documentation | URL |
 | --- | --- | --- | --- |
-| `movies` | ~500k documents (~200MB) | [./utils/the-movies-dataset](./utils/the-movies-dataset) | [🔗](https://groq-test-suite.storage.googleapis.com/datasets/movies/movies-7d858de5318a6bc27d92a638899957ef.ndjson) |
+| `movies` | ~500k documents (~200MB) | [./utils/the-movies-dataset](./utils/the-movies-dataset) | [🔗](https://groq-test-suite.storage.googleapis.com/datasets/movies/movies-8807c4bb9fa31a9a6c21a4f7e41662d6.ndjson) |
 
 ### Schema
 
