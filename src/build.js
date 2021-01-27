@@ -9,7 +9,7 @@ const {doc} = require('prettier');
 
 const DATASETS = {
   movies:
-    'https://groq-test-suite.storage.googleapis.com/datasets/movies/movies-7d858de5318a6bc27d92a638899957ef.ndjson',
+    'https://groq-test-suite.storage.googleapis.com/datasets/movies/movies-8807c4bb9fa31a9a6c21a4f7e41662d6.ndjson',
 };
 
 function sha1(s) {
