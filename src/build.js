@@ -1,19 +1,19 @@
-const fs = require("fs");
-const path = require("path");
-const yaml = require("js-yaml");
-const { promisify } = require("util");
-const glob = promisify(require("glob"));
-const ndjson = require("ndjson");
-const crypto = require("crypto");
-const { doc } = require("prettier");
+const fs = require('fs');
+const path = require('path');
+const yaml = require('js-yaml');
+const {promisify} = require('util');
+const glob = promisify(require('glob'));
+const ndjson = require('ndjson');
+const crypto = require('crypto');
+const {doc} = require('prettier');
 
 const DATASETS = {
   movies:
-    "https://groq-test-suite.storage.googleapis.com/datasets/movies/movies-7d858de5318a6bc27d92a638899957ef.ndjson",
+    'https://groq-test-suite.storage.googleapis.com/datasets/movies/movies-7d858de5318a6bc27d92a638899957ef.ndjson',
 };
 
 function sha1(s) {
-  return crypto.createHash("sha1").update(s).digest("hex");
+  return crypto.createHash('sha1').update(s).digest('hex');
 }
 
 /**
@@ -86,7 +86,7 @@ function replaceVariables(query, variables) {
  * @param {string} query
  */
 function variableKeys(query) {
-  return [...query.matchAll(/~(\w+)~/g)].map((x) => x[1]);
+  return [...query.matchAll(/~(\w+)~/g)].map(x => x[1]);
 }
 
 function containsVariables(query) {
@@ -103,16 +103,16 @@ class IdGenerator {
     for (let i = 0; i < arguments.length; i++) {
       let value = arguments[i];
       if (value == null) continue;
-      let sanitized = value.toLowerCase().replace(/[^a-zA-Z0-9.]+/g, "-");
+      let sanitized = value.toLowerCase().replace(/[^a-zA-Z0-9.]+/g, '-');
       parts.push(sanitized);
     }
 
-    let baseId = parts.join("-");
+    let baseId = parts.join('-');
     let finalId = baseId;
     let nonce = 2;
 
     while (this.used.has(finalId)) {
-      finalId = baseId + "-" + nonce;
+      finalId = baseId + '-' + nonce;
       nonce++;
     }
 
@@ -133,10 +133,10 @@ class GeneratedDataset {
    * Adds a value to the generated dataset with an unique field.
    */
   addValue(v) {
-    let docId = this.idGenerator.generate("d");
-    let fieldId = this.idGenerator.generate("f").replace(/-/g, "_");
-    this.documents.push({ _id: docId, [fieldId]: v });
-    return { docId, fieldId };
+    let docId = this.idGenerator.generate('d');
+    let fieldId = this.idGenerator.generate('f').replace(/-/g, '_');
+    this.documents.push({_id: docId, [fieldId]: v});
+    return {docId, fieldId};
   }
 
   /**
@@ -158,18 +158,18 @@ class GeneratedDataset {
 
   entry() {
     return {
-      _id: "dataset-generated",
-      _type: "dataset",
-      name: "Generated",
-      url: "generated",
+      _id: 'dataset-generated',
+      _type: 'dataset',
+      name: 'Generated',
+      url: 'generated',
       documents: this.documents,
     };
   }
 
   ref() {
     return {
-      _type: "reference",
-      _ref: "dataset-generated",
+      _type: 'reference',
+      _ref: 'dataset-generated',
     };
   }
 }
@@ -189,14 +189,14 @@ class Builder {
   process(test, extra) {
     test = this.exportDocuments(test, extra);
 
-    let hasResult = test.hasOwnProperty("result");
+    let hasResult = test.hasOwnProperty('result');
     let isInvalid = test.valid === false;
     let hasQuery = test.query != null;
 
     if (hasQuery && (hasResult || isInvalid)) {
       if (test.variables != null) {
         for (let expanded of this.expandQueryVariables(test)) {
-          this.emitTest({ ...test, ...expanded }, extra);
+          this.emitTest({...test, ...expanded}, extra);
         }
       } else if (!containsVariables(test.query)) {
         this.emitTest(test, extra);
@@ -208,32 +208,29 @@ class Builder {
       for (let child of test.tests) {
         let name =
           test.name != null && child.name != null
-            ? test.name + " / " + child.name
+            ? test.name + ' / ' + child.name
             : child.name || test.name;
         let variables =
           test.variables != null || child.variables != null
             ? Object.assign({}, test.variables, child.variables)
             : null;
-        this.process(
-          { ...test, tests: null, ...child, name, variables },
-          extra
-        );
+        this.process({...test, tests: null, ...child, name, variables}, extra);
       }
     }
   }
 
   emitTest(test, extra) {
-    let _id = this.idGenerator.generate("test", test.name);
+    let _id = this.idGenerator.generate('test', test.name);
 
     let dataset = test.dataset || {
       _ref: this.createEmptyDataset(),
-      _type: "reference",
+      _type: 'reference',
     };
     let valid = test.valid != null ? test.valid : true;
 
     let entry = {
       _id,
-      _type: "test",
+      _type: 'test',
       dataset,
       name: test.name,
       query: test.query,
@@ -246,13 +243,13 @@ class Builder {
   }
 
   exportDocuments(test, extra) {
-    let { dataset, documents, ...rest } = test;
+    let {dataset, documents, ...rest} = test;
 
     let datasetId;
 
     if (documents) {
       datasetId = this.createDatasetFromDocuments(documents, extra);
-    } else if (typeof dataset == "string") {
+    } else if (typeof dataset == 'string') {
       if (!DATASETS.hasOwnProperty(dataset)) {
         throw new Error(`[${extra.filename}] Unknown dataset: ${dataset}`);
       }
@@ -260,18 +257,18 @@ class Builder {
     }
 
     if (datasetId != null) {
-      dataset = { _ref: datasetId, _type: "reference" };
+      dataset = {_ref: datasetId, _type: 'reference'};
     }
 
-    return { dataset, ...rest };
+    return {dataset, ...rest};
   }
 
   createDatasetFromDocuments(documents, extra) {
     let _id = this.idGenerator.generate(sha1(extra.filename));
     let entry = {
       _id,
-      _type: "dataset",
-      name: "inline",
+      _type: 'dataset',
+      name: 'inline',
       documents,
       url: `file://${extra.filename}`,
     };
@@ -284,7 +281,7 @@ class Builder {
       let _id = sha1(url);
       let entry = {
         _id,
-        _type: "dataset",
+        _type: 'dataset',
         name,
         url,
       };
@@ -295,14 +292,14 @@ class Builder {
   }
 
   createEmptyDataset() {
-    let url = "about:blank";
+    let url = 'about:blank';
 
     if (!this.datasetMapping.has(url)) {
       let _id = sha1(url);
       let entry = {
         _id,
-        _type: "dataset",
-        name: "empty",
+        _type: 'dataset',
+        name: 'empty',
         url,
         documents: [],
       };
@@ -329,7 +326,7 @@ class Builder {
     }
 
     for (let alt of eachCombination(variables, keys)) {
-      yield { query: replaceVariables(query, alt), result };
+      yield {query: replaceVariables(query, alt), result};
 
       // Nothing to generate at all
       if (!(genFetch || genFilter || genJoin)) continue;
@@ -411,8 +408,8 @@ class Builder {
   }
 }
 
-const BASEDIR = path.resolve(__dirname + "/../test");
-const PATTERN = BASEDIR + "/**/*.yml";
+const BASEDIR = path.resolve(__dirname + '/../test');
+const PATTERN = BASEDIR + '/**/*.yml';
 
 async function build(emitter) {
   let testPaths = await glob(PATTERN);
@@ -422,7 +419,7 @@ async function build(emitter) {
     let filename = path.relative(BASEDIR, testPath);
     let data = fs.readFileSync(testPath);
     let test = yaml.safeLoad(data);
-    let extra = { filename };
+    let extra = {filename};
     builder.process(test, extra);
   }
 
@@ -433,14 +430,14 @@ async function main() {
   let serialize = ndjson.serialize();
   serialize.pipe(process.stdout);
 
-  await build((entry) => {
+  await build(entry => {
     serialize.write(entry);
   });
 
   serialize.end();
 }
 
-main().catch((error) => {
+main().catch(error => {
   console.error(error);
   process.exit(1);
 });
