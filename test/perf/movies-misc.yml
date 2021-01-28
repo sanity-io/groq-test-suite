@@ -6,7 +6,102 @@ tests:
     query: |
       *[_id == "movie-54518"][0]
     result:
-      {"_id":"movie-54518","_type":"movie","adult":false,"budget":13000000,"cast":[{"character":"himself","person":{"_ref":"person-150810","_type":"reference"}},{"character":"herself","person":{"_ref":"person-76594","_type":"reference"}},{"character":"himself","person":{"_ref":"person-57108","_type":"reference"}},{"character":"himself","person":{"_ref":"person-120724","_type":"reference"}},{"character":"","person":{"_ref":"person-219545","_type":"reference"}}],"collection":null,"crew":[{"department":"Directing","job":"Director","person":{"_ref":"person-54507","_type":"reference"}},{"department":"Costume & Make-Up","job":"Costume Design","person":{"_ref":"person-1594602","_type":"reference"}}],"genres":[{"_ref":"genre-99","_type":"reference"},{"_ref":"genre-10402","_type":"reference"},{"_ref":"genre-10751","_type":"reference"}],"homepage":"http://www.justinbieberneversaynever.com/","imdb_id":"tt1702443","keywords":["manager","canada","pop singer","star","prayer","music competition","tour bus","aftercreditsstinger","duringcreditsstinger","justin bieber"],"original_language":"en","original_title":"Justin Bieber: Never Say Never","overview":"Tells the story of Justin Bieber, the kid from Canada with the hair, the smile and the voice: It chronicles his unprecedented rise to fame, all the way from busking in the streets of Stratford, Canada to putting videos on YouTube to selling out Madison Square Garden in New York as the headline act during the My World Tour from 2010. It features Usher, Scooter Braun, Ludacris, Sean Kingston, Antonio \"L.A.\" Reid, Boyz II Men, Miley Cyrus, Jaden Smith, Justin's family members and parts of his crew and huge fanbase in a mix of interviews and guest performances. It was released in 3D in theaters all around the world and is the highest grossing concert movie of all time, beating the previous record held by Michael Jackson's This Is It from 2009.","popularity":5.892524,"poster":{"_ref":"asset-1f7DaSujt536oVcLT2SlOoNcwma.jpg","_type":"reference"},"production_companies":[{"_ref":"company-7377","_type":"reference"},{"_ref":"company-7378","_type":"reference"},{"_ref":"company-7379","_type":"reference"}],"production_countries":["US"],"release_date":"2011-02-11","revenue":98441954,"runtime":105,"spoken_languages":["en"],"status":"Released","tagline":"Find out what's possible if you never give up.","title":"Justin Bieber: Never Say Never","video":false,"vote_average":4.8,"vote_count":156}
+      _id: movie-54518
+      _type: movie
+      _rev: 1199474b03f7e486d0e886d451fb5a50f33ec481
+      _createdAt: "2020-10-29T02:37:58+00:00"
+      _updatedAt: "2020-10-29T02:37:58+00:00"
+      adult: false
+      budget: 13000000
+      cast:
+      - character: himself
+        person:
+          _ref: person-150810
+          _type: reference
+      - character: herself
+        person:
+          _ref: person-76594
+          _type: reference
+      - character: himself
+        person:
+          _ref: person-57108
+          _type: reference
+      - character: himself
+        person:
+          _ref: person-120724
+          _type: reference
+      - character: ''
+        person:
+          _ref: person-219545
+          _type: reference
+      collection:
+      crew:
+      - department: Directing
+        job: Director
+        person:
+          _ref: person-54507
+          _type: reference
+      - department: Costume & Make-Up
+        job: Costume Design
+        person:
+          _ref: person-1594602
+          _type: reference
+      genres:
+      - _ref: genre-99
+        _type: reference
+      - _ref: genre-10402
+        _type: reference
+      - _ref: genre-10751
+        _type: reference
+      homepage: http://www.justinbieberneversaynever.com/
+      imdb_id: tt1702443
+      keywords:
+      - manager
+      - canada
+      - pop singer
+      - star
+      - prayer
+      - music competition
+      - tour bus
+      - aftercreditsstinger
+      - duringcreditsstinger
+      - justin bieber
+      original_language: en
+      original_title: 'Justin Bieber: Never Say Never'
+      overview: 'Tells the story of Justin Bieber, the kid from Canada with the hair, the
+        smile and the voice: It chronicles his unprecedented rise to fame, all the way from
+        busking in the streets of Stratford, Canada to putting videos on YouTube to selling
+        out Madison Square Garden in New York as the headline act during the My World Tour
+        from 2010. It features Usher, Scooter Braun, Ludacris, Sean Kingston, Antonio "L.A."
+        Reid, Boyz II Men, Miley Cyrus, Jaden Smith, Justin''s family members and parts
+        of his crew and huge fanbase in a mix of interviews and guest performances. It was
+        released in 3D in theaters all around the world and is the highest grossing concert
+        movie of all time, beating the previous record held by Michael Jackson''s This Is
+        It from 2009.'
+      popularity: 5.892524
+      poster:
+        _ref: asset-1f7DaSujt536oVcLT2SlOoNcwma.jpg
+        _type: reference
+      production_companies:
+      - _ref: company-7377
+        _type: reference
+      - _ref: company-7378
+        _type: reference
+      - _ref: company-7379
+        _type: reference
+      production_countries:
+      - US
+      release_date: '2011-02-11'
+      revenue: 98441954
+      runtime: 105
+      spoken_languages:
+      - en
+      status: Released
+      tagline: Find out what's possible if you never give up.
+      title: 'Justin Bieber: Never Say Never'
+      video: false
+      vote_average: 4.8
+      vote_count: 156
 
   - name: "Fetch selective by ID"
     query: |
