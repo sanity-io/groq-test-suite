@@ -118,29 +118,7 @@ tests:
   query: |
     ((*[_id=="arrays"][0].arrays[])[0][])[0]
   result: 11
-- name: "Nested operator"
-  query: |
-    *[_id=="arrays"][0].arrays[][]
-  result: [11, 12, 21, 22]
-- name: "Nested nested operator"
-  query: |
-    *[_id=="arrays"][0].arrays[][][]
-  result:
-  - null
-  - null
-  - null
-  - null
 
-- name: "Nested nested operator (on unbalanced array)"
-  query: |
-    *[_id=="arrays-unbalanced"][0].arrays[][][]
-  result:
-  - null
-  - null
-  - 211
-  - 212
-  - null
-  - null
 
 - name: "Nested array attribute"
   query: |
@@ -151,66 +129,29 @@ tests:
   - - [31, 32]
     - [41, 42]
 
-- name: "Nested operator on nested array attribute"
-  query: |
-    *[_id=="arrays-arrays"][0].arrays[][]
-  result:
-  - [11, 12]
-  - [21, 22]
-  - [31, 32]
-  - [41, 42]
-
-- name: "Nested nested operator on nested array attribute"
-  query: |
-    *[_id=="arrays-arrays"][0].arrays[][][]
-  result:
-  - 11
-  - 12
-  - 21
-  - 22
-  - 31
-  - 32
-  - 41
-  - 42
-
-
 - name: "Combined with element access"
   query: |
     *[_id=="arrays-arrays"][0].arrays~expr~
   tests:
+    - variables: {expr: "[1]"}
+      result:
+      - [31, 32]
+      - [41, 42]
+    - variables: {expr: "[][1]"}
+      result:
+      - [31, 32]
+      - [41, 42]
     - variables: {expr: "[1][]"}
       result:
       - [31, 32]
       - [41, 42]
-    - variables: {expr: "[1][][]"}
-      result:
-      - 31
-      - 32
-      - 41
-      - 42
-    - variables: {expr: "[][1]"}
-      result:
-      - [21, 22]
-      - [41, 42]
-    - variables: {expr: "[][1][]"}
-      result:
-      - 21
-      - 22
-      - 41
-      - 42
-    - variables: {expr: "[][][1]"}
-      result:
-      - 12
-      - 22
-      - 32
-      - 42
     - variables: {expr: "[1][1][]"}
       result:
       - 41
       - 42
-    - variables: {expr: "[1][][1]"}
+    - variables: {expr: "[1][1]"}
       result:
-      - 32
+      - 41
       - 42
 
 - name: "Applied to integer array"
@@ -224,22 +165,46 @@ tests:
 - name: "Nested operator on integer array"
   query: |
     *[_id=="integers"][0].integers[]~expr~
-  result:
-  - null
-  - null
-  - null
+
   tests:
-    - {variables: {expr: "[]"}}
+  - result:
+    - null
+    - null
+    - null
+    tests:
     - {variables: {expr: ".attr"}}
     - {variables: {expr: ".attr[]"}}
-    - {variables: {expr: "[0]"}}
+    - {variables: {expr: "->"}}
+    - {variables: {expr: "->[]"}}
+  
+  - result: null
+    tests:
     - {variables: {expr: "[0][0]"}}
+
+  - result:
+    - 1
+    - 2
+    - 3
+    tests:
+    - {variables: {expr: "[]"}}
     - {variables: {expr: "[0..2]"}}
     - {variables: {expr: "[0..2][]"}}
     - {variables: {expr: "[true]"}}
     - {variables: {expr: "[true][]"}}
-    - {variables: {expr: "->"}}
-    - {variables: {expr: "->[]"}}
+
+- name: "Nested operator on integer array"
+  query: |
+    *[_id=="integers"][0].integers[]~expr~
+  result:
+  - 1
+  - 2
+  - 3
+  tests:
+  - {variables: {expr: "[]"}}
+  - {variables: {expr: "[0..2]"}}
+  - {variables: {expr: "[0..2][]"}}
+  - {variables: {expr: "[true]"}}
+  - {variables: {expr: "[true][]"}}
 
 - name: "Objects"
   query: |
@@ -334,19 +299,8 @@ tests:
       - 22
     - variables: {expr: "[value >= 20]"}
       result:
-      - []
-      - - value: 21
-        - value: 22
-    - variables: {expr: "[value >= 20][]"}
-      result:
       - value: 21
       - value: 22
-    - variables: {expr: "[][value >= 20]"}
-      result:
-      - null
-      - null
-      - null
-      - null
 
 - name: "Objects objects, filtered after projection"
   query: |
@@ -386,44 +340,17 @@ tests:
         - value: 32
       - - value: 41
         - value: 42
-    - variables: {expr: "[][]"}
-      result:
-      - value: 11
-      - value: 12
-      - value: 21
-      - value: 22
-      - value: 31
-      - value: 32
-      - value: 41
-      - value: 42
-    - variables: {expr: "[][].value"}
-      result:
-      - 11
-      - 12
-      - 21
-      - 22
-      - 31
-      - 32
-      - 41
-      - 42
 
 - name: "Objects object arrays with filter"
   query: |
-    *[_id=="objects-object-arrays-object"][0].objects[].object.arrays[21 in @[].value][][].value
+    *[_id=="objects-object-arrays-object"][0].objects[].object.arrays[21 in @[].value]
   result:
-  - 21
-  - 22
+  - - value: 21
+    - value: 22
 
 - name: "Objects object arrays with filter and slice"
   query: |
-    *[_id=="objects-object-arrays-object"][0].objects[].object.arrays[21 in @[].value][][~idx~].value
-  tests:
-    - {variables: {idx: "0"}, result: [21]}
-    - {variables: {idx: "1"}, result: [22]}
-
-- name: "Objects object arrays with filter and slice"
-  query: |
-    (*[_id=="objects-object-arrays-object"][0].objects[].object.arrays[21 in @[].value])[0][0][~idx~].value
+    (*[_id=="objects-object-arrays-object"][0].objects[].object.arrays[21 in @[].value])[0][~idx~].value
   tests:
     - {variables: {idx: "0"}, result: 21}
     - {variables: {idx: "1"}, result: 22}
@@ -499,15 +426,6 @@ tests:
       - null
       - null
       - null
-    - variables: {expr: "arrays[][]"}
-      result:
-      - 11
-      - 12
-      - 21
-      - 22
-      - null
-      - null
-      - null
     - variables: {expr: "refs[]->objects[].value"}
       result:
       - null
@@ -537,7 +455,7 @@ tests:
 
 - name: "Objects ref; complicated"
   query: |
-    (*[_id=="objects-ref"][].objects)[][ref._ref=="refs"][].ref->refs[_ref=="objects"][]->objects[value in [1,3]][].value
+    (*[_id=="objects-ref"][].objects[])[ref._ref=="refs"][].ref->refs[_ref=="objects"][]->objects[value in [1,3]][].value
   result:
   - 1
   - 3
@@ -617,10 +535,8 @@ tests:
       - null
     - variables: {expr: "arrays[][]"}
       result:
-      - 11
-      - 12
-      - 21
-      - 22
+      - [11, 12]
+      - [21, 22]
       - null
       - null
     - variables: {expr: "arrays[1][]"}
@@ -629,10 +545,16 @@ tests:
       - 22
       - null
       - null
+    - variables: {expr: "arrays[1]"}
+      result:
+      - - 21
+        - 22
+      - null
+      - null
     - variables: {expr: "arrays[][1]"}
       result:
-      - 12
-      - 22
+      - - 21
+        - 22
       - null
       - null
     - variables: {expr: "arrays[1][1]"}
@@ -682,7 +604,7 @@ tests:
   query: |
     *[_id=="objects"][].objects[value == 2]
   result:
-  - - value: 2
+  - value: 2
 
 - name: "Objects object objects with filter"
   query: |

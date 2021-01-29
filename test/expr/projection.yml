@@ -248,11 +248,7 @@ tests:
     *[_id=="a"][0]{_id, others{_ref}}
   result:
     _id: a
-    others:
-    - _ref: e
-    - _ref: c
-    - _ref: b
-    - _ref: d
+    others: null
 
 - name: "Documents nested 2"
   query: |
@@ -285,8 +281,7 @@ tests:
 - name: "Documents, boolean LHS"
   query: |
     *[_id == "id"][0].v_object.v_boolean{"value": !@}
-  result:
-    value: false
+  result: null
 
 - name: "Literals"
   query: |
@@ -418,5 +413,5 @@ tests:
   query: |
     [[1, 2], [3, 4]][]{"values": @}
   result:
-  - {values: [1, 2]}
-  - {values: [3, 4]}
+  - null
+  - null
