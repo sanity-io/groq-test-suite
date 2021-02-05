@@ -3,14 +3,52 @@ documents:
 - _id: "a"
   _type: "doc"
   values: [1, 2, 3]
+  nested:
+    value: 41
+    values: [1, 2]
+  nestedArray:
+  - value: 10
+    values: [1, 2]
+  - value: 11
+    values: [3, 4]
 - _id: "b"
   _type: "doc"
   values: [1, 2, 3, 4]
+  nested:
+    value: 42
+    values: [1, 2, 3, 4]
+  nestedArray:
+  - value: 12
+    values: [1, 2, 3, 4]
+  - value: 13
+    values: [5, 6]
+- _id: "c"
+  _type: "otherDoc"
+  values: [1, 2, 3, 4, 5]
 
 tests:
-- query: |
-    count(*[_type == "doc"])
+- variables:
+    expr:
+    - '*[_type == "doc"]'
+    - '*[_type == "doc"]._id'
+    - '*[_type == "doc"].nested.value'
+    - '*[_type == "doc"].nested.values[0]'
+    - '*[_type == "doc"] { id }'
+  query: |
+    count(~expr~)
   result: 2
+
+- query: |
+    count(*[_type == "doc"].nestedArray[].value)
+  result: 4
+
+- query: |
+    count(*[_type == "doc"].nestedArray[].values)
+  result: 4
+
+- query: |
+    count(*[_type == "doc"].nestedArray[].values[])
+  result: 10
 
 - query: |
     count(*[_id == "a"][0].values)
