@@ -9,13 +9,13 @@ tests:
       genres[]-> { name },
       poster-> { path, width, height },
       collection-> { name },
-      cast {
+      cast[]{
         person->{
           name,
           profile-> { path }
         }
       },
-      crew {
+      crew[]{
         person->{
           name,
           profile-> { path }
