@@ -1,4 +1,6 @@
-name: "max() function"
+name: "avg() function"
+experimental: true
+
 documents:
 - _id: "a"
   _type: "doc"
@@ -19,21 +21,21 @@ documents:
 
 tests:
 - query: |
-    max([1, 2, 3])
-  result: 3
+    avg([1, 2, 3, 4])
+  result: 2.5
 
 - query: |
-    max([1, 2, 3, 4, null, "hello", true])
-  result: 4
+    avg([1, 2, 3, 4, null, "hello", true])
+  result: 2.5
 
 - query: |
-    max([])
+    avg([])
   result: null
 
 - query: |
-    max(*[_type == "doc"].value)
-  result: 99
+    avg(*[_type == "doc"].value)
+  result: 29.75
 
 - query: |
-    max(*[_type == "doc"].values[])
-  result: 9
+    avg(*[_type == "doc"].values[])
+  result: 5
