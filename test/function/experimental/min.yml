@@ -1,4 +1,6 @@
-name: "avg() function"
+name: "min() function"
+experimental: true
+
 documents:
 - _id: "a"
   _type: "doc"
@@ -19,21 +21,21 @@ documents:
 
 tests:
 - query: |
-    avg([1, 2, 3, 4])
-  result: 2.5
+    min([1, 2, 3])
+  result: 1
 
 - query: |
-    avg([1, 2, 3, 4, null, "hello", true])
-  result: 2.5
+    min([1, 2, 3, 4, null, "hello", true])
+  result: 1
 
 - query: |
-    avg([])
+    min([])
   result: null
 
 - query: |
-    avg(*[_type == "doc"].value)
-  result: 29.75
+    min(*[_type == "doc"].value)
+  result: -3
 
 - query: |
-    avg(*[_type == "doc"].values[])
-  result: 5
+    min(*[_type == "doc"].values[])
+  result: 1

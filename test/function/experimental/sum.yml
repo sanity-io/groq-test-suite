@@ -1,4 +1,6 @@
-name: "min() function"
+name: "sum() function"
+experimental: true
+
 documents:
 - _id: "a"
   _type: "doc"
@@ -19,21 +21,21 @@ documents:
 
 tests:
 - query: |
-    min([1, 2, 3])
-  result: 1
+    sum([1, 2, 3, 4])
+  result: 10
 
 - query: |
-    min([1, 2, 3, 4, null, "hello", true])
-  result: 1
+    sum([1, 2, 3, 4, null, "hello", true])
+  result: 10
 
 - query: |
-    min([])
+    sum([])
   result: null
 
 - query: |
-    min(*[_type == "doc"].value)
-  result: -3
+    sum(*[_type == "doc"].value)
+  result: 119
 
 - query: |
-    min(*[_type == "doc"].values[])
-  result: 1
+    sum(*[_type == "doc"].values[])
+  result: 45
