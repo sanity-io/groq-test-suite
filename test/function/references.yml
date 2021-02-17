@@ -109,6 +109,49 @@ tests:
     - '1, null, ["c"], ["james-cameron"]'
     - '1, null, "c", 5 => 7, ["james-cameron"]'
 
+- name: "With parent"
+  query: |
+    *[_id == "james-cameron"]{"refs": *[references(^._id)]._id}[0]
+  result:
+    refs:
+    - "aliens"
+
+- name: "With parent in array"
+  query: |
+    *[_id == "james-cameron"]{"refs": *[references(~args~)]._id}[0]
+  result:
+    refs:
+    - "aliens"
+  variables:
+    args:
+    - '^._id'
+    - '[^._id]'
+    - '123, ^._id'
+    - '123, [^._id]'
+
+- name: "With parent and constant"
+  query: |
+    *[_id == "james-cameron"]{"refs": *[references(~args~)]._id}[0]
+  result:
+    refs:
+    - "a"
+    - "aliens"
+  variables:
+    args:
+    - '^._id, "c"'
+    - '[^._id], "c"'
+    - '[^._id], ["c"]'
+    - '^._id, ["c"]'
+    - '[123, ^._id], "c"'
+
+- name: "Nested two levels"
+  query: |
+    *[references(~args~)][]._id
+  variables:
+    args:
+    - '[["c"]]'
+  result: []
+
 - name: "Subquery"
   query: |
     *[references(*[_type == "moviedb"][]._id)][]._id|order(@)
