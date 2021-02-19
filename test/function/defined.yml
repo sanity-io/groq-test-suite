@@ -7,6 +7,12 @@ documents:
   v_arr: []
 
 tests:
+- name: "With namespace"
+  experimental: true
+  query: |
+    global::defined('null')
+  result: false
+
 - result: false
   query: |
     defined(~expr~)

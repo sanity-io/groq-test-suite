@@ -1,6 +1,12 @@
 name: "dateTime() function"
 
 tests:
+- name: "With namespace"
+  experimental: true
+  query: |
+    global::dateTime("2002-10-02T12:34:56Z")
+  result: "2002-10-02T12:34:56Z"
+
 - name: "Basic"
   query: |
     dateTime("2002-10-02T12:34:56Z")

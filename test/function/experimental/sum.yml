@@ -20,6 +20,11 @@ documents:
   values: []
 
 tests:
+- name: "With namespace"
+  query: |
+    global::sum([])
+  result: null
+
 - query: |
     sum([1, 2, 3, 4])
   result: 10

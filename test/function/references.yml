@@ -75,6 +75,13 @@ documents:
       _ref: "sigourney-weaver"
 
 tests:
+- name: "With namespace"
+  experimental: true
+  query: |
+    *[global::references("b")]{name}
+  result:
+  - name: "A"
+
 - name: "Basic"
   query: |
     *[references(~id~)]{name}

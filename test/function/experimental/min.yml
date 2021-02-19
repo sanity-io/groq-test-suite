@@ -20,6 +20,11 @@ documents:
   values: []
 
 tests:
+- name: "With namespace"
+  query: |
+    global::min([])
+  result: null
+
 - query: |
     min([1, 2, 3])
   result: 1

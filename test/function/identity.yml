@@ -2,6 +2,11 @@ name: "identity() function"
 result: true
 
 tests:
+- name: "With namespace"
+  experimental: true
+  query: |
+    defined(global::identity())
+
 - name: "defined"
   query: |
     defined(identity())

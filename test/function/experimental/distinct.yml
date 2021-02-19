@@ -56,6 +56,11 @@ documents:
     mixeds: [false, 32, "c"]
 
 tests:
+- name: "With namespace"
+  query: |
+    global::distinct([])
+  result: []
+
 - query: |
     distinct([1, 2, 3, 3, 3, 3, 4, 2, 9, 3]) | order(@)
   result: [1, 2, 3, 4, 9]
