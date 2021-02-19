@@ -20,6 +20,11 @@ documents:
   values: []
 
 tests:
+- name: "With namespace"
+  query: |
+    global::max([])
+  result: null
+
 - query: |
     max([1, 2, 3])
   result: 3

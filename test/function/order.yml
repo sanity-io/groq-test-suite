@@ -101,6 +101,12 @@ documents:
   tertiary: 2
 
 tests:
+- name: "With namespace"
+  experimental: true
+  query: |
+    *[_type=="order-boolean"]|global::order(value asc)[].value
+  result: [false, true]
+
 - name: "Document values"
   query: |
     *[_type=="~type~"]|order(value ~dir~)[].value

@@ -10,6 +10,12 @@ documents:
   str: "😀"
 
 tests:
+- name: "With namespace"
+  experimental: true
+  query: |
+    global::length([1])
+  result: 1
+
 - query: |
     length(*[_id == "a"][0].str)
   result: 3

@@ -18,6 +18,12 @@ documents:
   v_true: true
 
 tests:
+- name: "With namespace"
+  experimental: true
+  query: |
+    global::string(true)
+  result: "true"
+
 - query: |
     string(true)
   result: "true"

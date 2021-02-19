@@ -20,6 +20,11 @@ documents:
   values: []
 
 tests:
+- name: "With namespace"
+  query: |
+    global::avg([1, 2, 3, 4])
+  result: 2.5
+
 - query: |
     avg([1, 2, 3, 4])
   result: 2.5

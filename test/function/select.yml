@@ -11,6 +11,12 @@ documents:
   age: 20
 
 tests:
+- name: "With namespace"
+  experimental: true
+  query: |
+    global::select("a", "b")
+  result: null
+
 - name: "From documents"
   query: |
     *[_type == "person"]{"category": select(~args~)}

@@ -27,6 +27,12 @@ documents:
   values: [1, 2, 3, 4, 5]
 
 tests:
+- name: "With namespace"
+  experimental: true
+  query: |
+    global::count(*[_type == "doc"])
+  result: 2
+
 - variables:
     expr:
     - '*[_type == "doc"]'
