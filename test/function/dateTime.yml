@@ -6,6 +6,11 @@ tests:
     dateTime("2002-10-02T12:34:56Z")
   result: "2002-10-02T12:34:56Z"
 
+- name: "Basic with idempotency"
+  query: |
+    dateTime(dateTime("2002-10-02T12:34:56Z"))
+  result: "2002-10-02T12:34:56Z"
+
 - name: "Fractional seconds"
   query: |
     dateTime("2002-10-02T12:34:56.001Z")
