@@ -1,0 +1,19 @@
+dataset: movies
+name: "perf / movies"
+
+tests:
+- name: "Projection, then filter"
+  query: |
+    *[_type == "movie"]{_id, "min": runtime}[min > 100][0..10]._id
+  result:
+  - "movie-100"
+  - "movie-10000"
+  - "movie-100010"
+  - "movie-10002"
+  - "movie-10003"
+  - "movie-100032"
+  - "movie-10004"
+  - "movie-100042"
+  - "movie-100122"
+  - "movie-10013"
+  - "movie-10015"
