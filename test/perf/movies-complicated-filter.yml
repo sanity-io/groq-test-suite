@@ -1,0 +1,30 @@
+dataset: movies
+name: "perf / movies"
+
+tests:
+- name: "Complicated filter"
+  query: |
+    *[_type == "movie" && (runtime > 260 || spoken_languages[0] == "nb")]{_id, title}[0..10]
+  result: 
+  - _id: "movie-100490"
+    title: "Scarlett"
+  - _id: "movie-101185"
+    title: "The Far Pavilions"
+  - _id: "movie-10341"
+    title: "Until the End of the World"
+  - _id: "movie-108419"
+    title: "Empire"
+  - _id: "movie-109991"
+    title: "Quiet Flows the Don"
+  - _id: "movie-110147"
+    title: "The 10th Kingdom"
+  - _id: "movie-111109"
+    title: "Century of Birthing"
+  - _id: "movie-114796"
+    title: "Tin Man"
+  - _id: "movie-11659"
+    title: "The Best of Youth"
+  - _id: "movie-117691"
+    title: "Gangs of Wasseypur"
+  - _id: "movie-118309"
+    title: "John Adams"

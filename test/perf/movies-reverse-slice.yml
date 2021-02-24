@@ -1,0 +1,31 @@
+dataset: movies
+name: "perf / movies"
+
+tests:
+- name: "Reverse slice"
+  query: |
+    *[_type == "movie"]|order(title)[-10..-1] {
+      _id,
+      title
+    }
+  result:
+  - _id: "movie-420481"
+    title: "Путь к себе"
+  - _id: "movie-246438"
+    title: "Семь кабинок"
+  - _id: "movie-270908"
+    title: "Совершенно серьезно"
+  - _id: "movie-27942"
+    title: "Убить дракона"
+  - _id: "movie-44839"
+    title: "Юленька"
+  - _id: "movie-388182"
+    title: "هیچ کجا هیچ کس"
+  - _id: "movie-120249"
+    title: "‘Rameau’s Nephew’ by Diderot (Thanx to Dennis Young) by Wilma Schoen"
+  - _id: "movie-14670"
+    title: "’Round Midnight"
+  - _id: "movie-109380"
+    title: "…And the Fifth Horseman Is Fear"
+  - _id: "movie-252874"
+    title: "ファンタスティポ"
