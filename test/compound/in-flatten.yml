@@ -1,0 +1,55 @@
+name: "In flatten"
+
+documents:
+- _id: "a"
+  _type: "test"
+  list:
+  - {val: 1}
+  - {val: 2}
+  - {val: "a"}
+  - {val: "b"}
+
+- _id: "b"
+  _type: "test"
+  list:
+    val: "b"
+
+- _id: "c"
+  _type: "test"
+  list:
+  - "b"
+
+- _id: "d"
+  _type: "test"
+  list:
+  - val:
+    - val2: 1
+    - val2: 2
+  - val:
+    - val2: "a"
+    - val2: "b"
+
+tests:
+- name: "One level"
+  query: |
+    *[_type == "test" && ~val~ in list[].val]._id
+  variables:
+    val:
+    - '1'
+    - '2'
+    - '"a"'
+    - '"b"'
+  result:
+  - "a"
+
+- name: "Two levels"
+  query: |
+    *[_type == "test" && ~val~ in list[].val[].val2]._id
+  variables:
+    val:
+    - '1'
+    - '2'
+    - '"a"'
+    - '"b"'
+  result:
+  - "d"
