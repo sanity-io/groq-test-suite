@@ -98,3 +98,40 @@ tests:
       - variables: {data: "true"}
       - variables: {data: "{}"}
       - variables: {data: "*[false][0]"}
+
+  - name: "Over documents"
+    documents:
+    - _id: "a"
+      _type: "test"
+    - _id: "b"
+      _type: "test"
+    - _id: "c"
+      _type: "test"
+    - _id: "d"
+      _type: "test"
+
+    query: |
+      *[_type == "test"][~slice~]._id
+
+    # These tests try to exercise edge cases mainly
+    tests:
+      - {variables: {slice: "0...1"}, result: ["a"]}
+      - {variables: {slice: "0...3"}, result: ["a", "b", "c"]}
+      - {variables: {slice: "0...10"}, result: ["a", "b", "c", "d"]}
+
+      - {variables: {slice: "1...1"}, result: []}
+      - {variables: {slice: "2..1"}, result: []}
+      - {variables: {slice: "10..1"}, result: []}
+      - {variables: {slice: "1...10"}, result: ["b", "c", "d"]}
+
+      - {variables: {slice: "1..-1"}, result: ["b", "c", "d"]}
+      - {variables: {slice: "1...-1"}, result: ["b", "c"]}
+      - {variables: {slice: "10...-1"}, result: []}
+      - {variables: {slice: "2...-1"}, result: ["c"]}
+      - {variables: {slice: "3...-1"}, result: []}
+
+      - {variables: {slice: "-10...3"}, result: ["a", "b", "c"]}
+      - {variables: {slice: "-3...3"}, result: ["b", "c"]}
+
+      - {variables: {slice: "-10..-1"}, result: ["a", "b", "c", "d"]}
+      - {variables: {slice: "-100..-10"}, result: []}
