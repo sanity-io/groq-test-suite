@@ -4,8 +4,8 @@ name: "perf / movies"
 tests:
 - name: "Semijoin, disjunction"
   query: |
-    *[_type == "movie"
-      && collection->poster->width >= 3840
+    *[_type == "movie"][
+      collection->poster->width >= 3840
       || "Documentary" in genres[]->name
     ][0..100] {
       _id
