@@ -1,0 +1,34 @@
+name: "In flatten"
+
+documents:
+- _id: "a"
+  _type: "test"
+  list:
+  - {val: 1}
+  - {val: 2}
+  - {val: "a"}
+  - {val: "b"}
+
+- _id: "b"
+  _type: "test"
+  list:
+    val:
+     "b"
+
+- _id: "c"
+  _type: "test"
+  list:
+  - "b"
+
+tests:
+- name: "Filtering"
+  query: |
+    *[_type == "test" && ~val~ in list[].val]._id
+  variables:
+    val:
+    - '1'
+    - '2'
+    - '"a"'
+    - '"b"'
+  result:
+  - "a"
