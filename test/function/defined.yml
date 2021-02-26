@@ -10,7 +10,7 @@ tests:
 - name: "With namespace"
   experimental: true
   query: |
-    global::defined('null')
+    global::defined(null)
   result: false
 
 - result: false
