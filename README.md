@@ -179,6 +179,13 @@ The rules of how the tests are generated are as follows:
   You can use `standloneVariables: ["var1"]` in case there are some variables which are not standalone.
 - Set `genFilter: false` or `genFetch: false` to disable the generated tests.
 
+### Features
+
+A test can specify a list of named features that it requires, which a test runner can use to skip tests or enable specific modes. Currently defined features:
+
+- `experimentalFunctions`: Experimental functions that are not part of the GROQ spec.
+- `namespaces`: Namespace support for functions.
+- `scoring`: Support for scoring with `score()` and `boost()`.
 
 ### Specifying datasets
 

@@ -227,7 +227,7 @@ class Builder {
       _type: 'reference',
     }
     let valid = test.valid != null ? test.valid : true
-    let experimental = test.experimental || false
+    let features = test.features || []
 
     let entry = {
       _id,
@@ -237,7 +237,7 @@ class Builder {
       query: test.query,
       result: valid ? test.result : null,
       valid,
-      experimental,
+      features,
       ...extra,
     }
 

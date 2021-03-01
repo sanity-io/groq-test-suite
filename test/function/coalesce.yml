@@ -2,7 +2,8 @@ name: "coalesce() function"
 
 tests:
 - name: "With namespace"
-  experimental: true
+  features:
+  - namespaces
   query: |
     global::coalesce()
   result: null

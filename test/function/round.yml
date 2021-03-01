@@ -2,7 +2,8 @@ name: "round() function"
 
 tests:
 - name: "With namespace"
-  experimental: true
+  features:
+  - namespaces
   query: |
     global::round(3.14)
   result: 3

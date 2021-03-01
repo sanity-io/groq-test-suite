@@ -11,7 +11,8 @@ documents:
 
 tests:
 - name: "With namespace"
-  experimental: true
+  features:
+  - namespaces
   query: |
     global::length([1])
   result: 1
