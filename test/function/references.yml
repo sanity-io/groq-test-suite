@@ -76,7 +76,8 @@ documents:
 
 tests:
 - name: "With namespace"
-  experimental: true
+  features:
+  - namespaces
   query: |
     *[global::references("b")]{name}
   result:

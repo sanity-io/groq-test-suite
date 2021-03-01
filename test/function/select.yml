@@ -12,7 +12,8 @@ documents:
 
 tests:
 - name: "With namespace"
-  experimental: true
+  features:
+  - namespaces
   query: |
     global::select("a", "b")
   result: null

@@ -8,7 +8,8 @@ documents:
 
 tests:
 - name: "With namespace"
-  experimental: true
+  features:
+  - namespaces
   query: |
     global::defined(null)
   result: false

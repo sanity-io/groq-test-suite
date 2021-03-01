@@ -1,5 +1,6 @@
 name: "min() function"
-experimental: true
+features:
+- experimentalFunctions
 
 documents:
 - _id: "a"
