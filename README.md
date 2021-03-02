@@ -187,6 +187,37 @@ A test can specify a list of named features that it requires, which a test runne
 - `namespaces`: Namespace support for functions.
 - `scoring`: Support for scoring with `score()` and `boost()`.
 
+### Scores
+
+Since the scoring algorithm used by `score()` is currently implementation-defined, tests cannot contain the literal score. Instead, tests must use an ordinal number to represent the _position_ among the total list of result scores. The test runner, when comparing results, should replace the actual scores with this algorithm:
+
+* Take all encountered scores in the results
+* Remove duplicates
+* Sort them
+* Replace each score with an attribute `_pos` containing the position in the list
+
+For example: If a query returns:
+
+```yaml
+- {id: "a", _score: 1.0}
+- {id: "b", _score: 1.2}
+- {id: "c", _score: 1.2}
+- {id: "d", _score: 1.4}
+```
+
+then these should be remapped as:
+
+```yaml
+- {id: "a", _pos: 1}
+- {id: "b", _pos: 2}
+- {id: "c", _pos: 2}
+- {id: "d", _pos: 3}
+```
+
+…and this is what the test needs to test equality against.
+
+In other words, any value with equal score is given the same ordinal value.
+
 ### Specifying datasets
 
 Tests can either declare datasets inline (using the `documents` property) or refer to an external dataset by name:
