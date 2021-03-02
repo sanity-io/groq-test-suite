@@ -1,0 +1,122 @@
+# See readme for how to test equality on scores.
+
+name: "score() function"
+
+features:
+- scoring
+
+documents:
+- _id: "a"
+  _type: "doc"
+  value: 1
+  text: "hello"
+- _id: "b"
+  _type: "doc"
+  value: 2
+  text: "Hello world"
+- _id: "c"
+  _type: "doc"
+  value: 3
+  text: "Thanks for all the fish"
+- _id: "d"
+  _type: "doc"
+  value: 4
+  text: "Fish, fish, just fish"
+
+tests:
+- name: Illegal use
+  query: ~expr~
+  valid: false
+  variables:
+    expr:
+    - "*{foo} | score(a == 1)"
+    - "*[0] | score(a == 1)"
+    - "score(a == 1)"
+
+- name: Equality
+  features:
+  - scoring
+  query: |
+    ~expr~
+      | score(value == 1)
+      | order(_score desc, _id) {_id, _score}
+  variables:
+    expr:
+    - "*"
+    - "*[0..-1]"
+    - "*[_type == 'doc']"
+  result:
+  - _id: a
+    _pos: 1
+  - _id: b
+    _pos: 2
+  - _id: c
+    _pos: 2
+  - _id: d
+    _pos: 2
+
+- name: Inequality
+  features:
+  - scoring
+  query: |
+    ~expr~
+      | score(value != 1)
+      | order(_score desc, _id) {_id, _score}
+  variables:
+    expr:
+    - "*"
+    - "*[0..-1]"
+    - "*[_type == 'doc']"
+  result:
+  - _id: b
+    _pos: 1
+  - _id: c
+    _pos: 1
+  - _id: d
+    _pos: 1
+  - _id: a
+    _pos: 2
+
+- name: Text match
+  features:
+  - scoring
+  query: |
+    ~expr~
+      | score(text match "fish")
+      | order(_score desc, _id) {_id, _score}
+  variables:
+    expr:
+    - "*"
+    - "*[0..-1]"
+    - "*[_type == 'doc']"
+  result:
+  - _id: d
+    _pos: 1
+  - _id: c
+    _pos: 2
+  - _id: a
+    _pos: 3
+  - _id: b
+    _pos: 3
+
+- name: Negated text match
+  features:
+  - scoring
+  query: |
+    ~expr~
+      | score(!(text match "fish"))
+      | order(_score desc, _id) {_id, _score}
+  variables:
+    expr:
+    - "*"
+    - "*[0..-1]"
+    - "*[_type == 'doc']"
+  result:
+  - _id: a
+    _pos: 1
+  - _id: b
+    _pos: 1
+  - _id: c
+    _pos: 2
+  - _id: d
+    _pos: 2
