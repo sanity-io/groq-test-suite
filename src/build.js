@@ -441,7 +441,6 @@ async function main() {
   let outStream = fs.createWriteStream(outFile)
   serialize.pipe(outStream)
 
-
   await build(argv.pattern ? path.join(BASEDIR, argv.pattern) : PATTERN, (entry) => {
     serialize.write(entry)
   })
