@@ -55,8 +55,11 @@ Use the provided `build` script to compile the test suite:
 # Install dependencies
 $ yarn
 
-# Build the test suite (to suite.ndjson)
-$ yarn build
+# Build the test suite 
+$ yarn build # outputs to suite.ndjson
+$ yarn build --stdout # outputs to stdout
+$ yarn build --out=custom.ndjson # outputs to custom.ndjson
+$ yarn build --pattern='**/misc.yml' # Only build for files which matched the pattern.
 ```
 
 ## Structure

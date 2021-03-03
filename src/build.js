@@ -6,7 +6,11 @@ const glob = promisify(require('glob'))
 const ndjson = require('ndjson')
 const crypto = require('crypto')
 const {doc} = require('prettier')
+const parseArgs = require('minimist')
 
+const OUTFILE = "suite.ndjson"
+const BASEDIR = path.resolve(__dirname + '/../test')
+const PATTERN = path.join(BASEDIR, '**/*.yml')
 const DATASETS = {
   movies:
     'https://groq-test-suite.storage.googleapis.com/datasets/movies/movies-8807c4bb9fa31a9a6c21a4f7e41662d6.ndjson',
@@ -410,11 +414,8 @@ class Builder {
   }
 }
 
-const BASEDIR = path.resolve(__dirname + '/../test')
-const PATTERN = BASEDIR + '/**/*.yml'
-
-async function build(emitter) {
-  let testPaths = await glob(PATTERN)
+async function build(pattern, emitter) {
+  let testPaths = await glob(pattern)
   let builder = new Builder(emitter)
 
   for (let testPath of testPaths) {
@@ -429,10 +430,19 @@ async function build(emitter) {
 }
 
 async function main() {
+  let argv = parseArgs(process.argv.slice(2))
   let serialize = ndjson.serialize()
-  serialize.pipe(process.stdout)
 
-  await build((entry) => {
+  if (argv.stdout) {
+    serialize.pipe(process.stdout)
+  }
+
+  let outFile = argv.out ? argv.out : OUTFILE
+  let outStream = fs.createWriteStream(outFile)
+  serialize.pipe(outStream)
+
+
+  await build(argv.pattern ? path.join(BASEDIR, argv.pattern) : PATTERN, (entry) => {
     serialize.write(entry)
   })
 
