@@ -44,7 +44,8 @@ tests:
   variables:
     expr:
     - "*"
-    - "*[0..-1]"
+    # TODO: Enable when supported
+    #- "*[0..-1]"
     - "*[_type == 'doc']"
   result:
   - _id: c
@@ -66,7 +67,8 @@ tests:
   variables:
     expr:
     - "*"
-    - "*[0..-1]"
+    # TODO: Enable when supported
+    #- "*[0..-1]"
     - "*[_type == 'doc']"
   result:
   - _id: b
