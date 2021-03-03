@@ -1,0 +1,111 @@
+name: "PT Text"
+
+features:
+  - namespaces
+  - experimentalFunctions
+
+documents:
+  - _id: "block-array-no-children"
+    _type: "pt"
+    body:
+      [
+        {
+          "_type": "block",
+          "style": "normal",
+          "markDefs": []
+        },
+        {
+          "_type": "block",
+          "style": "strong"
+        }
+      ]
+  - _id: "block-object-no-children"
+    _type: "pt"
+    body:
+      {
+        "_type": "block",
+        "style": "normal",
+        "markDefs": []
+      }
+  - _id: "block-array-invalid-blocks"
+    _type: "pt"
+    body:
+      [
+        {
+          "_key": "3d37e687e771",
+          "_type": "image"
+        },
+        {
+          "_key": "3d37e687e772",
+          "_type": "div"
+        },
+      ]
+  - _id: "block-array-invalid-blocks"
+    _type: "pt"
+    body:
+      [
+        {
+          "_key": "3d37e687e771",
+          "_type": "image"
+        },
+        {
+          "_key": "3d37e687e772",
+          "_type": "div"
+        },
+        {
+          "_key": "926cc8c2792a",
+          "_type": "block",
+          "children": [
+            {
+              "_key": "7e1ed1a9711f",
+              "_type": "image",
+              "text": "Heading"
+            },
+            {
+              "_key": "1e210235143e",
+              "_type": "image",
+              "text": " 1"
+            }
+          ],
+          "markDefs": [],
+          "style": "h1"
+        }
+      ]
+  - _id: "block-array-multiple-children"
+    _type: "pt"
+    body:
+      [
+        {
+          "_type": "block",
+          "style": "normal",
+          "children": [{
+            "_type": "span",
+            "marks": [],
+            "text": "This is one of her most famous portraits:"
+          }],
+          "markDefs": []
+        },
+        {
+          "_type": "block",
+          "style": "normal",
+          "children": [{
+            "_type": "span",
+            "marks": [],
+            "text": "Photo by:"
+          },
+            {
+              "_type": "span",
+              "marks": ["emphasis"],
+              "text": "Annie Leibovitz"
+            }
+          ]
+        }
+      ]
+tests:
+  - query: |
+      *[_type == "pt"]{"body": pt::text(body)}
+    result:
+    - "body":
+    - "body": "This is one of her most famous portraits:\nPhoto by:Annie Leibovitz"
+    - "body": "\n"
+    - "body": ""
