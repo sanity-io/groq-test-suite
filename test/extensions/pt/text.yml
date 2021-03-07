@@ -1,111 +1,426 @@
-name: "PT Text"
+name: "portable text"
 
 features:
   - namespaces
   - experimentalFunctions
 
 documents:
-  - _id: "block-array-no-children"
+  - _id: "pt-array-block-multiple-children"
     _type: "pt"
     body:
       [
         {
           "_type": "block",
           "style": "normal",
-          "markDefs": []
+          "children": [ {
+            "_type": "span",
+            "marks": [ ],
+            "text": "This is child in a block."
+          } ],
+          "markDefs": [ ]
+        },
+        {
+          "_type": "block",
+          "style": "normal",
+          "children": [ {
+            "_type": "span",
+            "marks": [ ],
+            "text": "This is child in another block."
+          },
+            {
+              "_type": "span",
+              "marks": [ "emphasis" ],
+              "text": "This is another child in another block."
+            }
+          ]
+        }
+      ]
+  - _id: "pt-array-block-no-children"
+    _type: "pt"
+    body:
+      [
+        {
+          "_key": "3d37e687e771",
+          "_type": "image"
+        },
+        {
+          "_key": "3d37e687e772",
+          "_type": "div"
+        },
+      ]
+  - _id: "pt-array-custom-block-nested-text"
+    _type: "pt"
+    body:
+      [
+        {
+          "_key": "3d37e687e771",
+          "_type": "image"
+        },
+        {
+          "_key": "3d37e687e772",
+          "_type": "div"
+        },
+        {
+          "_type": "customBlock",
+          "children": [
+            {
+              "_type": "span",
+              "text": "This is a custom block."
+            },
+            {
+              "_type": "span",
+              "tag": {
+                "text": "This is a footnote."
+              }
+            }
+          ]
+        }
+      ]
+  - _id: "pt-array-custom-block-no-child"
+    _type: "pt"
+    body:
+      [
+        {
+          "_key": "3d37e687e771",
+          "_type": "image"
+        },
+        {
+          "_key": "3d37e687e772",
+          "_type": "div"
+        },
+        {
+          "_type": "customBlock",
+          "children": [ ]
+        }
+      ]
+  - _id: "pt-array-custom-block-no-children"
+    _type: "pt"
+    body:
+      [
+        {
+          "_type": "block",
+          "style": "normal",
+          "markDefs": [ ]
         },
         {
           "_type": "block",
           "style": "strong"
         }
       ]
-  - _id: "block-object-no-children"
+  - _id: "pt-array-custom-block-with-children"
+    _type: "pt"
+    body:
+      [
+        {
+          "_key": "3d37e687e771",
+          "_type": "image"
+        },
+        {
+          "_key": "3d37e687e772",
+          "_type": "div"
+        },
+        {
+          "_type": "customBlock",
+          "children": [
+            {
+              "_type": "span",
+              "text": "This is a custom block."
+            },
+            {
+              "_type": "footnote",
+              "text": "This is a footnote."
+            }
+          ]
+        }
+      ]
+  - _id: "pt-array-nested-text"
+    _type: "pt"
+    body:
+      [
+        {
+          "_type": "block",
+          "_key": "452888523a25",
+          "style": "normal",
+          "markDefs": [ ],
+          "children": [
+            {
+              "text": "This is code text.",
+              "_type": "span",
+              "_key": "c1764a3dd149",
+              "marks": [
+                  "code"
+              ]
+            },
+            {
+              "text": " ",
+              "_type": "span",
+              "_key": "7e46f1751ee8",
+              "marks": [ ]
+            },
+            {
+              "text": "This is underline text.",
+              "_type": "span",
+              "_key": "ca05bc246bf4",
+              "marks": [
+                  "underline"
+              ]
+            },
+            {
+              "text": " ",
+              "_type": "span",
+              "_key": "a8d88c7eb04f",
+              "marks": [ ]
+            },
+            {
+              "text": "This is strikethrough text.",
+              "_type": "span",
+              "_key": "0600ab421338",
+              "marks": [
+                  "strike-through"
+              ]
+            }
+          ]
+        },
+        {
+          "_type": "block",
+          "_key": "2fafe368ac67",
+          "style": "normal",
+          "markDefs": [ ],
+          "children": [
+            {
+              "text": "Item 1",
+              "_type": "span",
+              "_key": "14ac0dca0bb4",
+              "marks": [
+                  "strong"
+              ]
+            },
+            {
+              "text": " in bold.",
+              "_type": "span",
+              "_key": "6dec2939ed9f",
+              "marks": [ ]
+            }
+          ],
+          "level": 1,
+          "listItem": "number"
+        },
+        {
+          "_type": "block",
+          "_key": "fa94e605b924",
+          "style": "normal",
+          "markDefs": [ ],
+          "children": [
+            {
+              "text": "Item 2",
+              "_type": "span",
+              "_key": "398da011eed3",
+              "marks": [
+                  "em"
+              ]
+            },
+            {
+              "text": " in italic.",
+              "_type": "span",
+              "_key": "e120e4da5294",
+              "marks": [ ]
+            }
+          ],
+          "level": 1,
+          "listItem": "number"
+        },
+        {
+          "_type": "block",
+          "_key": "24a05762d0be",
+          "style": "h6",
+          "markDefs": [
+            {
+              "_type": "link",
+              "_key": "a0223a450357",
+              "href": "https://sanity.io"
+            }
+          ],
+          "children": [
+            {
+              "text": "Heading 6 with a ",
+              "_type": "span",
+              "_key": "cae7582b2079",
+              "marks": [ ]
+            },
+            {
+              "text": "link",
+              "_type": "span",
+              "_key": "e6758ad42732",
+              "marks": [
+                  "a0223a450357"
+              ]
+            },
+            {
+              "text": ".",
+              "_type": "span",
+              "_key": "f0450575816e",
+              "marks": [ ]
+            }
+          ]
+        },
+        {
+          "_key": "b70f2f0077e8",
+          "_type": "block",
+          "style": "normal",
+          "markDefs": [ ],
+          "children": [
+            {
+              "text": "",
+              "_type": "span",
+              "_key": "818d2df25d4f",
+              "marks": [ ]
+            },
+            {
+              "_type": "footnote",
+              "_key": "2794b12fa584",
+              "footnote": [
+                {
+                  "_type": "block",
+                  "_key": "96a1ce9654c6",
+                  "style": "normal",
+                  "markDefs": [ ],
+                  "children": [
+                    {
+                      "_type": "span",
+                      "_key": "fbd1109cf3dd",
+                      "text": "This is a ",
+                      "marks": [ ]
+                    },
+                    {
+                      "_type": "span",
+                      "_key": "e4faf6be73a2",
+                      "text": "footnote",
+                      "marks": [
+                          "strong"
+                      ]
+                    },
+                    {
+                      "_type": "span",
+                      "_key": "e577c516d894",
+                      "text": " in bold.",
+                      "marks": [ ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "text": "",
+              "_key": "5cae2f162d2e",
+              "_type": "span",
+              "marks": [ ]
+            }
+          ]
+        }
+      ]
+  - _id: "pt-object-block-no-children"
     _type: "pt"
     body:
       {
         "_type": "block",
         "style": "normal",
-        "markDefs": []
+        "markDefs": [ ]
       }
-  - _id: "block-array-invalid-blocks"
+  - _id: "pt-object-block-one-child"
     _type: "pt"
     body:
-      [
-        {
-          "_key": "3d37e687e771",
-          "_type": "image"
-        },
-        {
-          "_key": "3d37e687e772",
-          "_type": "div"
-        },
-      ]
-  - _id: "block-array-invalid-blocks"
-    _type: "pt"
-    body:
-      [
-        {
-          "_key": "3d37e687e771",
-          "_type": "image"
-        },
-        {
-          "_key": "3d37e687e772",
-          "_type": "div"
-        },
-        {
-          "_key": "926cc8c2792a",
-          "_type": "block",
-          "children": [
-            {
-              "_key": "7e1ed1a9711f",
-              "_type": "image",
-              "text": "Heading"
-            },
-            {
-              "_key": "1e210235143e",
-              "_type": "image",
-              "text": " 1"
-            }
-          ],
-          "markDefs": [],
-          "style": "h1"
-        }
-      ]
-  - _id: "block-array-multiple-children"
-    _type: "pt"
-    body:
-      [
-        {
-          "_type": "block",
-          "style": "normal",
-          "children": [{
+      {
+        "_type": "block",
+        "children": [
+          {
             "_type": "span",
-            "marks": [],
-            "text": "This is one of her most famous portraits:"
-          }],
-          "markDefs": []
-        },
-        {
-          "_type": "block",
-          "style": "normal",
-          "children": [{
+            "text": "This is a child."
+          }
+        ]
+      }
+  - _id: "pt-object-block-with-children"
+    _type: "pt"
+    body:
+      {
+        "_type": "block",
+        "style": "normal",
+        "children": [
+          {
             "_type": "span",
-            "marks": [],
-            "text": "Photo by:"
+            "text": "This is a child."
           },
-            {
-              "_type": "span",
-              "marks": ["emphasis"],
-              "text": "Annie Leibovitz"
-            }
-          ]
-        }
-      ]
+          {
+            "_type": "span",
+            "text": "This is another child."
+          }
+        ],
+        "markDefs": [ ]
+      }
+  - _id: "pt-object-custom-block-no-children"
+    _type: "pt"
+    body:
+      {
+        "_type": "customBlock",
+        "style": "normal",
+        "markDefs": [ ]
+      }
+  - _id: "pt-object-custom-block-one-child"
+    _type: "pt"
+    body:
+      {
+        "_type": "customBlock",
+        "children": [
+          {
+            "_type": "span",
+            "text": "This is a child."
+          }
+        ]
+      }
+  - _id: "pt-object-custom-block-with-children"
+    _type: "pt"
+    body:
+      {
+        "_type": "customBlock",
+        "style": "normal",
+        "children": [
+          {
+            "_type": "span",
+            "text": "This is a child."
+          },
+          {
+            "_type": "span",
+            "text": "This is another child."
+          }
+        ],
+        "markDefs": [ ]
+      }
 tests:
-  - query: |
+  - name: "parsing"
+    query: |
       *[_type == "pt"]{"body": pt::text(body)}
     result:
+    - "body": "This is child in a block.\n\nThis is child in another block.This is another child in another block."
     - "body":
-    - "body": "This is one of her most famous portraits:\nPhoto by:Annie Leibovitz"
-    - "body": "\n"
+    - "body": "This is a custom block."
     - "body": ""
+    - "body":
+    - "body": "This is a custom block."
+    - "body": "This is code text. This is underline text. This is strikethrough text.\n\nItem 1 in bold.\n\nItem 2 in italic.\n\nHeading 6 with a link.\n\n"
+    - "body":
+    - "body": "This is a child."
+    - "body": "This is a child.This is another child."
+    - "body":
+    - "body": "This is a child."
+    - "body": "This is a child.This is another child."
+  - name: "text match"
+    query: |
+      *[_type == "pt" && pt::text(body) match "This is*"]{"body": pt::text(body)}
+    result:
+      - "body": "This is child in a block.\n\nThis is child in another block.This is another child in another block."
+      - "body": "This is a custom block."
+      - "body": "This is a custom block."
+      - "body": "This is code text. This is underline text. This is strikethrough text.\n\nItem 1 in bold.\n\nItem 2 in italic.\n\nHeading 6 with a link.\n\n"
+      - "body": "This is a child."
+      - "body": "This is a child.This is another child."
+      - "body": "This is a child."
+      - "body": "This is a child.This is another child."
