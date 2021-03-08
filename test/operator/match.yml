@@ -1,5 +1,16 @@
 name: "Match operator"
 
+documents:
+- _id: "a"
+  _type: "test"
+  text: "Battle of Britain"
+- _id: "b"
+  _type: "test"
+  text: "The Brittany Murphy Story"
+- _id: "c"
+  _type: "test"
+  text: "Britney Ever After"
+
 variables:
   text: '"hello world FOO-bar"'
   pattern1: '"hel*"'
@@ -7,6 +18,39 @@ variables:
   patterns: '["hello", "foo"]'
 
 tests:
+- name: Simple match
+  query: |
+    *[text match "Britain"]._id
+  result: [a]
+- name: Simple case-insensitive match
+  query: |
+    *[text match "britain"]._id
+  result: [a]
+- name: Prefix
+  query: |
+    *[text match "brit*"]._id
+  result: [a, b, c]
+- name: Term and prefix
+  query: |
+    *[text match "battle brit*"]._id
+  result: [a]
+- name: Wildcard
+  query: |
+    *[text match "*britn*"]._id
+  result: [c]
+- name: Term and wildcard
+  query: |
+    *[text match "*brit* ever"]._id
+  result: [c]
+- name: Wildcard 2
+  query: |
+    *[text match "*br*tn*"]._id
+  result: [c]
+- name: Term and wildcard
+  query: |
+    *[text match "*br*tn* ever"]._id
+  result: [c]
+
 - query: |
     ~text~ match ~pattern~
 
@@ -23,6 +67,7 @@ tests:
         - '"h*l*o"'
         - '"foo-bar"'
         - '"hel* bar"'
+        - '"hello bar*"'
         - '["hel*", "bar"]'
         - '["hello", "foo"]'
 
@@ -61,7 +106,7 @@ tests:
   query: |
     "" match ~expr~
   result: false
-    
+
 - name: "Unsupported LHS"
   variables:
     expr:
