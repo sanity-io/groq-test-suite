@@ -10,18 +10,22 @@ documents:
   _type: "doc"
   value: 1
   text: "hello"
+  bool: true
 - _id: "b"
   _type: "doc"
   value: 2
   text: "Hello world"
+  bool: true
 - _id: "c"
   _type: "doc"
   value: 3
   text: "Thanks for all the fish"
+  bool: false
 - _id: "d"
   _type: "doc"
   value: 4
   text: "Fish, fish, just fish"
+  bool: false
 
 tests:
 - name: Illegal use
@@ -179,3 +183,105 @@ tests:
     _pos: 3
   - _id: b
     _pos: 3
+
+- name: Conjunction
+  features:
+  - scoring
+  query: |
+    ~expr~ | score(value > 1 && bool) {_id, _score}
+  variables:
+    expr:
+    - "*"
+    # TODO: Enable when supported
+    #- "*[0..-1]"
+    - "*[_type == 'doc']"
+  result:
+  - {_id: b, _pos: 1}
+  - {_id: a, _pos: 2}
+  - {_id: c, _pos: 2}
+  - {_id: d, _pos: 2}
+
+- name: Conjunction with true
+  features:
+  - scoring
+  query: |
+    ~expr~ | score(value > 1 && true) {_id, _score}
+  variables:
+    expr:
+    - "*"
+    # TODO: Enable when supported
+    #- "*[0..-1]"
+    - "*[_type == 'doc']"
+  result:
+  - {_id: b, _pos: 1}
+  - {_id: c, _pos: 1}
+  - {_id: d, _pos: 1}
+  - {_id: a, _pos: 2}
+
+- name: Conjunction with false
+  features:
+  - scoring
+  query: |
+    ~expr~ | score(value > 1 && false) {_id, _score}
+  variables:
+    expr:
+    - "*"
+    # TODO: Enable when supported
+    #- "*[0..-1]"
+    - "*[_type == 'doc']"
+  result:
+  - {_id: a, _pos: 1}
+  - {_id: b, _pos: 1}
+  - {_id: c, _pos: 1}
+  - {_id: d, _pos: 1}
+
+- name: Disjunction
+  features:
+  - scoring
+  query: |
+    ~expr~ | score(value > 1 || bool) {_id, _score}
+  variables:
+    expr:
+    - "*"
+    # TODO: Enable when supported
+    #- "*[0..-1]"
+    - "*[_type == 'doc']"
+  result:
+  - {_id: b, _pos: 1}
+  - {_id: c, _pos: 2}
+  - {_id: d, _pos: 2}
+  - {_id: a, _pos: 3}
+
+- name: Disjunction with true
+  features:
+  - scoring
+  query: |
+    ~expr~ | score(value > 1 || true) {_id, _score}
+  variables:
+    expr:
+    - "*"
+    # TODO: Enable when supported
+    #- "*[0..-1]"
+    - "*[_type == 'doc']"
+  result:
+  - {_id: b, _pos: 1}
+  - {_id: c, _pos: 1}
+  - {_id: d, _pos: 1}
+  - {_id: a, _pos: 2}
+
+- name: Disjunction with false
+  features:
+  - scoring
+  query: |
+    ~expr~ | score(value > 1 || false) {_id, _score}
+  variables:
+    expr:
+    - "*"
+    # TODO: Enable when supported
+    #- "*[0..-1]"
+    - "*[_type == 'doc']"
+  result:
+  - {_id: b, _pos: 1}
+  - {_id: c, _pos: 1}
+  - {_id: d, _pos: 1}
+  - {_id: a, _pos: 2}
