@@ -1,0 +1,19 @@
+name: "geo::point() function"
+
+tests:
+- name: Basic
+  query: |
+    geo::point(59.913889, 10.752222)
+  result:
+    type: Point
+    coordinates: [10.752222, 59.913889]
+
+- name: Invalid
+  query: |
+    geo::point(~args~)
+  variables:
+    args:
+    - "null, 3.14"
+    - "3.14, null"
+    - "null, null"
+  result: null
