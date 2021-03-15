@@ -1,0 +1,128 @@
+name: "geo() function"
+
+tests:
+- name: Point
+  query: |
+    geo(~arg~)
+  variables:
+    arg:
+    - '{"lat": 59.913889, "lng": 10.752222}'
+    - 'geo({"lat": 59.913889, "lng": 10.752222, "extra": "ignored"})'
+    - |
+      {"type": "Point", "coordinates": [10.752222, 59.913889]}
+    - |
+      {"type": "Point", "coordinates": [10.752222, 59.913889], "dingbat": {"foo": "bar"}}
+  result:
+    type: Point
+    coordinates: [10.752222, 59.913889]
+
+- name: MultiPoint
+  query: |
+    geo(~arg~)
+  variables:
+    arg: |
+      {
+        "type": "MultiPoint",
+        "coordinates": [
+          [100.0, 10.0],
+          [101.0, 10.0]
+        ]
+      }
+  result:
+    type: MultiPoint
+    coordinates:
+    - [100.0, 10.0]
+    - [101.0, 10.0]
+
+- name: Polygon
+  query: |
+    geo(~arg~)
+  variables:
+    arg: |
+      {
+        "type": "Polygon",
+        "coordinates": [[
+          [100.0, 10.0],
+          [101.0, 10.0]
+        ]]
+      }
+  result:
+    type: Polygon
+    coordinates:
+    - - [100.0, 10.0]
+      - [101.0, 10.0]
+
+- name: MultiPolygon
+  query: |
+    geo(~arg~)
+  variables:
+    arg: |
+      {
+        "type": "MultiPolygon",
+        "coordinates": [[[
+          [100.0, 10.0],
+          [101.0, 10.0]
+        ]]]
+      }
+  result:
+    type: MultiPolygon
+    coordinates:
+    - - - [100.0, 10.0]
+        - [101.0, 10.0]
+
+- name: LineString
+  query: |
+    geo(~arg~)
+  variables:
+    arg: |
+      {
+        "type": "LineString",
+        "coordinates": [
+          [100.0, 10.0],
+          [101.0, 10.0]
+        ]
+      }
+  result:
+    type: LineString
+    coordinates:
+    - [100.0, 10.0]
+    - [101.0, 10.0]
+
+- name: MultiLineString
+  query: |
+    geo(~arg~)
+  variables:
+    arg: |
+      {
+        "type": "MultiLineString",
+        "coordinates": [[
+          [100.0, 10.0],
+          [101.0, 10.0],
+        ]]
+      }
+  result:
+    type: MultiLineString
+    coordinates:
+    - - [100.0, 10.0]
+      - [101.0, 10.0]
+
+- name: Invalid
+  query: |
+    geo(~arg~)
+  variables:
+    arg:
+    - '{}'
+    - '{"lat": 59.913889, "lng": 10.752222, "lon": 10.752222}'
+    - '{"lat": 59.913889}'
+    - '{"lng": 59.913889}'
+    - '{"lon": 59.913889}'
+    - '{"type": "Point", "coordinates": [100]}'
+    - '{"type": "MultiPoint", "coordinates": [100]}'
+    - '{"type": "Polygon", "coordinates": [100]}'
+    - '{"type": "MultiPolygon", "coordinates": [100]}'
+    - '{"type": "LineString", "coordinates": [10, 10]}'
+    - '{"type": "MultiLineString", "coordinates": [10, 10]}'
+    - '{"type": "InvalidType"}'
+    # We don't support FeatureCollection
+    - '{"type":"FeatureCollection", "features": [{"type":"Feature","geometry":{"type":"Point","coordinates":[7.996354103088379,63.47343444824236]},"properties":{"ID_0":169}}]}'
+  result: null
