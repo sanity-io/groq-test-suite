@@ -3,22 +3,36 @@ name: "geo::distance() function"
 tests:
 - name: Basic
   query: |
-    geo::distance({"lat": 59.913889, "lng": 10.752222}, {"lat": 59.329444, "lng": 18.068611})
+    geo::distance(~left~, ~right~)
+  variables:
+    left:
+    - '{"lat": 59.913889, "lng": 10.752222}'
+    - 'geo({"lat": 59.913889, "lng": 10.752222})'
+    right:
+    - '{"lat": 59.329444, "lng": 18.068611}'
+    - 'geo({"lat": 59.329444, "lng": 18.068611})'
   result: 416760.7738822515
 
 - name: Self
   query: |
-    geo::distance({"lat": 59.913889, "lng": 10.752222}, {"lat": 59.913889, "lng": 10.752222})
+    geo::distance(~left~, ~left~)
+  variables:
+    left:
+    - '{"lat": 59.913889, "lng": 10.752222}'
+    - 'geo({"lat": 59.913889, "lng": 10.752222})'
   result: 0.0
 
 - name: Invalid
   query: |
-    geo::distance(~value~, {"lat": 59.913889, "lng": 10.752222})
+    geo::distance(~left~, ~right~)
   variables:
-    value:
+    left:
     - '{"type": "Polygon", "coordinates": []}'
     - "42"
     - '"hello world"'
     - "true"
     - "2.34"
+    right:
+    - '{"lat": 59.913889, "lng": 10.752222}'
+    - 'geo({"lat": 59.913889, "lng": 10.752222})'
   result: null
