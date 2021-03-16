@@ -1,0 +1,1454 @@
+dataset: movies
+name: "perf / movies"
+
+tests:
+- name: Subquery with references join
+  query: |
+    *[_type == "person"][0...100]{
+      name,
+      "topMovies": *[_type == "movie" && vote_average > 6 && references(^._id)]{
+        title,
+        "genres": genres[]->name
+      }
+    }
+  result:
+  - name: George Lucas
+    topMovies:
+      - genres:
+          - Adventure
+          - Action
+          - Science Fiction
+        title: Star Wars
+      - genres:
+          - Documentary
+        title: Side by Side
+      - genres:
+          - Action
+          - Drama
+          - History
+          - War
+        title: Kagemusha
+      - genres:
+          - Animation
+          - Adventure
+          - Family
+        title: The Land Before Time
+      - genres:
+          - Adventure
+          - Family
+          - Fantasy
+        title: Return to Oz
+      - genres:
+          - Adventure
+          - Family
+          - Fantasy
+        title: Labyrinth
+      - genres:
+          - Action
+          - Adventure
+          - Science Fiction
+          - Fantasy
+        title: 'Star Wars: The Force Awakens'
+      - genres:
+          - Science Fiction
+        title: Electronic Labyrinth THX 1138 4EB
+      - genres:
+          - Documentary
+        title: The Pixar Story
+      - genres:
+          - Documentary
+        title: Milius
+      - genres:
+          - Adventure
+          - Action
+          - Science Fiction
+        title: The Empire Strikes Back
+      - genres:
+          - Adventure
+          - Action
+          - Science Fiction
+        title: Return of the Jedi
+      - genres:
+          - Adventure
+          - Action
+          - Science Fiction
+        title: 'Star Wars: Episode I - The Phantom Menace'
+      - genres:
+          - Adventure
+          - Action
+          - Science Fiction
+        title: 'Star Wars: Episode II - Attack of the Clones'
+      - genres:
+          - Science Fiction
+          - Adventure
+          - Action
+        title: 'Star Wars: Episode III - Revenge of the Sith'
+      - genres:
+          - Science Fiction
+        title: Captain EO
+      - genres:
+          - Documentary
+        title: 'Drew: The Man Behind the Poster'
+      - genres:
+          - Documentary
+        title: Sicko
+      - genres:
+          - Drama
+        title: 'Mishima: A Life in Four Chapters'
+      - genres:
+          - Drama
+        title: 'Tucker: The Man and His Dream'
+      - genres:
+          - Documentary
+        title: 'Magician: The Astonishing Life and Work of Orson Welles'
+      - genres:
+          - Music
+          - Animation
+          - Family
+          - Fantasy
+        title: Strange Magic
+      - genres:
+          - Action
+          - Adventure
+          - Science Fiction
+        title: 'Rogue One: A Star Wars Story'
+      - genres:
+          - Animation
+          - Fantasy
+        title: Twice Upon a Time
+      - genres:
+          - Animation
+          - Comedy
+          - Science Fiction
+        title: 'Robot Chicken: Star Wars'
+      - genres:
+          - Documentary
+        title: 'The Cutting Edge: The Magic of Movie Editing'
+      - genres:
+          - Documentary
+        title: 'Hearts of Darkness: A Filmmaker''s Apocalypse'
+      - genres:
+          - Documentary
+        title: A Personal Journey with Martin Scorsese Through American Movies
+      - genres:
+          - Documentary
+        title: 'Hugh Hefner: Playboy, Activist and Rebel'
+      - genres:
+          - Drama
+          - Mystery
+          - Science Fiction
+        title: THX 1138
+      - genres:
+          - Documentary
+        title: The People vs. George Lucas
+      - genres:
+          - Documentary
+        title: 'Empire of Dreams: The Story of the Star Wars Trilogy'
+      - genres:
+          - Comedy
+          - Drama
+        title: American Graffiti
+      - genres:
+          - Adventure
+          - Drama
+          - Action
+        title: Willow
+      - genres:
+          - Adventure
+          - Action
+        title: Raiders of the Lost Ark
+      - genres:
+          - Adventure
+          - Action
+        title: Indiana Jones and the Temple of Doom
+      - genres:
+          - Adventure
+          - Fantasy
+          - Comedy
+          - Family
+        title: Hook
+      - genres:
+          - Adventure
+          - Action
+        title: Indiana Jones and the Last Crusade
+      - genres:
+          - Documentary
+        title: The Sci-Fi Boys
+  - name: Bob Peterson
+    topMovies:
+      - genres:
+          - Animation
+          - Family
+          - Comedy
+        title: Toy Story 3
+      - genres:
+          - Adventure
+          - Animation
+          - Family
+        title: The Good Dinosaur
+      - genres:
+          - Animation
+          - Family
+        title: Finding Nemo
+      - genres:
+          - Adventure
+          - Animation
+          - Comedy
+          - Family
+        title: Finding Dory
+      - genres:
+          - Animation
+          - Family
+        title: Geri's Game
+      - genres:
+          - Animation
+          - Comedy
+          - Family
+          - Adventure
+        title: Up
+      - genres:
+          - Drama
+          - Comedy
+          - Animation
+          - Family
+        title: Inside Out
+      - genres:
+          - Animation
+          - Comedy
+          - Family
+        title: Dug's Special Mission
+      - genres:
+          - Family
+          - Comedy
+          - Animation
+          - Adventure
+        title: Cars 3
+      - genres:
+          - Animation
+          - Comedy
+          - Family
+        title: 'Monsters, Inc.'
+      - genres:
+          - Animation
+          - Family
+        title: Monsters University
+      - genres:
+          - Action
+          - Adventure
+          - Animation
+          - Family
+        title: The Incredibles
+  - name: Scott Speedman
+    topMovies:
+      - genres:
+          - Drama
+          - Action
+          - Comedy
+        title: Weirdsville
+      - genres:
+          - Drama
+          - Thriller
+        title: The 24th Day
+      - genres:
+          - Drama
+          - Romance
+        title: My Life Without Me
+      - genres:
+          - Comedy
+          - Drama
+          - Romance
+        title: Barefoot
+      - genres:
+          - Fantasy
+          - Action
+          - Thriller
+        title: Underworld
+      - genres:
+          - Comedy
+          - Drama
+        title: Barney's Version
+      - genres:
+          - Action
+          - Crime
+          - Drama
+          - Thriller
+        title: Dark Blue
+      - genres:
+          - Fantasy
+          - Action
+          - Horror
+        title: 'Underworld: Awakening'
+      - genres:
+          - Drama
+          - Romance
+        title: The Vow
+      - genres:
+          - Fantasy
+          - Action
+          - Science Fiction
+          - Thriller
+        title: 'Underworld: Evolution'
+  - name: Dan Weil
+    topMovies:
+      - genres:
+          - Thriller
+          - Crime
+          - Drama
+        title: 'Leon: The Professional'
+      - genres:
+          - Drama
+          - Thriller
+          - Action
+        title: Blood Diamond
+      - genres:
+          - Action
+          - Drama
+          - History
+          - War
+        title: Defiance
+      - genres:
+          - Adventure
+          - Drama
+          - Romance
+        title: The Big Blue
+      - genres:
+          - Adventure
+          - Fantasy
+          - Action
+          - Thriller
+          - Science Fiction
+        title: The Fifth Element
+      - genres:
+          - Drama
+          - Thriller
+        title: Syriana
+      - genres:
+          - Action
+          - Drama
+          - Mystery
+          - Thriller
+        title: The Bourne Identity
+      - genres:
+          - Drama
+          - Romance
+        title: Total Eclipse
+      - genres:
+          - Adventure
+          - War
+          - History
+        title: King Arthur
+  - name: Gregory Sporleder
+    topMovies:
+      - genres:
+          - Comedy
+        title: 17 Again
+      - genres:
+          - Crime
+          - Drama
+        title: The Grifters
+      - genres:
+          - Comedy
+          - Crime
+          - Drama
+          - Thriller
+        title: Clay Pigeons
+      - genres:
+          - Mystery
+          - Horror
+          - Action
+        title: The Crazies
+      - genres:
+          - Action
+          - Thriller
+          - Crime
+          - Romance
+        title: True Romance
+      - genres:
+          - Fantasy
+          - Drama
+          - Comedy
+        title: Being John Malkovich
+      - genres:
+          - Action
+          - Adventure
+          - Drama
+        title: Twister
+      - genres:
+          - Action
+          - History
+          - War
+        title: Black Hawk Down
+      - genres:
+          - Action
+          - Adventure
+          - Thriller
+        title: The Rock
+  - name: Tyrell Davis
+    topMovies: []
+  - name: Eli Kabillio
+    topMovies:
+      - genres:
+          - Documentary
+        title: A Hole in the Head
+  - name: Haylee Wanstall
+    topMovies: []
+  - name: Herbert Heywood
+    topMovies:
+      - genres:
+          - Drama
+          - Family
+          - Fantasy
+        title: It's a Wonderful Life
+      - genres:
+          - Action
+          - Drama
+          - History
+          - War
+        title: Sergeant York
+      - genres:
+          - Drama
+        title: Scarlet Street
+      - genres:
+          - Drama
+          - Romance
+          - War
+          - Western
+        title: They Died with Their Boots On
+      - genres:
+          - Romance
+          - Crime
+          - Drama
+        title: King of the Underworld
+      - genres:
+          - Crime
+          - Drama
+          - Thriller
+        title: The Roaring Twenties
+      - genres:
+          - Comedy
+          - Drama
+        title: Gentleman Jim
+      - genres:
+          - History
+          - Drama
+        title: Young Mr. Lincoln
+      - genres:
+          - Music
+          - Western
+        title: Can't Help Singing
+      - genres:
+          - Drama
+        title: The Grapes of Wrath
+      - genres:
+          - Drama
+        title: Young People
+  - name: Alden Ray
+    topMovies:
+      - genres:
+          - Action
+          - Crime
+          - Drama
+          - Thriller
+        title: 'The Fast and the Furious: Tokyo Drift'
+  - name: Justin Lee
+    topMovies:
+      - genres:
+          - Adventure
+          - Drama
+        title: Druid Peak
+  - name: William Wyler
+    topMovies:
+      - genres:
+          - Drama
+          - Western
+          - Romance
+        title: The Big Country
+      - genres:
+          - Action
+          - Western
+          - Romance
+        title: The Westerner
+      - genres:
+          - Drama
+          - Comedy
+          - Music
+          - Romance
+        title: Funny Girl
+      - genres:
+          - Crime
+          - Drama
+          - Romance
+        title: The Letter
+      - genres:
+          - Crime
+          - Drama
+          - Thriller
+          - Action
+        title: The Desperate Hours
+      - genres:
+          - Drama
+          - Romance
+        title: Jezebel
+      - genres:
+          - Drama
+        title: The Children's Hour
+      - genres:
+          - Crime
+          - Drama
+        title: Detective Story
+      - genres:
+          - Drama
+          - Romance
+          - War
+        title: Mrs. Miniver
+      - genres:
+          - Crime
+          - Drama
+        title: Dead End
+      - genres:
+          - Drama
+          - Romance
+        title: The Heiress
+      - genres:
+          - Comedy
+          - Crime
+          - Romance
+        title: How to Steal a Million
+      - genres:
+          - Drama
+          - Fantasy
+          - History
+          - Romance
+        title: Wuthering Heights
+      - genres:
+          - Drama
+          - Romance
+        title: Dodsworth
+      - genres:
+          - Mystery
+          - Drama
+          - Thriller
+        title: The Collector
+      - genres:
+          - Drama
+          - War
+          - Western
+        title: Friendly Persuasion
+      - genres:
+          - Drama
+          - Romance
+        title: The Little Foxes
+      - genres:
+          - Drama
+        title: Counsellor at Law
+      - genres:
+          - Drama
+        title: These Three
+      - genres:
+          - Action
+          - Adventure
+          - Drama
+          - History
+        title: Ben-Hur
+      - genres:
+          - Comedy
+          - Romance
+        title: Roman Holiday
+      - genres:
+          - Drama
+          - History
+          - Romance
+        title: The Best Years of Our Lives
+  - name: Duffy Hecht
+    topMovies: []
+  - name: Wan Chi-Keung
+    topMovies:
+      - genres:
+          - Drama
+          - Action
+          - Thriller
+          - Crime
+          - Mystery
+        title: Infernal Affairs
+      - genres:
+          - Drama
+          - Action
+          - Thriller
+          - Crime
+        title: Infernal Affairs II
+      - genres:
+          - Crime
+          - Drama
+          - Action
+        title: Infernal Affairs III
+  - name: Behroz Shahamat
+    topMovies:
+      - genres:
+          - Drama
+        title: The Apple
+  - name: Faroukh Fadace
+    topMovies: []
+  - name: Mojtaba Mirtahasebi
+    topMovies: []
+  - name: Kaveh Moinfar
+    topMovies: []
+  - name: Henrietta Barry
+    topMovies: []
+  - name: Akbar Meshkini
+    topMovies:
+      - genres:
+          - Drama
+        title: Osama
+      - genres:
+          - Drama
+        title: The Apple
+  - name: Newton Blick
+    topMovies: []
+  - name: Howard Burkons
+    topMovies:
+      - genres:
+          - Drama
+          - Thriller
+          - Crime
+        title: John Q
+  - name: Hossein Amiri
+    topMovies: []
+  - name: Golda Casimir
+    topMovies: []
+  - name: Hashem Gerami
+    topMovies: []
+  - name: Mastaneh Mohajer
+    topMovies: []
+  - name: Bob Davis
+    topMovies: []
+  - name: Wally Cox
+    topMovies:
+      - genres:
+          - Drama
+        title: Fate Is the Hunter
+      - genres:
+          - Action
+          - Drama
+          - Thriller
+          - War
+        title: The Bedford Incident
+      - genres:
+          - TV Movie
+          - Horror
+          - Mystery
+          - Crime
+        title: The Night Strangler
+      - genres:
+          - Drama
+          - Comedy
+        title: Spencer's Mountain
+      - genres:
+          - Comedy
+          - Romance
+        title: A Guide for the Married Man
+  - name: Kathryn Crawford
+    topMovies: []
+  - name: Hilary Eaves
+    topMovies:
+      - genres:
+          - Drama
+        title: Advise & Consent
+  - name: Lew Wallace
+    topMovies:
+      - genres:
+          - Adventure
+          - Drama
+        title: 'Ben-Hur: A Tale of the Christ'
+      - genres:
+          - Action
+          - Adventure
+          - Drama
+          - History
+        title: Ben-Hur
+  - name: M. R. Sharifiniya
+    topMovies: []
+  - name: Siamak Alagheband
+    topMovies:
+      - genres:
+          - Drama
+        title: At Five in the Afternoon
+  - name: Len Kabasinski
+    topMovies: []
+  - name: Craig Haines
+    topMovies:
+      - genres:
+          - Drama
+          - Music
+          - Romance
+        title: Moulin Rouge!
+  - name: Jerry Haleva
+    topMovies:
+      - genres:
+          - Comedy
+          - Crime
+        title: The Big Lebowski
+      - genres:
+          - Drama
+          - Thriller
+        title: Live from Baghdad
+      - genres:
+          - Action
+          - Comedy
+          - War
+        title: Hot Shots! Part Deux
+  - name: Abbas Sagharisaz
+    topMovies: []
+  - name: Brian Daniel Heffron
+    topMovies:
+      - genres:
+          - Drama
+          - Documentary
+          - Comedy
+        title: I Am Santa Claus
+  - name: William C. Hulley
+    topMovies: []
+  - name: Mollie Israel
+    topMovies: []
+  - name: Jasmin St. Claire
+    topMovies:
+      - genres:
+          - Documentary
+        title: Mission to Lars
+  - name: Mohammad Reza Darvishi
+    topMovies:
+      - genres:
+          - Drama
+        title: Osama
+      - genres:
+          - Drama
+        title: At Five in the Afternoon
+  - name: Ken Larson
+    topMovies: []
+  - name: Annabelle Logan
+    topMovies: []
+  - name: Jean Epstein
+    topMovies:
+      - genres:
+          - Drama
+          - Horror
+        title: The Fall of the House of Usher
+  - name: Ted Lune
+    topMovies: []
+  - name: Ilona Margolis
+    topMovies: []
+  - name: Marguerite Gance
+    topMovies:
+      - genres:
+          - Drama
+          - Horror
+        title: The Fall of the House of Usher
+      - genres:
+          - Drama
+          - History
+        title: Napoleon
+  - name: Karl Tunberg
+    topMovies:
+      - genres:
+          - Drama
+          - Comedy
+          - Crime
+        title: I Was an Adventuress
+      - genres:
+          - Drama
+          - Family
+          - Music
+        title: Rebecca of Sunnybrook Farm
+      - genres:
+          - Action
+          - Adventure
+          - Drama
+          - Romance
+          - War
+        title: Taras Bulba
+      - genres:
+          - Action
+          - Adventure
+          - Drama
+          - History
+        title: Ben-Hur
+  - name: Charles Lamy
+    topMovies:
+      - genres:
+          - Drama
+          - Horror
+        title: The Fall of the House of Usher
+  - name: Brandon Obray
+    topMovies:
+      - genres:
+          - Adventure
+          - Fantasy
+          - Family
+        title: Jumanji
+  - name: Fournez-Goffard
+    topMovies:
+      - genres:
+          - Drama
+          - Horror
+        title: The Fall of the House of Usher
+      - genres:
+          - Drama
+          - History
+        title: The Passion of Joan of Arc
+  - name: Simon Schiffrin
+    topMovies:
+      - genres:
+          - Comedy
+          - Crime
+        title: The Red Inn
+  - name: Chamila Rodríguez
+    topMovies:
+      - genres: []
+        title: Night Across the Street
+  - name: Françoise Rosay
+    topMovies:
+      - genres:
+          - Comedy
+          - War
+        title: Me and the Colonel
+      - genres:
+          - Drama
+        title: Le Grand Jeu
+      - genres:
+          - Comedy
+          - Crime
+        title: The Red Inn
+      - genres:
+          - Comedy
+          - Drama
+          - History
+        title: Carnival in Flanders
+      - genres: []
+        title: The 13th Letter
+      - genres:
+          - Crime
+          - Comedy
+        title: The Counterfeiters of Paris
+      - genres:
+          - Comedy
+        title: Drole de Drame
+      - genres:
+          - Drama
+          - War
+        title: The 25th Hour
+      - genres:
+          - Comedy
+          - Crime
+        title: Cloportes
+      - genres:
+          - Drama
+        title: Dance Program
+      - genres:
+          - Drama
+        title: Nobody's Children
+  - name: Irene Seidner
+    topMovies:
+      - genres:
+          - Comedy
+          - Crime
+          - Drama
+          - Thriller
+          - War
+        title: All Through the Night
+      - genres:
+          - Drama
+          - Romance
+        title: Miracle in the Rain
+  - name: Marie-Claire Olivia
+    topMovies:
+      - genres:
+          - Comedy
+          - Crime
+        title: The Red Inn
+  - name: Raju Srivastava
+    topMovies:
+      - genres:
+          - Drama
+          - Foreign
+          - Romance
+        title: Maine Pyar Kiya
+  - name: Didier d'Yd
+    topMovies:
+      - genres:
+          - Comedy
+          - Crime
+        title: The Red Inn
+  - name: D.W. Griffith
+    topMovies:
+      - genres: []
+        title: Death's Marathon
+      - genres:
+          - Comedy
+        title: Those Awful Hats
+      - genres: []
+        title: The Lonedale Operator
+      - genres:
+          - Drama
+          - Horror
+        title: 'The Avenging Conscience: or ''Thou Shalt Not Kill'''
+      - genres:
+          - Drama
+        title: 'Intolerance: Love''s Struggle Throughout the Ages'
+      - genres:
+          - Drama
+          - Action
+          - Romance
+        title: Way Down East
+      - genres:
+          - Comedy
+          - Romance
+          - Drama
+        title: True Heart Susie
+      - genres:
+          - Drama
+          - History
+        title: Orphans of the Storm
+      - genres:
+          - Crime
+          - Drama
+        title: The Musketeers of Pig Alley
+      - genres:
+          - Music
+          - Drama
+          - Romance
+        title: San Francisco
+      - genres:
+          - Drama
+        title: A Corner in Wheat
+      - genres:
+          - Drama
+          - History
+          - War
+        title: The Birth of a Nation
+      - genres:
+          - Drama
+          - Romance
+        title: Broken Blossoms
+  - name: Adrienne Wehr
+    topMovies: []
+  - name: Charles M. Kirk
+    topMovies:
+      - genres:
+          - Drama
+        title: The Life of Vergie Winters
+      - genres:
+          - Drama
+          - History
+        title: Orphans of the Storm
+  - name: Ramon Saunders
+    topMovies: []
+  - name: Hendrik Sartov
+    topMovies:
+      - genres:
+          - Drama
+          - Action
+          - Romance
+        title: Way Down East
+      - genres:
+          - Drama
+          - History
+        title: Orphans of the Storm
+  - name: Ibrahim Ferrer
+    topMovies:
+      - genres:
+          - Documentary
+          - Music
+        title: Buena Vista Social Club
+  - name: Sam Zimbalist
+    topMovies:
+      - genres:
+          - Drama
+          - History
+          - Romance
+        title: Quo Vadis
+      - genres:
+          - History
+          - War
+          - Drama
+        title: Thirty Seconds Over Tokyo
+      - genres:
+          - Comedy
+        title: The Smart Set
+      - genres:
+          - Comedy
+          - Romance
+        title: Paradise for Three
+      - genres:
+          - Adventure
+          - Drama
+          - Romance
+        title: Mogambo
+      - genres:
+          - Adventure
+          - Drama
+          - Romance
+        title: Boom Town
+      - genres:
+          - Action
+          - Adventure
+          - Drama
+          - History
+        title: Ben-Hur
+  - name: Carol Dempster
+    topMovies:
+      - genres:
+          - Drama
+        title: 'Intolerance: Love''s Struggle Throughout the Ages'
+      - genres:
+          - Drama
+          - Action
+          - Romance
+        title: Way Down East
+      - genres:
+          - Comedy
+          - Romance
+          - Drama
+        title: True Heart Susie
+  - name: Peter Wooley
+    topMovies:
+      - genres:
+          - Comedy
+          - Music
+        title: High Anxiety
+      - genres:
+          - Comedy
+        title: Up the Academy
+      - genres:
+          - Western
+          - Action
+          - Drama
+          - History
+        title: One Man's Hero
+      - genres:
+          - TV Movie
+          - Science Fiction
+          - Drama
+        title: The Day After
+  - name: Porter Strong
+    topMovies:
+      - genres:
+          - Drama
+          - Action
+          - Romance
+        title: Way Down East
+  - name: Charles Croker-King
+    topMovies:
+      - genres:
+          - Comedy
+          - Romance
+        title: Libeled Lady
+  - name: Maurice Pelling
+    topMovies:
+      - genres:
+          - Drama
+          - History
+          - Romance
+        title: Cleopatra
+  - name: Kathy Strachan
+    topMovies:
+      - genres:
+          - Drama
+        title: Run & Jump
+      - genres:
+          - Drama
+        title: Handsome Devil
+  - name: Blanche Sweet
+    topMovies:
+      - genres: []
+        title: Death's Marathon
+      - genres: []
+        title: The Lonedale Operator
+      - genres:
+          - Drama
+          - Horror
+        title: 'The Avenging Conscience: or ''Thou Shalt Not Kill'''
+      - genres:
+          - Comedy
+          - Drama
+          - Romance
+        title: Souls for Sale
+  - name: Maurice Seiderman
+    topMovies:
+      - genres:
+          - Drama
+          - Thriller
+          - Crime
+        title: Touch of Evil
+      - genres:
+          - Mystery
+          - Drama
+        title: Citizen Kane
+      - genres:
+          - Drama
+          - Horror
+        title: I Walked with a Zombie
+      - genres:
+          - Drama
+          - Romance
+        title: Othello
+  - name: Theo Sena
+    topMovies:
+      - genres:
+          - Drama
+          - Romance
+        title: The Wrestler
+      - genres:
+          - Drama
+          - Thriller
+          - Crime
+        title: Compliance
+  - name: Mary Pickford
+    topMovies:
+      - genres:
+          - Comedy
+        title: The Hoodlum
+      - genres:
+          - Documentary
+          - TV Movie
+        title: The Birth of the Tramp
+      - genres:
+          - Adventure
+          - Drama
+          - Action
+        title: The Black Pirate
+      - genres:
+          - Drama
+        title: Stella Maris
+      - genres:
+          - Drama
+          - Comedy
+        title: Daddy-Long-Legs
+      - genres:
+          - Drama
+        title: Sparrows
+      - genres:
+          - Drama
+          - Comedy
+          - Romance
+        title: My Best Girl
+  - name: Emil Rameau
+    topMovies:
+      - genres:
+          - Drama
+          - Mystery
+          - Thriller
+          - Crime
+        title: Gaslight
+  - name: Byron Vreeland
+    topMovies: []
+  - name: Robert Surtees
+    topMovies:
+      - genres:
+          - Adventure
+          - Drama
+          - History
+        title: Mutiny on the Bounty
+      - genres:
+          - Drama
+        title: Bloodbrothers
+      - genres:
+          - Drama
+          - History
+          - Romance
+        title: Quo Vadis
+      - genres:
+          - Western
+        title: Two Mules for Sister Sara
+      - genres:
+          - Western
+          - Music
+          - Romance
+        title: Oklahoma!
+      - genres:
+          - Comedy
+          - Drama
+          - Western
+        title: Oklahoma Crude
+      - genres:
+          - Action
+          - Adventure
+          - Drama
+          - Western
+        title: The Cowboys
+      - genres:
+          - History
+          - Drama
+          - Thriller
+        title: The Hindenburg
+      - genres:
+          - History
+          - War
+          - Drama
+        title: Thirty Seconds Over Tokyo
+      - genres:
+          - Western
+        title: The Hallelujah Trail
+      - genres:
+          - Adventure
+          - Drama
+          - Romance
+        title: Mogambo
+      - genres:
+          - Drama
+        title: The Last Picture Show
+      - genres:
+          - Action
+          - Crime
+          - Drama
+          - Thriller
+        title: Coogan's Bluff
+      - genres:
+          - Thriller
+          - Drama
+          - Crime
+        title: The Chase
+      - genres:
+          - Drama
+          - Romance
+        title: The Bad and the Beautiful
+      - genres:
+          - Drama
+          - Thriller
+        title: Act of Violence
+      - genres:
+          - Drama
+        title: The Graduate
+      - genres:
+          - Comedy
+          - Drama
+          - Romance
+        title: 'Same Time, Next Year'
+      - genres:
+          - Comedy
+          - Drama
+          - Romance
+        title: Summer of '42
+      - genres:
+          - Comedy
+          - Drama
+          - Music
+          - Romance
+        title: Sweet Charity
+      - genres:
+          - Mystery
+          - Drama
+          - Thriller
+        title: The Collector
+      - genres:
+          - Action
+          - Adventure
+          - Romance
+        title: King Solomon's Mines
+      - genres:
+          - Action
+          - Adventure
+          - Drama
+          - History
+        title: Ben-Hur
+      - genres:
+          - Comedy
+          - Crime
+          - Drama
+        title: The Sting
+  - name: Alfred Hansen
+    topMovies: []
+  - name: Pola Negri
+    topMovies:
+      - genres:
+          - Drama
+        title: Mad Love
+      - genres:
+          - Mystery
+          - Family
+          - Thriller
+          - Romance
+        title: The Moon-Spinners
+      - genres:
+          - Comedy
+          - Drama
+          - Romance
+        title: The Wildcat
+      - genres:
+          - Comedy
+          - Romance
+        title: Hi Diddle Diddle
+  - name: Barbara Hanley
+    topMovies: []
+  - name: Mario Caiano
+    topMovies:
+      - genres:
+          - Horror
+        title: Vampire in Venice
+      - genres:
+          - Western
+        title: A Fistful of Dollars
+      - genres:
+          - Drama
+          - Horror
+          - Thriller
+        title: In the Folds of the Flesh
+      - genres:
+          - Documentary
+        title: Eurocrime! The Italian Cop and Gangster Films That Ruled the '70s
+  - name: Angelo Scibetta
+    topMovies: []
+  - name: María Fiorentino
+    topMovies:
+      - genres:
+          - Crime
+          - Drama
+          - Mystery
+          - Thriller
+        title: Cenizas del Paraiso
+  - name: Maurizio Lucidi
+    topMovies:
+      - genres:
+          - Comedy
+        title: Il successo
+      - genres:
+          - Horror
+        title: Vampire in Venice
+      - genres:
+          - Drama
+          - Action
+          - Crime
+        title: Street People
+  - name: Barbara De Rossi
+    topMovies:
+      - genres:
+          - Horror
+        title: Vampire in Venice
+  - name: M. Steven Felty
+    topMovies: []
+  - name: Bobby Johnston
+    topMovies:
+      - genres:
+          - Crime
+          - Drama
+          - Horror
+          - Thriller
+        title: Mother's Day
+      - genres:
+          - Comedy
+          - Drama
+          - Fantasy
+          - Romance
+        title: 'Wristcutters: A Love Story'
+      - genres:
+          - Crime
+          - Horror
+          - Mystery
+          - Thriller
+        title: Stuck
+      - genres:
+          - Documentary
+        title: No Impact Man
+  - name: Anne Knecht
+    topMovies:
+      - genres:
+          - Horror
+        title: Vampire in Venice
+  - name: Tim Murrell
+    topMovies:
+      - genres:
+          - Horror
+          - Mystery
+          - Thriller
+        title: The Children
+      - genres:
+          - Drama
+        title: StreetDance 3D
+  - name: Elvire Audray
+    topMovies:
+      - genres:
+          - Horror
+        title: Vampire in Venice
+  - name: Clara Colosimo
+    topMovies:
+      - genres:
+          - Comedy
+        title: Fantozzi Still Suffers
+      - genres:
+          - Comedy
+          - Drama
+          - History
+        title: Satyricon
+      - genres:
+          - Horror
+        title: Vampire in Venice
+      - genres:
+          - Comedy
+        title: Il Ragazzo di Campagna
+  - name: John D. Dunning
+    topMovies:
+      - genres:
+          - Drama
+          - History
+        title: Julius Caesar
+      - genres:
+          - Action
+          - Adventure
+          - Drama
+          - War
+        title: Battleground
+      - genres:
+          - Drama
+        title: The Brothers Karamazov
+      - genres:
+          - Action
+          - Adventure
+          - Drama
+          - History
+        title: Ben-Hur
+  - name: Susan Ruttan
+    topMovies: []
+  - name: Tim Cutt
+    topMovies:
+      - genres:
+          - Comedy
+          - Romance
+        title: Mischief
+  - name: Philip Chan Fei-Lit
+    topMovies:
+      - genres:
+          - Comedy
+          - Action
+          - Thriller
+        title: 'Riki-Oh: The Story of Ricky'
+      - genres:
+          - Action
+        title: New Dragon Gate Inn
+      - genres:
+          - Fantasy
+          - Drama
+          - Horror
+        title: Erotic Ghost Story
+  - name: Prashant Pandey
+    topMovies: []
+  - name: Del Zamora
+    topMovies:
+      - genres:
+          - Comedy
+          - Crime
+          - Science Fiction
+          - Thriller
+        title: Repo Man
+      - genres:
+          - Action
+        title: 'Boone: The Bounty Hunter'
+      - genres:
+          - Action
+          - Thriller
+          - Science Fiction
+        title: RoboCop
+  - name: John Edginton
+    topMovies:
+      - genres:
+          - Documentary
+          - Music
+        title: The Pink Floyd and Syd Barrett Story
+
