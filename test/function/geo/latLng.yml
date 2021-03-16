@@ -1,16 +1,16 @@
-name: "geo::point() function"
+name: "geo::latLng() function"
 
 tests:
 - name: Basic
   query: |
-    geo::point(59.913889, 10.752222)
+    geo::latLng(59.913889, 10.752222)
   result:
     type: Point
     coordinates: [10.752222, 59.913889]
 
 - name: Invalid
   query: |
-    geo::point(~args~)
+    geo::latLng(~args~)
   variables:
     args:
     - "null, 3.14"
