@@ -3,22 +3,22 @@ name: "geo::distance() function"
 tests:
 - name: Basic
   query: |
-    geo::distance(geo({"lat": 59.913889, "lng": 10.752222}), geo({"lat": 59.329444, "lng": 18.068611}))
+    geo::distance({"lat": 59.913889, "lng": 10.752222}, {"lat": 59.329444, "lng": 18.068611})
   result: 416760.7738822515
 
 - name: Self
   query: |
-    geo::distance(geo({"lat": 59.913889, "lng": 10.752222}), geo({"lat": 59.913889, "lng": 10.752222}))
+    geo::distance({"lat": 59.913889, "lng": 10.752222}, {"lat": 59.913889, "lng": 10.752222})
   result: 0.0
 
 - name: Invalid
   query: |
-    geo::distance(geo(~value~), geo({"lat": 59.913889, "lng": 10.752222}))
+    geo::distance(~value~, {"lat": 59.913889, "lng": 10.752222})
   variables:
     value:
     - '{"type": "Polygon", "coordinates": []}'
     - "42"
     - '"hello world"'
     - "true"
-    - "geo(2)"
+    - "2.34"
   result: null
