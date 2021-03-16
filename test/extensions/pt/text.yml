@@ -424,3 +424,15 @@ tests:
       - "body": "This is a child.This is another child."
       - "body": "This is a child."
       - "body": "This is a child.This is another child."
+
+  # This test is created such that it generates automatic filter/join/projection queries.
+  - name: "generated"
+    dataset: null
+    variables:
+      body: '[{"_type": "block", "children":[{"_type":"span","text":"Hello world"}]}]'
+      text: '"Hello world"'
+    result: true
+    tests:
+      - query: "pt::text(~body~) == ~text~"
+      - query: "~text~ == pt::text(~body~)"
+
