@@ -77,6 +77,62 @@ tests:
   - _id: a
     _pos: 2
 
+- name: Comparisons
+  features:
+  - scoring
+  query: |
+    ~expr~ | score(~score~) {_id, _score}
+  variables:
+    expr:
+    - "*"
+    - "*[0..-1]"
+    - "*[_type == 'doc']"
+  tests:
+  - variables:
+      score: 'value > 2'
+    result:
+    - _id: c
+      _pos: 1
+    - _id: d
+      _pos: 1
+    - _id: a
+      _pos: 2
+    - _id: b
+      _pos: 2
+  - variables:
+      score: 'value >= 2'
+    result:
+    - _id: b
+      _pos: 1
+    - _id: c
+      _pos: 1
+    - _id: d
+      _pos: 1
+    - _id: a
+      _pos: 2
+  - variables:
+      score: 'value < 2'
+    result:
+    - _id: a
+      _pos: 1
+    - _id: b
+      _pos: 2
+    - _id: c
+      _pos: 2
+    - _id: d
+      _pos: 2
+  - variables:
+      score: 'value <= 2'
+    result:
+    - _id: a
+      _pos: 1
+    - _id: b
+      _pos: 1
+    - _id: c
+      _pos: 2
+    - _id: d
+      _pos: 2
+
 - name: Text match
   features:
   - scoring
