@@ -1,8 +1,9 @@
-name: "portable text"
+name: "Portable text"
 
 features:
-  - namespaces
-  - experimentalFunctions
+- namespaces
+- experimentalFunctions
+- portableText
 
 documents:
   - _id: "pt-array-block-multiple-children"
