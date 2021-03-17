@@ -45,8 +45,7 @@ tests:
   variables:
     expr:
     - "*"
-    # TODO: Enable when supported
-    #- "*[0..-1]"
+    - "*[0..-1]"
     - "*[_type == 'doc']"
   result:
   - _id: a
@@ -66,8 +65,7 @@ tests:
   variables:
     expr:
     - "*"
-    # TODO: Enable when supported
-    #- "*[0..-1]"
+    - "*[0..-1]"
     - "*[_type == 'doc']"
   result:
   - _id: b
@@ -87,8 +85,7 @@ tests:
   variables:
     expr:
     - "*"
-    # TODO: Enable when supported
-    #- "*[0..-1]"
+    - "*[0..-1]"
     - "*[_type == 'doc']"
   result:
   - _id: d
@@ -108,8 +105,7 @@ tests:
   variables:
     expr:
     - "*"
-    # TODO: Enable when supported
-    #- "*[0..-1]"
+    - "*[0..-1]"
     - "*[_type == 'doc']"
   result:
   - _id: a
@@ -129,8 +125,7 @@ tests:
   variables:
     expr:
     - "*"
-    # TODO: Enable when supported
-    #- "*[0..-1]"
+    - "*[0..-1]"
     - "*[_type == 'doc']"
   result:
   - _id: a
@@ -150,8 +145,7 @@ tests:
   variables:
     expr:
     - "*"
-    # TODO: Enable when supported
-    #- "*[0..-1]"
+    - "*[0..-1]"
     - "*[_type == 'doc']"
   result:
   - _id: a
@@ -171,8 +165,7 @@ tests:
   variables:
     expr:
     - "*"
-    # TODO: Enable when supported
-    #- "*[0..-1]"
+    - "*[0..-1]"
     - "*[_type == 'doc']"
   result:
   - _id: d
@@ -192,8 +185,7 @@ tests:
   variables:
     expr:
     - "*"
-    # TODO: Enable when supported
-    #- "*[0..-1]"
+    - "*[0..-1]"
     - "*[_type == 'doc']"
   result:
   - {_id: b, _pos: 1}
@@ -209,8 +201,7 @@ tests:
   variables:
     expr:
     - "*"
-    # TODO: Enable when supported
-    #- "*[0..-1]"
+    - "*[0..-1]"
     - "*[_type == 'doc']"
   result:
   - {_id: b, _pos: 1}
@@ -226,8 +217,7 @@ tests:
   variables:
     expr:
     - "*"
-    # TODO: Enable when supported
-    #- "*[0..-1]"
+    - "*[0..-1]"
     - "*[_type == 'doc']"
   result:
   - {_id: a, _pos: 1}
@@ -243,8 +233,7 @@ tests:
   variables:
     expr:
     - "*"
-    # TODO: Enable when supported
-    #- "*[0..-1]"
+    - "*[0..-1]"
     - "*[_type == 'doc']"
   result:
   - {_id: b, _pos: 1}
@@ -260,8 +249,7 @@ tests:
   variables:
     expr:
     - "*"
-    # TODO: Enable when supported
-    #- "*[0..-1]"
+    - "*[0..-1]"
     - "*[_type == 'doc']"
   result:
   - {_id: b, _pos: 1}
@@ -277,8 +265,7 @@ tests:
   variables:
     expr:
     - "*"
-    # TODO: Enable when supported
-    #- "*[0..-1]"
+    - "*[0..-1]"
     - "*[_type == 'doc']"
   result:
   - {_id: b, _pos: 1}
