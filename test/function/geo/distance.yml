@@ -4,37 +4,132 @@ features:
 
 tests:
 - name: Basic
-  query: |
-    geo::distance(~left~, ~right~)
   variables:
-    left:
-    - '{"lat": 59.913889, "lng": 10.752222}'
-    - 'geo({"lat": 59.913889, "lng": 10.752222})'
-    right:
-    - '{"lat": 59.329444, "lng": 18.068611}'
-    - 'geo({"lat": 59.329444, "lng": 18.068611})'
+    a: '{"lat": 59.913889, "lng": 10.752222}'
+    b: '{"lat": 59.329444, "lng": 18.068611}'
+  tests:
+  - query: "geo::distance(~a~, ~b~)"
+  - query: "geo::distance(geo(~a~), geo(~b~))"
   result: 416760.7738822515
 
 - name: Self
-  query: |
-    geo::distance(~left~, ~left~)
   variables:
-    left:
+    v:
     - '{"lat": 59.913889, "lng": 10.752222}'
-    - 'geo({"lat": 59.913889, "lng": 10.752222})'
+  tests:
+  - query: "geo::distance(~v~, ~v~)"
+  - query: "geo::distance(geo(~v~), geo(~v~))"
   result: 0.0
 
 - name: Invalid
-  query: |
-    geo::distance(~left~, ~right~)
   variables:
-    left:
+    a:
     - '{"type": "Polygon", "coordinates": []}'
     - "42"
     - '"hello world"'
     - "true"
     - "2.34"
-    right:
+    b:
     - '{"lat": 59.913889, "lng": 10.752222}'
-    - 'geo({"lat": 59.913889, "lng": 10.752222})'
+  test:
+  - query: "geo::distance(~a~, ~b~)"
+  - query: "geo::distance(~b~, ~a~)"
+  - query: "geo::distance(geo(~a~), geo(~b~))"
+  - query: "geo::distance(geo(~b~), geo(~a~))"
   result: null
+
+- name: "< and <="
+  variables:
+    op:
+    - '<'
+    - '<='
+    a:
+    - '{"lat": 59.913889, "lng": 10.752222}'
+    b:
+    - '{"lat": 59.329444, "lng": 18.068611}'
+  tests:
+  - query: "geo::distance(~a~, ~b~) ~op~ 500000"
+  - query: "geo::distance(geo(~a~), geo(~b~)) ~op~ 500000"
+  - query: "geo::distance(~b~, ~a~) ~op~ 500000"
+  - query: "geo::distance(geo(~b~), geo(~a~)) ~op~ 500000"
+  result: true
+
+- name: "< and <="
+  variables:
+    op:
+    - '<'
+    - '<='
+    a:
+    - '{"lat": 59.913889, "lng": 10.752222}'
+    b:
+    - '{"lat": 59.329444, "lng": 18.068611}'
+  tests:
+  - query: "geo::distance(~a~, ~b~) ~op~ 100000"
+  - query: "geo::distance(geo(~a~), geo(~b~)) ~op~ 100000"
+  - query: "geo::distance(~b~, ~a~) ~op~ 100000"
+  - query: "geo::distance(geo(~b~), geo(~a~)) ~op~ 100000"
+  result: false
+
+- name: "> and >="
+  variables:
+    op:
+    - '>'
+    - '>='
+    a:
+    - '{"lat": 59.913889, "lng": 10.752222}'
+    b:
+    - '{"lat": 59.329444, "lng": 18.068611}'
+  tests:
+  - query: "geo::distance(~a~, ~b~) ~op~ 100"
+  - query: "geo::distance(geo(~a~), geo(~b~)) ~op~ 100"
+  - query: "geo::distance(~b~, ~a~) ~op~ 100"
+  - query: "geo::distance(geo(~b~), geo(~a~)) ~op~ 100"
+  result: true
+
+- name: "> and >="
+  variables:
+    op:
+    - '>'
+    - '>='
+    a:
+    - '{"lat": 59.913889, "lng": 10.752222}'
+    b:
+    - '{"lat": 59.329444, "lng": 18.068611}'
+  tests:
+  - query: "geo::distance(~a~, ~b~) ~op~ 500000"
+  - query: "geo::distance(geo(~a~), geo(~b~)) ~op~ 500000"
+  - query: "geo::distance(~b~, ~a~) ~op~ 500000"
+  - query: "geo::distance(geo(~b~), geo(~a~)) ~op~ 500000"
+  result: false
+
+- name: "!(< and <=)"
+  variables:
+    op:
+    - '<'
+    - '<='
+    a:
+    - '{"lat": 59.913889, "lng": 10.752222}'
+    b:
+    - '{"lat": 59.329444, "lng": 18.068611}'
+  tests:
+  - query: "!(geo::distance(~a~, ~b~) ~op~ 500000)"
+  - query: "!(geo::distance(geo(~a~), geo(~b~)) ~op~ 500000)"
+  - query: "!(geo::distance(~b~, ~a~) ~op~ 500000)"
+  - query: "!(geo::distance(geo(~b~), geo(~a~)) ~op~ 500000)"
+  result: false
+
+- name: "!(> and >=)"
+  variables:
+    op:
+    - '>'
+    - '>='
+    a:
+    - '{"lat": 59.913889, "lng": 10.752222}'
+    b:
+    - '{"lat": 59.329444, "lng": 18.068611}'
+  tests:
+  - query: "!(geo::distance(~a~, ~b~) ~op~ 100)"
+  - query: "!(geo::distance(geo(~a~), geo(~b~)) ~op~ 100)"
+  - query: "!(geo::distance(~b~, ~a~) ~op~ 100)"
+  - query: "!(geo::distance(geo(~b~), geo(~a~)) ~op~ 100)"
+  result: false
