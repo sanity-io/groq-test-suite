@@ -1,4 +1,6 @@
 name: "geo::latLng() function"
+features:
+- geoFunctions
 
 tests:
 - name: Basic
