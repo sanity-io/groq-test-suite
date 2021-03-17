@@ -1,4 +1,6 @@
 name: "geo() function"
+features:
+- geoFunctions
 
 tests:
 - name: Point

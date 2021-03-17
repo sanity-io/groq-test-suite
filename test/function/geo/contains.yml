@@ -1,4 +1,6 @@
 name: "geo::contains() function"
+features:
+- geoFunctions
 
 documents:
 - _id: Norway

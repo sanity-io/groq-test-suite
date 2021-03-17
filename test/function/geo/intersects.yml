@@ -1,4 +1,6 @@
 name: "geo::intersects() function"
+features:
+- geoFunctions
 
 documents:
 - _id: Norway

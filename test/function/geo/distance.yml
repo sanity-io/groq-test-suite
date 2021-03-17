@@ -1,4 +1,6 @@
 name: "geo::distance() function"
+features:
+- geoFunctions
 
 tests:
 - name: Basic
