@@ -237,94 +237,94 @@ tests:
   features:
   - scoring
   query: |
-    ~expr~ | score(value > 1 && bool) {_id, _score}
+    ~expr~ | score(value > 1 && bool) {_id, "score": _score}
   variables:
     expr:
     - "*"
     - "*[0..-1]"
     - "*[_type == 'doc']"
   result:
-  - {_id: b, _pos: 1}
-  - {_id: a, _pos: 2}
-  - {_id: c, _pos: 2}
-  - {_id: d, _pos: 2}
+  - {_id: b, score: 2}
+  - {_id: a, score: 0}
+  - {_id: c, score: 0}
+  - {_id: d, score: 0}
 
 - name: Conjunction with true
   features:
   - scoring
   query: |
-    ~expr~ | score(value > 1 && true) {_id, _score}
+    ~expr~ | score(value > 1 && true) {_id, "score": _score}
   variables:
     expr:
     - "*"
     - "*[0..-1]"
     - "*[_type == 'doc']"
   result:
-  - {_id: b, _pos: 1}
-  - {_id: c, _pos: 1}
-  - {_id: d, _pos: 1}
-  - {_id: a, _pos: 2}
+  - {_id: b, score: 2}
+  - {_id: c, score: 2}
+  - {_id: d, score: 2}
+  - {_id: a, score: 0}
 
 - name: Conjunction with false
   features:
   - scoring
   query: |
-    ~expr~ | score(value > 1 && false) {_id, _score}
+    ~expr~ | score(value > 1 && false) {_id, "score": _score}
   variables:
     expr:
     - "*"
     - "*[0..-1]"
     - "*[_type == 'doc']"
   result:
-  - {_id: a, _pos: 1}
-  - {_id: b, _pos: 1}
-  - {_id: c, _pos: 1}
-  - {_id: d, _pos: 1}
+  - {_id: a, score: 0}
+  - {_id: b, score: 0}
+  - {_id: c, score: 0}
+  - {_id: d, score: 0}
 
 - name: Disjunction
   features:
   - scoring
   query: |
-    ~expr~ | score(value > 1 || bool) {_id, _score}
+    ~expr~ | score(value > 1 || bool) {_id, "score": _score}
   variables:
     expr:
     - "*"
     - "*[0..-1]"
     - "*[_type == 'doc']"
   result:
-  - {_id: b, _pos: 1}
-  - {_id: c, _pos: 2}
-  - {_id: d, _pos: 2}
-  - {_id: a, _pos: 3}
+  - {_id: b, score: 2}
+  - {_id: a, score: 1}
+  - {_id: c, score: 1}
+  - {_id: d, score: 1}
 
 - name: Disjunction with true
   features:
   - scoring
   query: |
-    ~expr~ | score(value > 1 || true) {_id, _score}
+    ~expr~ | score(value > 1 || true) {_id, "score": _score}
   variables:
     expr:
     - "*"
     - "*[0..-1]"
     - "*[_type == 'doc']"
   result:
-  - {_id: b, _pos: 1}
-  - {_id: c, _pos: 1}
-  - {_id: d, _pos: 1}
-  - {_id: a, _pos: 2}
+  - {_id: b, score: 2}
+  - {_id: c, score: 2}
+  - {_id: d, score: 2}
+  - {_id: a, score: 1}
 
 - name: Disjunction with false
   features:
   - scoring
   query: |
-    ~expr~ | score(value > 1 || false) {_id, _score}
+    ~expr~ | score(value > 1 || false) {_id, "score": _score}
   variables:
     expr:
     - "*"
     - "*[0..-1]"
     - "*[_type == 'doc']"
   result:
-  - {_id: b, _pos: 1}
-  - {_id: c, _pos: 1}
-  - {_id: d, _pos: 1}
-  - {_id: a, _pos: 2}
+  - {_id: b, score: 1}
+  - {_id: c, score: 1}
+  - {_id: d, score: 1}
+  - {_id: a, score: 0}
