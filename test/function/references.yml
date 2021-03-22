@@ -115,7 +115,7 @@ tests:
     - '["c", "james-cameron"]'
     - '["c"], ["james-cameron"]'
     - '1, null, ["c"], ["james-cameron"]'
-    - '1, null, "c", 5 => 7, ["james-cameron"]'
+    - '1, null, "c", ["james-cameron"]'
 
 - name: "With parent"
   query: |
@@ -183,8 +183,6 @@ tests:
     - 'null'
     - 'true'
     - 'false'
-    - '"1" => "1"'
-    - '"1" .. "1"'
 
 - name: "Incorrect number of arguments"
   query: |

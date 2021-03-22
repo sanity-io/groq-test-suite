@@ -71,8 +71,6 @@ tests:
     - '123'
     - '{"key": "value"}'
     - '"Michael"'
-    - '(1 => 2)'
-    - '(1 .. 3)'
   query: |
     count(~expr~)
   result: null

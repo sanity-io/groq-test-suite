@@ -40,9 +40,6 @@ variables:
   - "{}"
   - "null"
   - "[]"
-  - "(1 => 2)"
-  - "(1 .. 2)"
-  - "(1 ... 2)"
 
 tests:
 - name: "Numbers"

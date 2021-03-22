@@ -70,8 +70,6 @@ tests:
     - 'null'
     - '{"key": "value"}'
     - '[1, 2]'
-    - '(1 => 2)'
-    - '(1 .. 3)'
   query: |
     string(~expr~)
   result: null

@@ -38,8 +38,6 @@ tests:
     expr:
     - '123'
     - '{"key": "value"}'
-    - '(1 => 2)'
-    - '(1 .. 3)'
     - 'null'
     - 'true'
     - 'false'

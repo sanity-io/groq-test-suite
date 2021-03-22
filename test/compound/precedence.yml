@@ -118,14 +118,14 @@ tests:
   result: 2
 
 - query: |
-    1 + 2 .. 3
-  result: "3..3"
+    3 in (1 + 2 .. 3)
+  result: true
 - query: |
-    1 + (2 .. 3)
-  result: null
+    3 in (1 + (2 .. 3))
+  valid: false
 - query: |
-    1 .. 2 + 3
-  result: "1..5"
+    3 in (1 .. 2 + 3)
+  result: true
 
 # Level 5 (.., ...)
 
@@ -138,7 +138,7 @@ tests:
   result: true
 - query: |
     (2 in 1) .. 4
-  result: null
+  valid: false
 
 # Test level 6 against level 4 as a replacement for level 5 against 5:
 - query: |
@@ -205,10 +205,10 @@ tests:
   result: true
 
 - query: |
-    true || true => false
-  result: "true => false"
+    select(true || true => false)
+  result: false
 - query: |
-    true || (true => false)
-  result: true
+    select(true || (true => false))
+  valid: false
 
 # Level 1 (=>)
