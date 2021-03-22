@@ -7,8 +7,6 @@ tests:
     - "true"
     - "false"
     - "null"
-    - "(1 => 2)"
-    - "(1 .. 2)"
   result: null
   query: |
     ~val~ + ~val~

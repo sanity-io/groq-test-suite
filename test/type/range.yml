@@ -1,43 +1,8 @@
 name: "Range"
 
 tests:
-- name: "String construction"
+- name: "Invalid"
+  valid: false
   tests:
-  - query: '"a".."b"'
-    result: '"a".."b"'
-  - query: '"a"..."b"'
-    result: '"a"..."b"'
-
-- name: "Number construction"
-  tests:
-  - query: '1..2'
-    result: '1..2'
-  - query: '1...2'
-    result: '1...2'
-
-- name: "Boolean construction"
-  tests:
-  - query: 'false..true'
-    result: 'false..true'
-  - query: 'false...true'
-    result: 'false...true'
-
-- name: "Un-rangable types"
-  variables:
-    t:
-    - "[]"
-    - "{}"
-  genFilter: false
-  genJoin: false
-  result: null
-  tests:
-  - query: "~t~ .. ~t~"
-  - query: "~t~ ... ~t~"
-
-- name: "Mixed type"
-  result: null
-  genFilter: false
-  tests:
-  - query: '1 .. "a"'
-  - query: '"a" .. 1'
-
+  - query: '"a" .. "b"'
+  - query: '"a" ... "b"'
