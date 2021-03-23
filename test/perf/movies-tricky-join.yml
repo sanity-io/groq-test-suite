@@ -1,0 +1,55 @@
+dataset: movies
+name: "perf / movies"
+
+tests:
+- name: Join with plus operator
+  query: |
+    *[
+      _type == "collection" &&
+      count(*[_type == "movie" && ^.name == title + " Collection"]) > 0
+    ]
+    {_id, name}
+    [0...10]
+  result:
+    [
+      {
+        "_id": "collection-10",
+        "name": "Star Wars Collection"
+      },
+      {
+        "_id": "collection-100286",
+        "name": "Elizabeth Collection"
+      },
+      {
+        "_id": "collection-100965",
+        "name": "Atlantis Collection"
+      },
+      {
+        "_id": "collection-100970",
+        "name": "The Fox and the Hound Collection"
+      },
+      {
+        "_id": "collection-101246",
+        "name": "Azumi Collection"
+      },
+      {
+        "_id": "collection-101385",
+        "name": "Trailer Park Boys Collection"
+      },
+      {
+        "_id": "collection-10194",
+        "name": "Toy Story Collection"
+      },
+      {
+        "_id": "collection-102008",
+        "name": "Another Gay Movie Collection"
+      },
+      {
+        "_id": "collection-102019",
+        "name": "Death Note Collection"
+      },
+      {
+        "_id": "collection-102322",
+        "name": "Sherlock Holmes Collection"
+      }
+    ]
