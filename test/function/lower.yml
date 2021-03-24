@@ -2,38 +2,38 @@ name: "lower() function"
 documents:
 - _id: "Movie-10000"
   _type: "movie"
-  cast:
-    - person:
-        name: Salvatore Basile
-        profile:
-          path: /uuNgFWRyZgbhNEKKSRv0pip4tvE.jpg
-    - person:
-        name: Sergio Cabrera
-        profile:
-          path: /3RsA3N2riu5MeTtuOm5j5swWYOo.jpg
-    - person:
-        name: Sergio Cabrera
-        profile:
-          path: /3RsA3N2riu5MeTtuOm5j5swWYOo.jpg
 - _id: "Movie-100"
   _type: "movie"
-  cast:
-    - person:
-        name: Jason Flemyng
-        profile:
-          path: /kzzQoiO3bbi2UeDJL9QtBT5jaQn.jpg
-    - person:
-        name: Dexter Fletcher
-        profile:
-          path: /did9anJiAFYvTbeQyNZaxts7GaT.jpg
-    - person:
-        name: Nick Moran
-        profile:
-          path: /jf5M1SxmWFOm8lsOmxlFGSaUSm6.jpg
-    - person:
-        name: Jason Statham
-        profile:
-          path: /PhWiWgasncGWD9LdbsGcmxkV4r.jpg
+- _id: "PT-block"
+  _type: "pt"
+  body:
+    [
+      {
+        "_type": "block",
+        "style": "normal",
+        "children": [ {
+          "_type": "span",
+          "marks": [ ],
+          "text": "This is child in a block."
+        } ],
+        "markDefs": [ ]
+      },
+      {
+        "_type": "block",
+        "style": "normal",
+        "children": [ {
+          "_type": "span",
+          "marks": [ ],
+          "text": "This is child in another block."
+        },
+          {
+            "_type": "span",
+            "marks": [ "emphasis" ],
+            "text": "This is another child in another block."
+          }
+        ]
+      }
+    ]
 
 tests:
 - name: "With namespace"
@@ -44,6 +44,7 @@ tests:
   result:
     - "id": "movie-100"
     - "id": "movie-10000"
+    - "id": "pt-block"
 
 - name: "Projection"
   query: |
@@ -51,6 +52,7 @@ tests:
   result:
     - "id": "movie-100"
     - "id": "movie-10000"
+    - "id": "pt-block"
 
 - name: "Equality"
   query: |
@@ -63,6 +65,7 @@ tests:
     *[lower(_id) != "movie-10000"][]._id
   result:
     - "Movie-100"
+    - "PT-block"
 
 - name: "Match string"
   query: |
@@ -77,3 +80,22 @@ tests:
   result:
     - "Movie-100"
     - "Movie-10000"
+
+- name: "In lower strings"
+  query: |
+    *["movie-100" in [lower(_id)]][]._id
+  result:
+    - "Movie-100"
+
+- name: "In range"
+  query: |
+    *[lower(_id) in "movie-000".."movie-99999"][]._id
+  result:
+    - "Movie-100"
+    - "Movie-10000"
+
+- name: "Match PT Text"
+  query: |
+    *[lower(pt::text(body)) match "This is a*"][]._id
+  result:
+    - "PT-block"
