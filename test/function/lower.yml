@@ -1,0 +1,79 @@
+name: "lower() function"
+documents:
+- _id: "Movie-10000"
+  _type: "movie"
+  cast:
+    - person:
+        name: Salvatore Basile
+        profile:
+          path: /uuNgFWRyZgbhNEKKSRv0pip4tvE.jpg
+    - person:
+        name: Sergio Cabrera
+        profile:
+          path: /3RsA3N2riu5MeTtuOm5j5swWYOo.jpg
+    - person:
+        name: Sergio Cabrera
+        profile:
+          path: /3RsA3N2riu5MeTtuOm5j5swWYOo.jpg
+- _id: "Movie-100"
+  _type: "movie"
+  cast:
+    - person:
+        name: Jason Flemyng
+        profile:
+          path: /kzzQoiO3bbi2UeDJL9QtBT5jaQn.jpg
+    - person:
+        name: Dexter Fletcher
+        profile:
+          path: /did9anJiAFYvTbeQyNZaxts7GaT.jpg
+    - person:
+        name: Nick Moran
+        profile:
+          path: /jf5M1SxmWFOm8lsOmxlFGSaUSm6.jpg
+    - person:
+        name: Jason Statham
+        profile:
+          path: /PhWiWgasncGWD9LdbsGcmxkV4r.jpg
+
+tests:
+- name: "With namespace"
+  features:
+  - namespaces
+  query: |
+    * | {"id": string::lower(_id)}
+  result:
+    - "id": "movie-100"
+    - "id": "movie-10000"
+
+- name: "Projection"
+  query: |
+    * | {"id": lower(_id)}
+  result:
+    - "id": "movie-100"
+    - "id": "movie-10000"
+
+- name: "Equality"
+  query: |
+    *[lower(_id) == "movie-10000"][]._id
+  result:
+  - "Movie-10000"
+
+- name: "Inequality"
+  query: |
+    *[lower(_id) != "movie-10000"][]._id
+  result:
+    - "Movie-100"
+
+- name: "Match string"
+  query: |
+    *[lower(_id) match "movie*"][]._id
+  result:
+    - "Movie-100"
+    - "Movie-10000"
+
+- name: "In strings"
+  query: |
+    *[lower(_id) in ["movie-100", "movie-10000"]][]._id
+  result:
+    - "Movie-100"
+    - "Movie-10000"
