@@ -1,4 +1,8 @@
 name: "lower() function"
+
+features:
+  - namespaces
+
 documents:
 - _id: "Movie-10000"
   _type: "movie"
