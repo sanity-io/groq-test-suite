@@ -144,4 +144,20 @@ tests:
     - 'true'
     - 'false'
     - 'null'
-      
+
+- name: "_id in path"
+  documents:
+  - _id: "a"
+  tests:
+  - query: |
+      *[_id in path("*")][]._id
+    result: ["a"]
+
+- name: "_id not in path"
+  documents:
+    - _id: "a"
+    - _id: "a.b"
+  tests:
+    - query: |
+        *[!(_id in path("a.*"))][]._id
+      result: ["a"]
