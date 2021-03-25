@@ -136,7 +136,21 @@ tests:
     - '{"type": "MultiPolygon", "coordinates": [100]}'
     - '{"type": "LineString", "coordinates": [10, 10]}'
     - '{"type": "MultiLineString", "coordinates": [10, 10]}'
+    - '{"type": "Polygon", "coordinates": [[[-88.505859, 36.597889], [-91.142578, 33.906896], [-86.308594, 31.316101], [-85.649414, 35.924645], [-85.825195, 36.031332], [-85.825195, 36.031332], [-84.726563, 36.456636], [-82.858887, 37.996163], [-88.505859, 36.597889]]]}'
+    # Duplicate points
+    - '{"type": "Polygon", "coordinates": [[[0, 0], [0, 0]]]}'
+    # Start and end not connected
+    - '{"type": "Polygon", "coordinates": [[[0, 0], [1, 0]]]}'
+    # Intersects with itself
+    - '{"type": "Polygon", "coordinates": [[[-19.860535, 46.582462], [-16.810799, 28.249957], [-9.228172, 38.139147], [-42.972336, 40.950863], [-16.761017, 26.693785], [-19.860535, 46.582462]]]}'
+  result: null
+
+- name: Unsupported
+  query: |
+    geo(~arg~)
+  variables:
+    arg:
     - '{"type": "InvalidType"}'
     # We don't support FeatureCollection
     - '{"type":"FeatureCollection", "features": [{"type":"Feature","geometry":{"type":"Point","coordinates":[7.996354103088379,63.47343444824236]},"properties":{"ID_0":169}}]}'
-  result: null
+  invalid: true
