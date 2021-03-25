@@ -4,9 +4,9 @@ features:
   - namespaces
 
 documents:
-- _id: "Movie-10000"
-  _type: "movie"
 - _id: "Movie-100"
+  _type: "movie"
+- _id: "Movie-10000"
   _type: "movie"
 - _id: "PT-block"
   _type: "pt"
