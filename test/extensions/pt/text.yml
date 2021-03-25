@@ -1,7 +1,8 @@
 name: "Portable text"
 
 features:
-- namespaces
+  - namespaces
+  - portableText
 
 documents:
   - _id: "pt-array-block-multiple-children"
