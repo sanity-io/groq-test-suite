@@ -10,74 +10,80 @@ documents:
 - _id: "c"
   _type: "test"
   text: "Britney Ever After"
+- _id: "d"
+  _type: "test"
+  text: "The quick BROWN fox jumps over the LAZY dog."
+- _id: "e"
+  _type: "test"
+  text: "Похоже, на нашем веку россиянам все-таки посчастливится"
+- _id: "f"
+  _type: "test"
+  text: "Learn your A.B.C.s!`"
 
 variables:
-  text: '"hello world FOO-bar"'
-  pattern1: '"hel*"'
-  pattern2: '"fo"'
-  patterns: '["hello", "foo"]'
+  text: |
+    "hello world FOO-bar ding.dong A.B.C.s! посчастливится!"
 
 tests:
-- name: Simple match
-  query: |
-    *[text match "Britain"]._id
-  result: [a]
-- name: Simple case-insensitive match
-  query: |
-    *[text match "britain"]._id
-  result: [a]
-- name: Prefix
-  query: |
-    *[text match "brit*"]._id
-  result: [a, b, c]
-- name: Term and prefix
-  query: |
-    *[text match "battle brit*"]._id
-  result: [a]
-- name: Wildcard
-  query: |
-    *[text match "*britn*"]._id
-  result: [c]
-- name: Term and wildcard
-  query: |
-    *[text match "*brit* ever"]._id
-  result: [c]
-- name: Wildcard 2
-  query: |
-    *[text match "*br*tn*"]._id
-  result: [c]
-- name: Term and wildcard
-  query: |
-    *[text match "*br*tn* ever"]._id
-  result: [c]
+- query: |
+    ~text~ match ~pattern~
+  tests:
+  - name: "Basic match"
+    result: true
+    variables:
+      pattern:
+      - '"foo"'
+      - '"foo-bar"'
+      - '"hello"'
+      - '"hello world"'
+      - '"HELLO"'
+      - '"HELLO WORLD"'
+      - '"посчастливится"'
+      - '"A.B.C.s"'
+      - '"ding.dong"'
+  - name: "Basic non-match"
+    result: false
+    variables:
+      pattern:
+      - '"foos"'
+      - '"hell"'
+      - '"ding dong"'
 
 - query: |
     ~text~ match ~pattern~
-
   tests:
-    - name: "Matching"
-      result: true
-      variables:
-        pattern:
-        - '"hello*"'
-        - '"hel*"'
-        - '"foo"'
-        - '"bar"'
-        - '"*ld"'
-        - '"h*l*o"'
-        - '"foo-bar"'
-        - '"hel* bar"'
-        - '"hello bar*"'
-        - '["hel*", "bar"]'
-        - '["hello", "foo"]'
-
-    - name: "Non-matching"
-      result: false
-      variables:
-        pattern:
-        - '"fo"'
-        - '"hell"'
-        - '"fo bar"'
+  - name: "Wildcard match"
+    features:
+    - wildcardMatchSegmentation
+    result: true
+    variables:
+      pattern:
+      - '"hello*"'
+      - '"hel*"'
+      - '"foo"'
+      - '"bar"'
+      - '"*ld"'
+      - '"h*l*o"'
+      - '"foo-bar"'
+      - '"hel* bar"'
+      - '"hello bar*"'
+      - '["hel*", "bar"]'
+      - '["hello", "foo"]'
+      - '"ding*"'
+      - '"ding.*"'
+      - '"ding.*ong"'
+      - '"*dong"'
+      - '"*.dong"'
+      - '"*"'
+  - name: "Wildcard non-match"
+    result: false
+    features:
+    - wildcardMatchSegmentation
+    variables:
+      pattern:
+      - '"fo"'
+      - '"hell"'
+      - '"fo bar"'
 
 - name: "Multiple text"
   variables:
