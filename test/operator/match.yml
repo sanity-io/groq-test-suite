@@ -1,25 +1,5 @@
 name: "Match operator"
 
-documents:
-- _id: "a"
-  _type: "test"
-  text: "Battle of Britain"
-- _id: "b"
-  _type: "test"
-  text: "The Brittany Murphy Story"
-- _id: "c"
-  _type: "test"
-  text: "Britney Ever After"
-- _id: "d"
-  _type: "test"
-  text: "The quick BROWN fox jumps over the LAZY dog."
-- _id: "e"
-  _type: "test"
-  text: "Похоже, на нашем веку россиянам все-таки посчастливится"
-- _id: "f"
-  _type: "test"
-  text: "Learn your A.B.C.s!`"
-
 variables:
   text: |
     "hello world FOO-bar ding.dong A.B.C.s! посчастливится!"
