@@ -1,0 +1,78 @@
+name: dateTime() function
+documents: []
+tests:
+- name: dateTime() with > operator on different values
+  query: dateTime("2006-01-02T15:04:08Z") > dateTime("2006-01-02T15:04:05Z")
+  result: true
+- name: dateTime() with >= operator on different values
+  query: dateTime("2006-01-02T15:04:08Z") >= dateTime("2006-01-02T15:04:05Z")
+  result: true
+- name: dateTime() with >= operator on same values
+  query: dateTime("2006-01-02T15:04:08Z") >= dateTime("2006-01-02T15:04:08Z")
+  result: true
+- name: dateTime() with < operator on different values
+  query: dateTime("2006-01-02T15:04:08Z") < dateTime("2006-01-02T15:04:05Z")
+  result: false
+- name: dateTime() with <= operator on same values
+  query: dateTime("2006-01-02T15:04:08Z") <= dateTime("2006-01-02T15:04:08Z")
+  result: true
+- name: dateTime() with <= operator on different values
+  query: dateTime("2006-01-02T15:04:08Z") <= dateTime("2006-01-02T15:04:05Z")
+  result: false
+- name: dateTime() with == operator on same values
+  query: dateTime("2006-01-02T15:04:08Z") == dateTime("2006-01-02T15:04:08Z")
+  result: true
+- name: dateTime() with == operator on different values
+  query: dateTime("2006-01-02T15:04:08Z") == dateTime("2006-01-02T15:04:05Z")
+  result: false
+- name: dateTime() with != operator on same values
+  query: dateTime("2006-01-02T15:04:08Z") != dateTime("2006-01-02T15:04:08Z")
+  result: false
+- name: dateTime() with != operator on different values
+  query: dateTime("2006-01-02T15:04:08Z") != dateTime("2006-01-02T15:04:05Z")
+  result: true
+- name: Add int to dateTime
+  query: dateTime("2006-01-02T15:04:08Z") + 1
+  result: 2006-01-02 15:04:09 +0000 UTC
+  features:
+  - groqV1
+- name: Add 0 to dateTime
+  query: dateTime("2006-01-02T15:04:08Z") + 0
+  result: 2006-01-02 15:04:08 +0000 UTC
+  features:
+  - groqV1
+- name: Add int to dateTime cummulative
+  query: 1 + dateTime("2006-01-02T15:04:08Z")
+  result: 2006-01-02 15:04:09 +0000 UTC
+  features:
+  - groqV1
+- name: Add zero to dateTime cummulative
+  query: 0 + dateTime("2006-01-02T15:04:08Z")
+  result: 2006-01-02 15:04:08 +0000 UTC
+  features:
+  - groqV1
+- name: Subtract int from dateTime
+  query: dateTime("2006-01-02T15:04:08Z") - 1
+  result: 2006-01-02 15:04:07 +0000 UTC
+  features:
+  - groqV1
+- name: Subtract zero from dateTime
+  query: dateTime("2006-01-02T15:04:08Z") - 0
+  result: 2006-01-02 15:04:08 +0000 UTC
+  features:
+  - groqV1
+- name: Subtract higher dateTime from dateTime
+  query: dateTime("2006-01-02T15:04:08Z") - dateTime("2006-01-02T15:04:07Z")
+  result: 1
+  features:
+  - groqV1
+- name: Subtract equal dateTime from dateTime
+  query: dateTime("2006-01-02T15:04:08Z") - dateTime("2006-01-02T15:04:08Z")
+  result: 0
+  features:
+  - groqV1
+- name: Subtract lower dateTime from dateTime
+  query: dateTime("2006-01-02T15:04:08Z") - dateTime("2006-01-02T15:04:09Z")
+  result: -1
+  features:
+  - groqV1

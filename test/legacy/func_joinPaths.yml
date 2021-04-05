@@ -1,0 +1,45 @@
+name: joinPaths() function
+documents:
+- _id: a.b.c
+  _type: test
+  name: a.b.c
+- _id: def.g
+  _type: test
+  name: def.g
+tests:
+- name: attributes
+  query: |-
+    [
+      joinPaths(*[_id=="a.b.c"][0]._id, *[_id=="def.g"][0]._id),
+      joinPaths(*[_id=="a.b.c"][0].name, *[_id=="def.g"][0]._id),
+      joinPaths(*[_id=="a.b.c"][0]._id, *[_id=="def.g"][0].name),
+      joinPaths(*[_id=="a.b.c"][0].name, *[_id=="def.g"][0].name),
+      joinPaths("a.b.c", *[_id=="def.g"][0]._id),
+      joinPaths(*[_id=="a.b.c"][0]._id, "def.g"),
+    ]
+  result:
+  - a.b.c.def.g
+  - a.b.c.def.g
+  - a.b.c.def.g
+  - a.b.c.def.g
+  - a.b.c.def.g
+  - a.b.c.def.g
+  features:
+  - groqV1
+- name: literals
+  query: |-
+    [
+      joinPaths("a.b.c", "def.g"),
+      joinPaths(path("a.b.c"), "def.g"),
+      joinPaths("a.b.c", path("def.g")),
+      joinPaths(path("a.b.c"), path("def.g")),
+      joinPaths("a.**", "def.*"),
+    ]
+  result:
+  - a.b.c.def.g
+  - a.b.c.def.g
+  - a.b.c.def.g
+  - a.b.c.def.g
+  - a.**.def.*
+  features:
+  - groqV1

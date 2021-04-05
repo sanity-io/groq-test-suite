@@ -1,4 +1,5 @@
 name: "And operator"
+features: [groqV2]
 
 tests:
 - variables:

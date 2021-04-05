@@ -1,0 +1,7 @@
+name: identity() function
+features: [groqV1]
+documents: []
+tests:
+- name: identity()
+  query: identity()
+  result: someuser

@@ -1,4 +1,5 @@
 name: "Pair"
+features: [groqV2]
 
 tests:
 - query: "1 => 2"

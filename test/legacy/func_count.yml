@@ -1,0 +1,89 @@
+name: count() function
+documents:
+- _id: id
+  _type: values
+  v_array:
+  - 1
+  - 3.14
+  - string
+  - true
+  - - 1
+    - 2
+    - 3
+  - key: value
+  v_array_empty: []
+  v_array_null:
+  - null
+  - 1
+  - 3.14
+  - string
+  - true
+  - - 1
+    - 2
+    - 3
+  - key: value
+  v_decimal: 3.14
+  v_false: false
+  v_integer: 1
+  v_null: null
+  v_object:
+    v_array:
+    - a
+    - b
+    - c
+    v_boolean: true
+    v_decimal: 2.718
+    v_integer: 2
+    v_null: null
+    v_object:
+      k: v
+    v_string: abc
+  v_object_empty: {}
+  v_string: string
+  v_true: true
+- _id: a
+  _type: test
+  value: 1
+- _id: b
+  _type: test
+  value: 2
+- _id: c
+  _type: test
+  value: 3
+tests:
+- name: attributes
+  query: |-
+    [
+      count(*[_id=="id"][0].v_array),
+      count(*[_id=="id"][0].v_array_empty),
+      count(*[_id=="id"][0].v_array_null),
+    ]
+  result:
+  - 6
+  - 0
+  - 7
+- name: documents
+  query: |-
+    [
+      count(*),
+      count(*[_type == 'test' && value <= 2]),
+      count(*[false]),
+    ]
+  result:
+  - 4
+  - 2
+  - 0
+- name: literals
+  query: |-
+    [
+      count([1, 2, 3]),
+      count([1, 2, null, 3]),
+      count([]),
+    ]
+  result:
+  - 3
+  - 4
+  - 0
+- name: nulls
+  query: count(unknownAttribute)
+  result: null

@@ -1,0 +1,249 @@
+name: "+ operator"
+documents:
+- _id: target
+  _type: test
+  name: Target
+- _id: source
+  _type: test
+  name: Source
+  target:
+    _ref: target
+- _id: id
+  _type: test
+  v_array:
+  - 1
+  - string
+  - true
+  - null
+  - - 1
+    - 2
+    - 3
+  - key: value
+  v_decimal: 3.14
+  v_false: false
+  v_integer: 1
+  v_null: null
+  v_object:
+    v_array:
+    - a
+    - b
+    - c
+    v_boolean: true
+    v_decimal: 2.718
+    v_integer: 2
+    v_null: null
+    v_object:
+      k: v
+    v_string: abc
+  v_string: string
+  v_true: true
+tests:
+- name: "+ attributes"
+  query: |-
+    [
+      *[_id=='id'][0].v_integer + *[_id=='id'][0].v_integer,
+      *[_id=='id'][0].v_integer + *[_id=='id'][0].v_decimal,
+      *[_id=='id'][0].v_integer + *[_id=='id'][0].v_null,
+      *[_id=='id'][0].v_decimal + *[_id=='id'][0].v_integer,
+      *[_id=='id'][0].v_decimal + *[_id=='id'][0].v_decimal,
+      *[_id=='id'][0].v_decimal + *[_id=='id'][0].v_null,
+      *[_id=='id'][0].v_null + *[_id=='id'][0].v_integer,
+      *[_id=='id'][0].v_null + *[_id=='id'][0].v_decimal,
+      *[_id=='id'][0].v_null + *[_id=='id'][0].v_null,
+    ]
+  result:
+  - 2
+  - 4.140000000000001
+  - null
+  - 4.140000000000001
+  - 6.28
+  - null
+  - null
+  - null
+  - null
+- name: "+ attributes concatenation"
+  query: |-
+    [
+      *[_id=='id'][0].v_string + *[_id=='id'][0].v_object.v_string,
+      *[_id=='id'][0].v_array + *[_id=='id'][0].v_object.v_array,
+      *[_id=='id'][0].v_object + *[_id=='id'][0].v_object.v_object,
+    ]
+  result:
+  - stringabc
+  - - 1
+    - string
+    - true
+    - null
+    - - 1
+      - 2
+      - 3
+    - key: value
+    - a
+    - b
+    - c
+  - v_array:
+    - a
+    - b
+    - c
+    v_boolean: true
+    v_decimal: 2.718
+    v_integer: 2
+    v_null: null
+    v_object:
+      k: v
+    v_string: abc
+    k: v
+  features:
+  - groqV1
+- name: "+ attributes concatenation reference"
+  query: |-
+    *[_id=="source"][0]{
+      "concat": @ + target->,
+    }.concat{_id, _type, name, target}
+  result:
+    _id: target
+    _type: test
+    name: Target
+    target:
+      _ref: target
+- name: "+ attributes invalid types"
+  query: |-
+    [
+      *[_id=='id'][0].v_string + *[_id=='id'][0].v_object.v_integer,
+    ]
+  result:
+  - null
+- name: "+ attributes prefix"
+  query: |-
+    [
+      + *[_id=='id'][0].v_integer,
+      + *[_id=='id'][0].v_decimal,
+      + *[_id=='id'][0].v_null,
+    ]
+  result:
+  - 1
+  - 3.14
+  - null
+- name: "+ literals"
+  query: |-
+    [
+      1 + 2,
+      1 + 2 + 3 + 4 + 5 + 6 + 7 + 8 + 9 + 10,
+      1 + 3.14,
+      3.14 + 1,
+      3.14 + 2.718,
+      1 + null,
+      null + 1,
+      null + null,
+      9223372036854775807 + 1,
+      -9223372036854775808 + 1,
+      9007199254740992 + 1,
+      -9007199254740994 + 1,
+      3.14e100 + 2.718e100,
+    ]
+  result:
+  - 3
+  - 55
+  - 4.140000000000001
+  - 4.140000000000001
+  - 5.8580000000000005
+  - null
+  - null
+  - null
+  - -9223372036854776000
+  - -9223372036854775807
+  - 9007199254740992
+  - -9007199254740992
+  - 5.858e100
+  features:
+  - groqV1
+- name: "+ literals"
+  query: |-
+    [
+      1 + 2,
+      1 + 2 + 3 + 4 + 5 + 6 + 7 + 8 + 9 + 10,
+      1 + 3.14,
+      3.14 + 1,
+      3.14 + 2.718,
+      1 + null,
+      null + 1,
+      null + null,
+      9223372036854775807 + 1,
+      -9223372036854775808 + 1,
+      9007199254740992 + 1,
+      -9007199254740994 + 1,
+      3.14e100 + 2.718e100,
+    ]
+  result:
+  - 3
+  - 55
+  - 4.140000000000001
+  - 4.140000000000001
+  - 5.8580000000000005
+  - null
+  - null
+  - null
+  - 9223372036854775807
+  - -9223372036854775807
+  - 9007199254740993
+  - -9007199254740992
+  - 5.858e100
+  features:
+  - groqV2
+- name: "+ literals concatenation"
+  query: |-
+    [
+      "abc" + "def" + "ghi" + "jkl",
+      "abc" + null,
+      null + "abc",
+      null + null,
+      [1,2,3] + ["a", "b", "c"] + [] + [true, false],
+      {"integer": 1, "string": "a"} + {"string": "b", "float": 3.14} + {"boolean": true, "integer": 2}
+    ]
+  result:
+  - abcdefghijkl
+  - null
+  - null
+  - null
+  - - 1
+    - 2
+    - 3
+    - a
+    - b
+    - c
+    - true
+    - false
+  - integer: 2
+    string: b
+    float: 3.14
+    boolean: true
+- name: "+ literals invalid types"
+  query: |-
+    [
+      1 + "abc",
+    ]
+  result:
+  - null
+- name: "+ literals prefix"
+  query: |-
+    [
+      +1,
+      ++1,
+      +++1,
+      +0,
+      +1 + +1,
+      +1 - +1,
+      +3.14,
+      +3.14 + +3.14,
+      +3.14 - +3.14,
+    ]
+  result:
+  - 1
+  - 1
+  - 1
+  - 0
+  - 2
+  - 0
+  - 3.14
+  - 6.28
+  - 0

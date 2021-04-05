@@ -1,4 +1,5 @@
 name: "Nested references"
+features: [groqV2]
 
 documents:
 - _id: image-customer-itch

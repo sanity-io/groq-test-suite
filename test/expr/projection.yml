@@ -1,4 +1,6 @@
 name: "Projection expression"
+features: [groqV2]
+
 documents:
 - _id: "a"
   _type: "test"
@@ -144,7 +146,7 @@ tests:
     *[_type=="test"][0..2]~expr~
   tests:
     - variables: {expr: "{_id, name}"}
-      result: 
+      result:
       - _id: a
         name: A
       - _id: b

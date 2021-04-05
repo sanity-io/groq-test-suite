@@ -1,0 +1,379 @@
+name: 'Joins: outer joins'
+documents:
+- _id: accounting
+  _type: department
+  name: Accounting
+- _id: engineering
+  _type: department
+  name: Engineering
+- _id: legal
+  _type: department
+  name: Legal
+- _id: alice
+  _type: employee
+  name: Alice Anderson
+  department:
+    _ref: accounting
+- _id: bob
+  _type: employee
+  name: Bob Baker
+  department:
+    _ref: engineering
+- _id: eve
+  _type: employee
+  name: Eve Evans
+  department:
+    _ref: engineering
+- _id: xander
+  _type: employee
+  name: Xander Xenakis
+- _id: u1
+  _type: user
+  friends:
+  - _ref: u2
+    _weak: true
+  - _ref: u3
+    _weak: true
+- _id: u2
+  _type: user
+  friends:
+  - _ref: u1
+    _weak: true
+  - _ref: u3
+    _weak: true
+- _id: u3
+  _type: user
+  friends:
+  - _ref: u1
+    _weak: true
+  - _ref: u2
+    _weak: true
+- _id: v1
+  _type: value
+  val: 1
+- _id: v2
+  _type: value
+  val: 2
+- _id: v3
+  _type: value
+  val: 3
+tests:
+- name: in
+  query: |-
+    *[_type == "user"]{
+      _id,
+      "friends": *[_type == "user" && _id in ^.friends[]._ref] | order(_id)[]._id
+    }
+  result:
+  - _id: u1
+    friends:
+    - u2
+    - u3
+  - _id: u2
+    friends:
+    - u1
+    - u3
+  - _id: u3
+    friends:
+    - u1
+    - u2
+- name: "=="
+  query: |-
+    *[_type == "value"]{
+      _id,
+      "join": *[_type == "value" && val == ^.val] | order(val)[].val
+    }
+  result:
+  - _id: v1
+    join:
+    - 1
+  - _id: v2
+    join:
+    - 2
+  - _id: v3
+    join:
+    - 3
+- name: "!="
+  query: |-
+    *[_type == "value"]{
+      _id,
+      "join": *[_type == "value" && val != ^.val] | order(val)[].val
+    }
+  result:
+  - _id: v1
+    join:
+    - 2
+    - 3
+  - _id: v2
+    join:
+    - 1
+    - 3
+  - _id: v3
+    join:
+    - 1
+    - 2
+- name: "!="
+  query: |-
+    *[_type == "value"]{
+      _id,
+      "join": *[_type == "value" && val != ^.val] | order(val)[].val
+    }
+  result:
+  - _id: v1
+    join:
+    - 2
+    - 3
+  - _id: v2
+    join:
+    - 1
+    - 3
+  - _id: v3
+    join:
+    - 1
+    - 2
+- name: "<"
+  query: |-
+    *[_type == "value"]{
+      _id,
+      "join": *[_type == "value" && val < ^.val] | order(val)[].val
+    }
+  result:
+  - _id: v1
+    join: []
+  - _id: v2
+    join:
+    - 1
+  - _id: v3
+    join:
+    - 1
+    - 2
+- name: "<="
+  query: |-
+    *[_type == "value"]{
+      _id,
+      "join": *[_type == "value" && val <= ^.val] | order(val)[].val
+    }
+  result:
+  - _id: v1
+    join:
+    - 1
+  - _id: v2
+    join:
+    - 1
+    - 2
+  - _id: v3
+    join:
+    - 1
+    - 2
+    - 3
+- name: ">"
+  query: |-
+    *[_type == "value"]{
+      _id,
+      "join": *[_type == "value" && val > ^.val] | order(val)[].val
+    }
+  result:
+  - _id: v1
+    join:
+    - 2
+    - 3
+  - _id: v2
+    join:
+    - 3
+  - _id: v3
+    join: []
+- name: ">="
+  query: |-
+    *[_type == "value"]{
+      _id,
+      "join": *[_type == "value" && val >= ^.val] | order(val)[].val
+    }
+  result:
+  - _id: v1
+    join:
+    - 1
+    - 2
+    - 3
+  - _id: v2
+    join:
+    - 2
+    - 3
+  - _id: v3
+    join:
+    - 3
+- name: "!(in)"
+  query: |-
+    *[_type == "user"]{
+      _id,
+      "notFriends": *[_type == "user" && !(_id in ^.friends[]._ref)] | order(_id)[]._id
+    }
+  result:
+  - _id: u1
+    notFriends:
+    - u1
+  - _id: u2
+    notFriends:
+    - u2
+  - _id: u3
+    notFriends:
+    - u3
+- name: "!(==)"
+  query: |-
+    *[_type == "value"]{
+      _id,
+      "join": *[_type == "value" && !(val == ^.val)] | order(val)[].val
+    }
+  result:
+  - _id: v1
+    join:
+    - 2
+    - 3
+  - _id: v2
+    join:
+    - 1
+    - 3
+  - _id: v3
+    join:
+    - 1
+    - 2
+- name: "!(!=)"
+  query: |-
+    *[_type == "value"]{
+      _id,
+      "join": *[_type == "value" && !(val != ^.val)] | order(val)[].val
+    }
+  result:
+  - _id: v1
+    join:
+    - 1
+  - _id: v2
+    join:
+    - 2
+  - _id: v3
+    join:
+    - 3
+- name: "!(<)"
+  query: |-
+    *[_type == "value"]{
+      _id,
+      "join": *[_type == "value" && !(val < ^.val)] | order(val)[].val
+    }
+  result:
+  - _id: v1
+    join:
+    - 1
+    - 2
+    - 3
+  - _id: v2
+    join:
+    - 2
+    - 3
+  - _id: v3
+    join:
+    - 3
+- name: "!(<=)"
+  query: |-
+    *[_type == "value"]{
+      _id,
+      "join": *[_type == "value" && !(val <= ^.val)] | order(val)[].val
+    }
+  result:
+  - _id: v1
+    join:
+    - 2
+    - 3
+  - _id: v2
+    join:
+    - 3
+  - _id: v3
+    join: []
+- name: "!(>)"
+  query: |-
+    *[_type == "value"]{
+      _id,
+      "join": *[_type == "value" && !(val > ^.val)] | order(val)[].val
+    }
+  result:
+  - _id: v1
+    join:
+    - 1
+  - _id: v2
+    join:
+    - 1
+    - 2
+  - _id: v3
+    join:
+    - 1
+    - 2
+    - 3
+- name: "!(>=)"
+  query: |-
+    *[_type == "value"]{
+      _id,
+      "join": *[_type == "value" && !(val >= ^.val)] | order(val)[].val
+    }
+  result:
+  - _id: v1
+    join: []
+  - _id: v2
+    join:
+    - 1
+  - _id: v3
+    join:
+    - 1
+    - 2
+- name: "->"
+  query: |-
+    *[_type == "employee"]{
+      _id,
+      "department": department->_id
+    }
+  result:
+  - _id: alice
+    department: accounting
+  - _id: bob
+    department: engineering
+  - _id: eve
+    department: engineering
+  - _id: xander
+  features:
+  - groqV1
+- name: "->"
+  query: |-
+    *[_type == "employee"]{
+      _id,
+      "department": department->_id
+    }
+  result:
+  - _id: alice
+    department: accounting
+  - _id: bob
+    department: engineering
+  - _id: eve
+    department: engineering
+  - _id: xander
+    department: null
+  features:
+  - groqV2
+- name: literal with negation
+  query: |-
+    {
+      "employees": *[_type == "employee" && _id != ^._id] | order(_id)[]._id
+    }
+  result:
+    employees:
+    - alice
+    - bob
+    - eve
+    - xander
+- name: Regression test
+  query: |-
+    *[false] {
+      "foo": (
+        *[
+          coalesce(lower(name), '') == coalesce(lower(^.name), '') &&
+          lower(_id) < lower(^._id)
+        ]
+      )
+    }
+  result: []

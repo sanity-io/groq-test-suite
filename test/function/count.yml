@@ -1,4 +1,6 @@
 name: "count() function"
+features: [groqV2]
+
 documents:
 - _id: "a"
   _type: "doc"
