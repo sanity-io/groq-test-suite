@@ -1,10 +1,15 @@
 name: "defined() function"
+
 documents:
 - _id: "a"
   _type: "doc"
   v_num: 0
   v_str: ""
   v_arr: []
+  v_obj: {}
+  v_geo:
+    lat: 11
+    lng: 10
 
 tests:
 - name: "With namespace"
@@ -36,9 +41,24 @@ tests:
     - 'true'
     - '""'
     - '"1"'
+    - '{}'
     - '*[_id == "a"][0].v_num'
     - '*[_id == "a"][0].v_str'
     - '*[_id == "a"][0].v_arr'
+    - '*[_id == "a"][0].v_obj'
+    - '*[_id == "a"][0].v_geo'
+
+- name: Empty
+  query: |
+    *[defined(~expr~)][0]._id
+  result: a
+  variables:
+    expr:
+    - 'v_num'
+    - 'v_str'
+    - 'v_arr'
+    - 'v_obj'
+    - 'v_geo'
 
 - valid: false
   query: |
