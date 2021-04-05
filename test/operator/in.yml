@@ -1,11 +1,19 @@
 name: "In operator"
 
 tests:
+- name: Invalid
+  query: |
+    ~left~ in ~right~
+  result: false
+  tests:
+  - variables: {left: 'a[].b[]', right: '["foo"]'}
+  - variables: {left: '["foo"]', right: '[["foo"]]'}
+  - variables: {left: '[]', right: '[[]]'}
+
 - name: "Array"
   query: |
     ~el~ in ~arr~
   tests:
-
   - result: true
     variables:
       arr: '[1, "1", null, true, false]'
@@ -29,7 +37,6 @@ tests:
   query: |
     ~el~ in ~arr~
   tests:
-
   - result: true
     variables:
       arr: '1..5'
@@ -69,7 +76,6 @@ tests:
   query: |
     ~el~ in ~arr~
   tests:
-
   - result: true
     variables:
       arr: '"a".."c"'
@@ -110,7 +116,6 @@ tests:
     ~el~ in path(~path~)
   genFilter: false
   tests:
-
   - result: true
     variables:
       path: '"a.*"'
