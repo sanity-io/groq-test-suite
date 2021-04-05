@@ -1,6 +1,5 @@
 name: "Comparison operators"
 variables:
-
   # True when LHS is strictly smaller than RHS.
   lt:
   - "!="
@@ -42,6 +41,17 @@ variables:
   - "[]"
 
 tests:
+- name: "Invalid"
+  result: []
+  variables:
+    op: ['<', '<=', '>', '>=']
+    expr:
+    - 'a[].b'
+    - 'a[].b[]'
+  tests:
+  - query: '*[42 ~op~ ~expr~]'
+  - query: '*[~expr~ ~op~ 42]'
+
 - name: "Numbers"
   result: true
   tests:
