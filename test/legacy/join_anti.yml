@@ -1,0 +1,86 @@
+name: 'Joins: antijoins'
+documents:
+- _id: accounting
+  _type: department
+  name: Accounting
+- _id: engineering
+  _type: department
+  name: Engineering
+- _id: legal
+  _type: department
+  name: Legal
+- _id: alice
+  _type: employee
+  name: Alice Anderson
+  department:
+    _ref: accounting
+- _id: bob
+  _type: employee
+  name: Bob Baker
+  department:
+    _ref: engineering
+- _id: eve
+  _type: employee
+  name: Eve Evans
+  department:
+    _ref: engineering
+- _id: xander
+  _type: employee
+  name: Xander Xenakis
+tests:
+- name: "-> defined (legacy array syntax)"
+  query: '*[ _type == "employee" && !defined(department->) ]._id'
+  result:
+  - xander
+  features:
+  - groqV1
+- name: "-> defined"
+  query: '*[ _type == "employee" && !defined(department->) ][]._id'
+  result:
+  - xander
+- name: "-> equality (legacy array syntax)"
+  query: '*[ _type == "employee" && department->_id != "engineering" ]._id'
+  result:
+  - alice
+  - xander
+  features:
+  - groqV1
+- name: "-> equality"
+  query: '*[ _type == "employee" && department->_id != "engineering" ][]._id'
+  result:
+  - alice
+  - xander
+- name: Count references (legacy array syntax)
+  query: '*[ _type == "department" && count(*[references(^._id)]) == 0 ]._id'
+  result:
+  - legal
+  features:
+  - groqV1
+- name: Count references
+  query: '*[ _type == "department" && count(*[references(^._id)]) == 0 ][]._id'
+  result:
+  - legal
+- name: In subquery (legacy array syntax)
+  query: '*[ _type == "department" && !(_id in *[ _type == "employee" ].department._ref)
+    ]._id'
+  result:
+  - legal
+  features:
+  - groqV1
+- name: In subquery
+  query: '*[ _type == "department" && !(_id in *[ _type == "employee" ][].department._ref)
+    ][]._id'
+  result:
+  - legal
+- name: References (legacy array syntax)
+  query: '*[ _type == "employee" && !references("engineering") ]._id'
+  result:
+  - alice
+  - xander
+  features:
+  - groqV1
+- name: References
+  query: '*[ _type == "employee" && !references("engineering") ][]._id'
+  result:
+  - alice
+  - xander

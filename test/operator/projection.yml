@@ -1,4 +1,6 @@
 name: "Projection operator"
+features: [groqV2]
+
 documents:
 - _id: arrays
   _type: test
@@ -176,7 +178,7 @@ tests:
     - {variables: {expr: ".attr[]"}}
     - {variables: {expr: "->"}}
     - {variables: {expr: "->[]"}}
-  
+
   - result: null
     tests:
     - {variables: {expr: "[0][0]"}}

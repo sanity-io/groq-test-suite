@@ -24,6 +24,7 @@ tests:
   - {variables: {left: '0', right: '0'}, result: null}
 
 - name: "Non-finite is null"
+  features: [groqV2]
   query: '(~expr~) == null'
   result: true
   tests:

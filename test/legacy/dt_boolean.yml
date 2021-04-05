@@ -1,0 +1,25 @@
+name: 'Datatype: boolean'
+documents:
+- _id: booleans
+  _type: test
+  value:
+  - true
+  - false
+tests:
+- name: Boolean attributes
+  query: '*[ _id == "booleans" ][0].value'
+  result:
+  - true
+  - false
+- name: Boolean literals
+  query: "[true, false]"
+  result:
+  - true
+  - false
+- name: Boolean literals non-lowercase
+  query: "[TRUE, True, FALSE, False]"
+  result:
+  - null
+  - null
+  - null
+  - null

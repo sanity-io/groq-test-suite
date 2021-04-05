@@ -1,0 +1,222 @@
+name: coalesce() function
+documents:
+- _id: id
+  _type: test
+  v_array:
+  - 1
+  - 3.14
+  - string
+  - true
+  - - 1
+    - 2
+    - 3
+  - key: value
+  v_array_empty: []
+  v_array_null:
+  - null
+  - 1
+  - 3.14
+  - string
+  - true
+  - - 1
+    - 2
+    - 3
+  - key: value
+  v_decimal: 3.14
+  v_false: false
+  v_integer: 1
+  v_null: null
+  v_object:
+    v_array:
+    - a
+    - b
+    - c
+    v_boolean: true
+    v_decimal: 2.718
+    v_integer: 2
+    v_null: null
+    v_object:
+      k: v
+    v_string: abc
+  v_object_empty: {}
+  v_string: string
+  v_true: true
+tests:
+- name: attributes types
+  query: |-
+    [
+      coalesce(*[_id=="id"][0].v_array),
+      coalesce(*[_id=="id"][0].v_array_empty),
+      coalesce(*[_id=="id"][0].v_array_null),
+      coalesce(*[_id=="id"][0].v_decimal),
+      coalesce(*[_id=="id"][0].v_false),
+      coalesce(*[_id=="id"][0].v_integer),
+      coalesce(*[_id=="id"][0].v_null),
+      coalesce(*[_id=="id"][0].v_object),
+      coalesce(*[_id=="id"][0].v_object_empty),
+      coalesce(*[_id=="id"][0].v_string),
+      coalesce(*[_id=="id"][0].v_true),
+      coalesce(*[_id=="id"][0].v_missing),
+    ]
+  result:
+  - - 1
+    - 3.14
+    - string
+    - true
+    - - 1
+      - 2
+      - 3
+    - key: value
+  - []
+  - - null
+    - 1
+    - 3.14
+    - string
+    - true
+    - - 1
+      - 2
+      - 3
+    - key: value
+  - 3.14
+  - false
+  - 1
+  - null
+  - v_array:
+    - a
+    - b
+    - c
+    v_boolean: true
+    v_decimal: 2.718
+    v_integer: 2
+    v_null: null
+    v_object:
+      k: v
+    v_string: abc
+  - {}
+  - string
+  - true
+  - null
+  features:
+  - groqV1
+- name: attributes types multiple
+  query: |-
+    [
+      coalesce(null, *[_id=="id"][0].v_array, null, "other", null),
+      coalesce(null, *[_id=="id"][0].v_array_empty, null, "other", null),
+      coalesce(null, *[_id=="id"][0].v_array_null, null, "other", null),
+      coalesce(null, *[_id=="id"][0].v_decimal, null, "other", null),
+      coalesce(null, *[_id=="id"][0].v_false, null, "other", null),
+      coalesce(null, *[_id=="id"][0].v_integer, null, "other", null),
+      coalesce(null, *[_id=="id"][0].v_null, null, "other", null),
+      coalesce(null, *[_id=="id"][0].v_object, null, "other", null),
+      coalesce(null, *[_id=="id"][0].v_object_empty, null, "other", null),
+      coalesce(null, *[_id=="id"][0].v_string, null, "other", null),
+      coalesce(null, *[_id=="id"][0].v_true, null, "other", null),
+      coalesce(null, *[_id=="id"][0].v_missing, null, "other", null),
+    ]
+  result:
+  - - 1
+    - 3.14
+    - string
+    - true
+    - - 1
+      - 2
+      - 3
+    - key: value
+  - []
+  - - null
+    - 1
+    - 3.14
+    - string
+    - true
+    - - 1
+      - 2
+      - 3
+    - key: value
+  - 3.14
+  - false
+  - 1
+  - other
+  - v_array:
+    - a
+    - b
+    - c
+    v_boolean: true
+    v_decimal: 2.718
+    v_integer: 2
+    v_null: null
+    v_object:
+      k: v
+    v_string: abc
+  - {}
+  - string
+  - true
+  - other
+  features:
+  - groqV1
+- name: literals types
+  query: |-
+    [
+      coalesce([1, 2, 3]),
+      coalesce([]),
+      coalesce([null, 1, 2]),
+      coalesce(3.14),
+      coalesce(false),
+      coalesce(1),
+      coalesce(null),
+      coalesce({"a": 1}),
+      coalesce({}),
+      coalesce("abc"),
+      coalesce(true),
+      coalesce(missing),
+    ]
+  result:
+  - - 1
+    - 2
+    - 3
+  - []
+  - - null
+    - 1
+    - 2
+  - 3.14
+  - false
+  - 1
+  - null
+  - a: 1
+  - {}
+  - abc
+  - true
+  - null
+- name: literals types multiple
+  query: |-
+    [
+      coalesce(null, [1, 2, 3], null, "other", null),
+      coalesce(null, [], null, "other", null),
+      coalesce(null, [null, 1, 2], null, "other", null),
+      coalesce(null, 3.14, null, "other", null),
+      coalesce(null, false, null, "other", null),
+      coalesce(null, 1, null, "other", null),
+      coalesce(null, null, null, "other", null),
+      coalesce(null, {"a": 1}, null, "other", null),
+      coalesce(null, {}, null, "other", null),
+      coalesce(null, "abc", null, "other", null),
+      coalesce(null, true, null, "other", null),
+      coalesce(null, missing, null, "other", null),
+    ]
+  result:
+  - - 1
+    - 2
+    - 3
+  - []
+  - - null
+    - 1
+    - 2
+  - 3.14
+  - false
+  - 1
+  - other
+  - a: 1
+  - {}
+  - abc
+  - true
+  - other

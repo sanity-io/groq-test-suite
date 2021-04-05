@@ -1,4 +1,6 @@
 name: "Dereference operator"
+features: [groqV2]
+
 documents:
 - _id: "b"
   _type: "test"

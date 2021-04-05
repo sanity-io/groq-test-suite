@@ -1,4 +1,6 @@
 name: "string() function"
+features: [groqV2]
+
 documents:
 - _id: "id"
   _type: "values"

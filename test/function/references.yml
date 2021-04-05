@@ -1,4 +1,6 @@
 name: "references() function"
+features: [groqV2]
+
 documents:
 - _id: "a"
   _type: "doc"
@@ -23,7 +25,6 @@ documents:
 - _id: "e"
   _type: "doc"
   name: "E"
-
 
 - _id: "carrie-henn"
   _type: "moviedb"

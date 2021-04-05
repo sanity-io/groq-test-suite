@@ -1,4 +1,6 @@
 name: "Comparison operators"
+features: [groqV2]
+
 variables:
   # True when LHS is strictly smaller than RHS.
   lt:

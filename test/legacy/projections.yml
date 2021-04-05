@@ -1,0 +1,651 @@
+name: Projections
+documents:
+- _id: e
+  _type: test
+  name: E
+- _id: c
+  _type: test
+  name: C
+  other:
+    _ref: e
+- _id: d
+  _type: test
+  name: D
+- _id: b
+  _type: test
+  name: B
+  other:
+    _ref: c
+  weakother:
+    _type: reference
+    _ref: c
+    _weak: true
+- _id: a
+  _type: test
+  name: A
+  other:
+    _ref: b
+  weakother:
+    _ref: b
+    _weak: true
+  others:
+  - _ref: e
+  - _ref: c
+  - _ref: b
+  - _ref: d
+- _id: id
+  _type: values
+  v_array:
+  - 1
+  - string
+  - true
+  - null
+  - - 1
+    - 2
+    - 3
+  - key: value
+  v_decimal: 3.14
+  v_false: false
+  v_integer: 1
+  v_null: null
+  v_object:
+    v_array:
+    - a
+    - b
+    - c
+    v_boolean: true
+    v_decimal: 2.718
+    v_integer: 2
+    v_null: null
+    v_object:
+      k: v
+    v_string: abc
+  v_ref:
+    _ref: a
+    _type: reference
+  v_string: string
+  v_true: true
+- _id: '1'
+  _type: number
+  numberValue: 1
+- _id: '2'
+  _type: number
+  numberValue: 2
+- _id: '3'
+  _type: string
+  stringValue: three
+- _id: '4'
+  _type: string
+  stringValue: four
+tests:
+- name: documents
+  query: |-
+    [
+      *[_id=="id"]{
+        "attr_array": v_array,
+        "attr_array_2": v_array[2],
+        "attr_array_6": v_array[6],
+        "attr_decimal": v_decimal,
+        "attr_false": v_false,
+        "attr_integer": v_integer,
+        "attr_missing": missing,
+        "attr_null": v_null,
+        "attr_object": v_object,
+        "attr_object_array": v_object.v_array,
+        "attr_object_array_2": v_object.v_array[2],
+        "attr_object_array_6": v_object.v_array[6],
+        "attr_object_boolean": v_object.v_boolean,
+        "attr_object_decimal": v_object.v_decimal,
+        "attr_object_integer": v_object.v_integer,
+        "attr_object_null": v_object.v_null,
+        "attr_object_object": v_object.v_object,
+        "attr_object_object_k": v_object.v_object.k,
+        "attr_object_object_missing": v_object.v_object.missing,
+        "attr_object_string": v_object.v_string,
+        "attr_string": v_string,
+        "attr_true": v_true,
+        "attr__id": _id,
+      },
+      *[_id=="id"]{
+        "nested": {
+          "integer": v_integer,
+          "deeper": {
+            "string": v_string,
+            "object": v_object.v_object,
+          }
+        },
+      },
+      *[_id=="id"][0]{
+        v_integer,
+        "string": v_object.v_string,
+      },
+      *[_type=="test"]|order(_id)[0..2]{_id, name},
+      *[_type=="test"]|order(_id)[0..2]{"label": name},
+      *[_type=="test"]|order(_id)[0..2]{"name": _id},
+      *[_type=="test"]|order(_id){"other": other->_id},
+    ]
+  result:
+  - - attr__id: id
+      attr_array:
+      - 1
+      - string
+      - true
+      - null
+      - - 1
+        - 2
+        - 3
+      - key: value
+      attr_array_2: true
+      attr_decimal: 3.14
+      attr_false: false
+      attr_integer: 1
+      attr_object:
+        v_array:
+        - a
+        - b
+        - c
+        v_boolean: true
+        v_decimal: 2.718
+        v_integer: 2
+        v_null: null
+        v_object:
+          k: v
+        v_string: abc
+      attr_object_array:
+      - a
+      - b
+      - c
+      attr_object_array_2: c
+      attr_object_boolean: true
+      attr_object_decimal: 2.718
+      attr_object_integer: 2
+      attr_object_object:
+        k: v
+      attr_object_object_k: v
+      attr_object_string: abc
+      attr_string: string
+      attr_true: true
+  - - nested:
+        deeper:
+          object:
+            k: v
+          string: string
+        integer: 1
+  - v_integer: 1
+    string: abc
+  - - _id: a
+      name: A
+    - _id: b
+      name: B
+    - _id: c
+      name: C
+  - - label: A
+    - label: B
+    - label: C
+  - - name: a
+    - name: b
+    - name: c
+  - - other: b
+    - other: c
+    - other: e
+    - {}
+    - {}
+  features:
+  - groqV1
+- name: documents conditionals
+  query: |-
+    *[_type in ["number", "string"]]|order(_id){
+      _type == "number" => {
+        "v": numberValue
+      },
+      _type == "string" => {
+        "v": stringValue
+      }
+    }
+  result:
+  - v: 1
+  - v: 2
+  - v: three
+  - v: four
+- name: documents conditionals overlap
+  query: |-
+    *[_type in ["number", "string"]]|order(_id){
+      _type == "number" => {
+        "v": numberValue,
+        "number": 0
+      },
+      _type == "number" => {
+        "number": numberValue
+      }
+    }
+  result:
+  - v: 1
+    number: 1
+  - v: 2
+    number: 2
+  - {}
+  - {}
+- name: documents nested 1
+  query: '*[_id=="a"][0]{_id, others{_ref}}'
+  result:
+    _id: a
+    others: {}
+  features:
+  - groqV1
+- name: documents nested
+  query: '*[_id=="a"][0]{_id, others[]{_ref}}'
+  result:
+    _id: a
+    others:
+    - _ref: e
+    - _ref: c
+    - _ref: b
+    - _ref: d
+  features:
+  - groqV2
+- name: documents nested 2
+  query: '*[_id=="a"][0]{_id, others[]{_ref}}'
+  result:
+    _id: a
+    others:
+    - _ref: e
+    - _ref: c
+    - _ref: b
+    - _ref: d
+  features:
+  - groqV1
+- name: documents nested 2
+  query: '*[_id=="a"][0]{_id, others[]{_ref}}'
+  result:
+    _id: a
+    others:
+    - _ref: e
+    - _ref: c
+    - _ref: b
+    - _ref: d
+  features:
+  - groqV2
+- name: documents multiple
+  query: |-
+    [
+      *[_id=="id"]{
+        v_integer,
+        "string": v_string,
+      }{...}{
+        "integer": v_integer,
+        string,
+        v_true,
+      },
+      *[_id=="id"][0]{
+        v_integer,
+        "string": v_string,
+      }{...}{
+        "integer": v_integer,
+        string,
+        v_true
+      },
+      *[_type=="test"]|{"id": _id, name}|order(id){id, "label": name}[0..2]
+    ]
+  result:
+  - - integer: 1
+      string: string
+  - integer: 1
+    string: string
+  - - id: a
+      label: A
+    - id: b
+      label: B
+    - id: c
+      label: C
+  features:
+  - groqV1
+- name: documents multiple
+  query: |-
+    [
+      *[_id=="id"]{
+        v_integer,
+        "string": v_string,
+      }{...}{
+        "integer": v_integer,
+        string,
+        v_true,
+      },
+      *[_id=="id"][0]{
+        v_integer,
+        "string": v_string,
+      }{...}{
+        "integer": v_integer,
+        string,
+        v_true
+      },
+      *[_type=="test"]|{"id": _id, name}|order(id){id, "label": name}[0..2]
+    ]
+  result:
+  - - integer: 1
+      string: string
+      v_true: null
+  - integer: 1
+    string: string
+    v_true: null
+  - - id: a
+      label: A
+    - id: b
+      label: B
+    - id: c
+      label: C
+  features:
+  - groqV2
+- name: documents evaluate
+  query: '*[_id == "id"][0].v_object{v_boolean}'
+  result:
+    v_boolean: true
+- name: documents literals
+  query: |-
+    *[_id=="id"]{
+      "literal_array": [1, "string", true, null, [1, 2, 3], {"key": "value"}],
+      "literal_decimal": 3.14,
+      "literal_false": false,
+      "literal_integer": 1,
+      "literal_null": null,
+      "literal_object": {
+        "v_array": ["a", "b", "c"],
+        "v_boolean": true,
+        "v_decimal": 2.718,
+        "v_integer": 2,
+        "v_null": null,
+        "v_object": {"k": "v"},
+        "v_string": "abc",
+      },
+      "literal_string": "string",
+      "literal_true": true,
+    }
+  result:
+  - literal_array:
+    - 1
+    - string
+    - true
+    - null
+    - - 1
+      - 2
+      - 3
+    - key: value
+    literal_decimal: 3.14
+    literal_false: false
+    literal_integer: 1
+    literal_object:
+      v_array:
+      - a
+      - b
+      - c
+      v_boolean: true
+      v_decimal: 2.718
+      v_integer: 2
+      v_object:
+        k: v
+      v_string: abc
+    literal_string: string
+    literal_true: true
+  features:
+  - groqV1
+- name: documents literals
+  query: |-
+    *[_id=="id"]{
+      "literal_array": [1, "string", true, null, [1, 2, 3], {"key": "value"}],
+      "literal_decimal": 3.14,
+      "literal_false": false,
+      "literal_integer": 1,
+      "literal_null": null,
+      "literal_object": {
+        "v_array": ["a", "b", "c"],
+        "v_boolean": true,
+        "v_decimal": 2.718,
+        "v_integer": 2,
+        "v_null": null,
+        "v_object": {"k": "v"},
+        "v_string": "abc",
+      },
+      "literal_string": "string",
+      "literal_true": true,
+    }
+  result:
+  - literal_array:
+    - 1
+    - string
+    - true
+    - null
+    - - 1
+      - 2
+      - 3
+    - key: value
+    literal_decimal: 3.14
+    literal_false: false
+    literal_integer: 1
+    literal_null: null
+    literal_object:
+      v_array:
+      - a
+      - b
+      - c
+      v_boolean: true
+      v_decimal: 2.718
+      v_integer: 2
+      v_null: null
+      v_object:
+        k: v
+      v_string: abc
+    literal_string: string
+    literal_true: true
+  features:
+  - groqV2
+- name: documents literals
+  query: '*[_type=="test"]|order(_id){"literal_string": "string", "literal_integer":
+    1}'
+  result:
+  - literal_integer: 1
+    literal_string: string
+  - literal_integer: 1
+    literal_string: string
+  - literal_integer: 1
+    literal_string: string
+  - literal_integer: 1
+    literal_string: string
+  - literal_integer: 1
+    literal_string: string
+- name: documents literals
+  query: '*[_type=="test"]|order(_id)[0..2]{_id, "literal_string": "string"}'
+  result:
+  - _id: a
+    literal_string: string
+  - _id: b
+    literal_string: string
+  - _id: c
+    literal_string: string
+- name: documents literals
+  query: '*[_type=="test"]|order(_id)[0..2]{_id, "literal_string": "string", "_id":
+    "newid"}'
+  result:
+  - _id: newid
+    literal_string: string
+  - _id: newid
+    literal_string: string
+  - _id: newid
+    literal_string: string
+- name: documents literals
+  query: '*[_type=="test"]|order(_id)[0..2]{"_id": "newid", "literal_string": "string",
+    _id}'
+  result:
+  - _id: a
+    literal_string: string
+  - _id: b
+    literal_string: string
+  - _id: c
+    literal_string: string
+- name: documents literals
+  query: '*[_type=="test"]|order(_id)[0..2]{..., "literal_string": "string"}{_id,
+    literal_string}'
+  result:
+  - _id: a
+    literal_string: string
+  - _id: b
+    literal_string: string
+  - _id: c
+    literal_string: string
+- name: documents literals
+  query: '*[_type=="test"]|order(_id)[0..2]{..., "literal_string": "string", "_id":
+    "newid"}{_id, literal_string}'
+  result:
+  - _id: newid
+    literal_string: string
+  - _id: newid
+    literal_string: string
+  - _id: newid
+    literal_string: string
+- name: documents literals
+  query: '*[_type=="test"]|order(_id)[0..2]{"_id": "newid", "literal_string": "string",
+    ...}{_id, literal_string}'
+  result:
+  - _id: newid
+    literal_string: string
+  - _id: newid
+    literal_string: string
+  - _id: newid
+    literal_string: string
+  features:
+  - groqV1
+- name: documents literals
+  query: '*[_type=="test"]|order(_id)[0..2]{"_id": "newid", "literal_string": "string",
+    ...}{_id, literal_string}'
+  result:
+  - _id: a
+    literal_string: string
+  - _id: b
+    literal_string: string
+  - _id: c
+    literal_string: string
+  features:
+  - groqV2
+- name: documents literals
+  query: '*[_type=="test"]|order(_id)[0]{"literal": "string", "duplicate": literal}'
+  result:
+    literal: string
+  features:
+  - groqV1
+- name: documents literals
+  query: '*[_type=="test"]|order(_id)[0]{"literal": "string", "duplicate": literal}'
+  result:
+    duplicate: null
+    literal: string
+  features:
+  - groqV2
+- name: literals
+  query: |-
+    [
+      [{"v": 1}, {"v": 2}, {"v": 3}]{
+        v,
+        "string": "abc",
+        "again": v,
+        "missing": missing,
+      },
+      {"v": 1}{
+        v,
+        "string": "abc",
+        "again": v,
+        "missing": missing,
+      }
+    ]
+  result:
+  - - v: 1
+      string: abc
+      again: 1
+    - v: 2
+      string: abc
+      again: 2
+    - v: 3
+      string: abc
+      again: 3
+  - v: 1
+    string: abc
+    again: 1
+  features:
+  - groqV1
+- name: literals
+  query: |-
+    [
+      [{"v": 1}, {"v": 2}, {"v": 3}]{
+        v,
+        "string": "abc",
+        "again": v,
+        "missing": missing,
+      },
+      {"v": 1}{
+        v,
+        "string": "abc",
+        "again": v,
+        "missing": missing,
+      }
+    ]
+  result:
+  - - v: 1
+      string: abc
+      again: 1
+      missing: null
+    - v: 2
+      string: abc
+      again: 2
+      missing: null
+    - v: 3
+      string: abc
+      again: 3
+      missing: null
+  - v: 1
+    string: abc
+    again: 1
+    missing: null
+  features:
+  - groqV2
+- name: literals multiple
+  query: |-
+    [
+      [{"v": 1}, {"v": 2}, {"v": 3}]|order(v desc){"value": v}[0..1]{"again": value},
+      {"v": 1}{"value": v}{"again": value},
+    ]
+  result:
+  - - again: 3
+    - again: 2
+  - again: 1
+- name: 'null'
+  query: |-
+    null | {
+      something,
+      "key": value,
+      "stuff": stuff->stuff,
+      "dogs": dogs[]->{cat}
+    }
+  result: null
+- name: accessing array values
+  query: '*[_id == "id"]{_id, "first": v_array[0]}'
+  result:
+  - _id: id
+    first: 1
+- name: missing document
+  query: |-
+    *[doesNotExist == true][0]{
+      something,
+      "key": value,
+      "stuff": stuff->stuff,
+      "dogs": dogs[]->{cat}
+    }
+  result: {}
+  features:
+  - groqV1
+- name: missing document
+  query: |-
+    *[doesNotExist == true][0]{
+      something,
+      "key": value,
+      "stuff": stuff->stuff,
+      "dogs": dogs[]->{cat}
+    }
+  result: null
+  features:
+  - groqV2

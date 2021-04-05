@@ -1,4 +1,5 @@
 name: "Miscellaneous"
+features: [groqV2]
 
 documents:
 - _id: "a"

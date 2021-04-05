@@ -1,4 +1,6 @@
 name: Attribute
+features: [groqV2]
+
 documents:
   - _id: "doc"
     _type: "doc"

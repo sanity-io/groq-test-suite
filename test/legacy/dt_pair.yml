@@ -1,0 +1,40 @@
+name: 'Datatype: pair'
+documents: []
+tests:
+- name: Literals
+  query: |-
+    [
+      1 => 2,
+      1 => 2 => 3 => 4,
+      null => null,
+      true => false,
+      3.14 => 2.718,
+      "a" => "b",
+      [1,2] => [3,4],
+      {"a":1,"b":2} => {"c":3,"d":4},
+    ]
+  result:
+  - - 1
+    - 2
+  - - - - 1
+        - 2
+      - 3
+    - 4
+  - - null
+    - null
+  - - true
+    - false
+  - - 3.14
+    - 2.718
+  - - a
+    - b
+  - - - 1
+      - 2
+    - - 3
+      - 4
+  - - a: 1
+      b: 2
+    - c: 3
+      d: 4
+  features:
+  - groqV1

@@ -1,0 +1,276 @@
+name: 'Joins: semijoins'
+documents:
+- _id: xander
+  _type: employee
+  name: Xander Xenakis
+- _id: ziggy
+  _type: employee
+  name: Ziggy Zabel
+- _id: accounting
+  _type: department
+  name: Accounting
+  manager:
+    _ref: xander
+- _id: engineering
+  _type: department
+  name: Engineering
+  manager:
+    _ref: xander
+- _id: legal
+  _type: department
+  name: Legal
+  manager:
+    _ref: ziggy
+- _id: alice
+  _type: employee
+  name: Alice Anderson
+  department:
+    _ref: accounting
+- _id: bob
+  _type: employee
+  name: Bob Baker
+  department:
+    _ref: engineering
+- _id: eve
+  _type: employee
+  name: Eve Evans
+  department:
+    _ref: engineering
+tests:
+- name: "-> defined (legacy array syntax)"
+  query: '*[ _type == "employee" && defined(department->) ]._id'
+  result:
+  - alice
+  - bob
+  - eve
+  features:
+  - groqV1
+- name: "-> defined"
+  query: '*[ _type == "employee" && defined(department->) ][]._id'
+  result:
+  - alice
+  - bob
+  - eve
+- name: "-> equality (legacy array syntax)"
+  query: '*[ _type == "employee" && department->_id == "engineering" ]._id'
+  result:
+  - bob
+  - eve
+  features:
+  - groqV1
+- name: "-> equality"
+  query: '*[ _type == "employee" && department->_id == "engineering" ][]._id'
+  result:
+  - bob
+  - eve
+- name: "-> -> equality (legacy array syntax)"
+  query: '*[ _type == "employee" && department->manager->_id == "xander" ]._id'
+  result:
+  - alice
+  - bob
+  - eve
+  features:
+  - groqV1
+- name: "-> -> equality"
+  query: '*[ _type == "employee" && department->manager->_id == "xander" ][]._id'
+  result:
+  - alice
+  - bob
+  - eve
+- name: "-> -> multiple equality (legacy array syntax)"
+  query: '*[ _type == "employee" && department->_id == "engineering" && department->manager->_id
+    == "xander" ]._id'
+  result:
+  - bob
+  - eve
+  features:
+  - groqV1
+- name: "-> -> multiple equality"
+  query: '*[ _type == "employee" && department->_id == "engineering" && department->manager->_id
+    == "xander" ][]._id'
+  result:
+  - bob
+  - eve
+- name: "-> -> multiple equality with projection and subquery"
+  query: |-
+    *[_type == "employee" && department->_id == "engineering" && department->manager->_id == "xander"]{
+      _id,
+      "department": department->name,
+      "manager": department->manager->_name,
+      "coworkers": *[ _type == "employee" && department->_id == ^.department->_id && _id != ^._id]{_id, name},
+    }
+  result:
+  - _id: bob
+    department: Engineering
+    coworkers:
+    - _id: eve
+      name: Eve Evans
+  - _id: eve
+    department: Engineering
+    coworkers:
+    - _id: bob
+      name: Bob Baker
+  features:
+  - groqV1
+- name: "-> -> multiple equality with projection and subquery"
+  query: |-
+    *[_type == "employee" && department->_id == "engineering" && department->manager->_id == "xander"]{
+      _id,
+      "department": department->name,
+      "manager": department->manager->_name,
+      "coworkers": *[ _type == "employee" && department->_id == ^.department->_id && _id != ^._id]{_id, name},
+    }
+  result:
+  - _id: bob
+    department: Engineering
+    coworkers:
+    - _id: eve
+      name: Eve Evans
+    manager: null
+  - _id: eve
+    department: Engineering
+    coworkers:
+    - _id: bob
+      name: Bob Baker
+    manager: null
+  features:
+  - groqV2
+- name: "-> -> no matches (legacy array syntax)"
+  query: '*[ _type == "employee" && department->manager->_id == "ziggy" ]._id'
+  result: []
+  features:
+  - groqV1
+- name: "-> -> no matches"
+  query: '*[ _type == "employee" && department->manager->_id == "ziggy" ][]._id'
+  result: []
+- name: Count references (legacy array syntax)
+  query: '*[ _type == "department" && count(*[references(^._id)]) > 0 ]._id'
+  result:
+  - accounting
+  - engineering
+  features:
+  - groqV1
+- name: Count references
+  query: '*[ _type == "department" && count(*[references(^._id)]) > 0 ][]._id'
+  result:
+  - accounting
+  - engineering
+- name: In subquery (legacy array syntax)
+  query: '*[ _type == "department" && _id in *[ _type == "employee" ].department._ref
+    ]._id'
+  result:
+  - accounting
+  - engineering
+  features:
+  - groqV1
+- name: In subquery
+  query: '*[ _type == "department" && _id in *[ _type == "employee" ][].department._ref
+    ][]._id'
+  result:
+  - accounting
+  - engineering
+- name: References (legacy array syntax)
+  query: '*[ _type == "employee" && references("engineering") ]._id'
+  result:
+  - bob
+  - eve
+  features:
+  - groqV1
+- name: References
+  query: '*[ _type == "employee" && references("engineering") ][]._id'
+  result:
+  - bob
+  - eve
+- name: Literal ref, inside query
+  query: |-
+    *[_id=="bob"]{
+      name,
+      "ref": {"_ref": "bob"}->name
+    }
+  result:
+  - name: Bob Baker
+    ref: Bob Baker
+- name: Literal ref, inside query[0]
+  query: |-
+    *[_id=="bob"][0]{
+      name,
+      "ref": {"_ref": "bob"}->name
+    }
+  result:
+    name: Bob Baker
+    ref: Bob Baker
+- name: Literal ref array, inside query (legacy array syntax)
+  query: |-
+    *[_id=="bob"][0]{
+      name,
+      "ref": [{"_ref": "bob"}]->name
+    }
+  result:
+    name: Bob Baker
+    ref:
+    - Bob Baker
+  features:
+  - groqV1
+- name: Literal ref array, inside query
+  query: |-
+    *[_id=="bob"][0]{
+      name,
+      "ref": [{"_ref": "bob"}][]->name
+    }
+  result:
+    name: Bob Baker
+    ref:
+    - Bob Baker
+- name: Literal ref array, inside object literal (legacy array syntax)
+  query: |-
+    {
+      "ref": [{"_ref": "bob"}]->name
+    }
+  result:
+    ref:
+    - null
+  features:
+  - groqV1
+- name: Literal ref array, inside object literal
+  query: |-
+    {
+      "ref": [{"_ref": "bob"}][]->name
+    }
+  result:
+    ref:
+    - Bob Baker
+  features:
+  - groqV2
+- name: Literal ref, non-existent
+  query: '{"_ref": "notfound"}->name'
+  result: null
+- name: Literal ref, non-existent, inside object literal
+  query: |-
+    {
+      "ref": {"_ref": "notfound"}->name
+    }
+  result: {}
+  features:
+  - groqV1
+- name: Literal ref, non-existent, inside object literal
+  query: |-
+    {
+      "ref": {"_ref": "notfound"}->name
+    }
+  result:
+    ref: null
+  features:
+  - groqV2
+- name: Literal ref array, non-existent, inside object literal
+  query: |-
+    {
+      "ref": [{"_ref": "notfound"}][]->name
+    }
+  result:
+    ref:
+    - null
+- name: Join in order()
+  query: "*[false] | order(a->b)"
+  result: []
+  features:
+  - groqV1

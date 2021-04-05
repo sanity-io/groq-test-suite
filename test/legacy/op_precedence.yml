@@ -1,0 +1,21 @@
+name: operator precedence
+documents:
+- _id: target
+  _type: test
+  name: Target
+- _id: id
+  _type: test
+  ref:
+    _type: ref
+    _ref: target
+tests:
+- name: arithmetic operators
+  query: 2 ** 3 * 4 + 4 / 3 % 2 - 3 % 4 ** 2
+  result: 30.333333333333336
+- name: "...ref->"
+  query: '*[ _id == "id" ]{"key": "value", ...ref->{_id, _type, name}}'
+  result:
+  - _id: target
+    _type: test
+    name: Target
+    key: value

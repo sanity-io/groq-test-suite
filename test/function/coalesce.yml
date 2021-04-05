@@ -8,8 +8,10 @@ tests:
     global::coalesce()
   result: null
 
-- query: |
+- name: "No args"
+  query: |
     coalesce()
+  features: [groqV2]
   result: null
 
 - query: |

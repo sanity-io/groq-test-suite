@@ -1,4 +1,5 @@
 name: "In flatten"
+features: [groqV2]
 
 documents:
 - _id: "a"

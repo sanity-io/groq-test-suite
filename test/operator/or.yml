@@ -1,4 +1,5 @@
 name: "Or operator"
+features: [groqV2]
 
 tests:
 - variables:
