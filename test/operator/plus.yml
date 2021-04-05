@@ -1,4 +1,5 @@
 name: "Plus operator"
+features: [groqV2]
 
 tests:
 - name: "Unknown types"

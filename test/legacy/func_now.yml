@@ -1,0 +1,11 @@
+name: now() function
+features: [groqV1]
+documents: []
+tests:
+- name: now() between 2019-01-01 and 2030-01-01
+  query: now() > "2019-01-01T00:00:00Z" && now() < "2030-01-01T00:00:00Z"
+  result: true
+- name: now() is stable
+  query: now() == now() && now() == now() && now() == now() && now() == now() && now()
+    == now()
+  result: true

@@ -1,0 +1,271 @@
+name: 'Regressions: issue 692'
+documents:
+- _id: image-LA5zSofUOP0i_vZrjnbCETLxBXZtIJvtNv8gZ-1600x1066-jpg
+  _type: sanity.imageAsset
+  assetId: LA5zSofUOP0i_vZrjnbCETLxBXZtIJvtNv8gZ
+  extension: jpg
+  label: b3baa0412cbea005b8311890ff8c394e0f8b8b8d91f90600de902a256211c8b6
+  metadata:
+    dimensions:
+      aspectRatio: 1.5009380863039399
+      height: 1066
+      width: 1600
+  mimeType: image/jpeg
+  originalFilename: kwcXFkrn4C2vehwEfJYy67Lo-1600x1066.jpg
+  size: 144209
+- _id: image-LA5zSofUOP0i_5imhgxiMKh2L4v7QiqNoTJCL-8192x4096-png
+  _type: sanity.imageAsset
+  assetId: LA5zSofUOP0i_5imhgxiMKh2L4v7QiqNoTJCL
+  extension: png
+  label: 6814d8aadfb3c55e71ef8681ff66ac130dcc4256213dee121029492a29e10707
+  metadata:
+    dimensions:
+      aspectRatio: 2
+      height: 4096
+      width: 8192
+  mimeType: image/png
+  originalFilename: hNDtKPJsBRmZwfc2cguW7N9K.bin
+  size: 801555
+- _id: image-LA5zSofUOP0i_Ax04jt14Bj34Lpxvy7I6itVl-8192x4096-png
+  _type: sanity.imageAsset
+  assetId: LA5zSofUOP0i_Ax04jt14Bj34Lpxvy7I6itVl
+  extension: png
+  label: 2cd20ec38d6e8c9edb133e469dd8b40a5e9b7933cca3239e015f860e9cfcc3b1
+  metadata:
+    dimensions:
+      aspectRatio: 2
+      height: 4096
+      width: 8192
+  mimeType: image/png
+  originalFilename: S5VTKfLOn2ijmP3d04diSkbS.bin
+  size: 1508139
+- _id: image-LA5zSofUOP0i_ozrAvgAmZcXUCtjrAqEJCEFi-8192x4096-png
+  _type: sanity.imageAsset
+  assetId: LA5zSofUOP0i_ozrAvgAmZcXUCtjrAqEJCEFi
+  extension: png
+  label: '086ff899434fe4f857ff7765b69ba420ffa86f3faa82fa5b0aec7349256a5ee5'
+  metadata:
+    dimensions:
+      aspectRatio: 2
+      height: 4096
+      width: 8192
+  mimeType: image/png
+  originalFilename: qTJ39CGShSLvxDJjEd1MdVE5.bin
+  size: 1118900
+- _id: 1il9Rn22Lh3CBMbgaOL0F4
+  _type: issue
+  category: 2
+  image:
+    _type: image
+    asset:
+      _ref: image-LA5zSofUOP0i_ozrAvgAmZcXUCtjrAqEJCEFi-8192x4096-png
+      _type: reference
+  lead: Labour lead
+  slug:
+    auto: true
+    current: labour
+  title: Labour
+- _id: 1il9Rn22Lh3CBMbgaQ99wy
+  _type: issue
+  category: 10
+  image:
+    _type: image
+    asset:
+      _ref: image-LA5zSofUOP0i_5imhgxiMKh2L4v7QiqNoTJCL-8192x4096-png
+      _type: reference
+  lead: Feminism lead
+  slug:
+    auto: true
+    current: feminism
+  title: Feminism
+- _id: kFfYpZgttXfnDS7ampumDk
+  _type: issue
+  category: 13
+  image:
+    _type: image
+    asset:
+      _ref: image-LA5zSofUOP0i_Ax04jt14Bj34Lpxvy7I6itVl-8192x4096-png
+      _type: reference
+  lead: Environment lead
+  slug:
+    auto: true
+    current: environment
+  title: Environment
+- _id: frontpage
+  _type: frontpage
+  blocks:
+  - _key: ca7c7677a728
+    _type: campaign
+    cta: Read more about our main story
+    image:
+      _type: image
+      asset:
+        _ref: image-LA5zSofUOP0i_vZrjnbCETLxBXZtIJvtNv8gZ-1600x1066-jpg
+        _type: reference
+    link: "/some/url"
+    title: Overskriften
+    viewType: Kvadrat Forsiden Topp
+  - _key: 48f2bbec6d46
+    _type: frontPageIssueList
+    frontPageIssues:
+    - _key: 457ac2e88c2c
+      _type: frontPageIssue
+      frontPageIssue:
+        _ref: 1il9Rn22Lh3CBMbgaOL0F4
+        _type: reference
+      lead: First lead
+    - _key: 742d3ad53b7a
+      _type: frontPageIssue
+      frontPageIssue:
+        _ref: kFfYpZgttXfnDS7ampumDk
+        _type: reference
+      lead: Second lead
+    - _key: f045c31ebd51
+      _type: frontPageIssue
+      frontPageIssue:
+        _ref: 1il9Rn22Lh3CBMbgaQ99wy
+        _type: reference
+      lead: Third lead
+tests:
+- name: Issue 692
+  query: |-
+    {
+      "frontPage": *[_id == "frontpage"]{
+        blocks[] {
+          ...,
+          frontPageIssues[] {
+            lead,
+            "issue": frontPageIssue-> {
+              title,
+              slug,
+              image
+            }
+          },
+          image{...}
+        }
+      }[0],
+    }
+  result:
+    frontPage:
+      blocks:
+      - _key: ca7c7677a728
+        _type: campaign
+        cta: Read more about our main story
+        image:
+          _type: image
+          asset:
+            _ref: image-LA5zSofUOP0i_vZrjnbCETLxBXZtIJvtNv8gZ-1600x1066-jpg
+            _type: reference
+        link: "/some/url"
+        title: Overskriften
+        viewType: Kvadrat Forsiden Topp
+      - _key: 48f2bbec6d46
+        _type: frontPageIssueList
+        frontPageIssues:
+        - issue:
+            image:
+              _type: image
+              asset:
+                _ref: image-LA5zSofUOP0i_ozrAvgAmZcXUCtjrAqEJCEFi-8192x4096-png
+                _type: reference
+            slug:
+              auto: true
+              current: labour
+            title: Labour
+          lead: First lead
+        - issue:
+            image:
+              _type: image
+              asset:
+                _ref: image-LA5zSofUOP0i_Ax04jt14Bj34Lpxvy7I6itVl-8192x4096-png
+                _type: reference
+            slug:
+              auto: true
+              current: environment
+            title: Environment
+          lead: Second lead
+        - issue:
+            image:
+              _type: image
+              asset:
+                _ref: image-LA5zSofUOP0i_5imhgxiMKh2L4v7QiqNoTJCL-8192x4096-png
+                _type: reference
+            slug:
+              auto: true
+              current: feminism
+            title: Feminism
+          lead: Third lead
+  features:
+  - groqV1
+- name: Issue 692
+  query: |-
+    {
+      "frontPage": *[_id == "frontpage"]{
+        blocks[] {
+          ...,
+          frontPageIssues[] {
+            lead,
+            "issue": frontPageIssue-> {
+              title,
+              slug,
+              image
+            }
+          },
+          image{...}
+        }
+      }[0],
+    }
+  result:
+    frontPage:
+      blocks:
+      - _key: ca7c7677a728
+        _type: campaign
+        cta: Read more about our main story
+        frontPageIssues: null
+        image:
+          _type: image
+          asset:
+            _ref: image-LA5zSofUOP0i_vZrjnbCETLxBXZtIJvtNv8gZ-1600x1066-jpg
+            _type: reference
+        link: "/some/url"
+        title: Overskriften
+        viewType: Kvadrat Forsiden Topp
+      - _key: 48f2bbec6d46
+        _type: frontPageIssueList
+        frontPageIssues:
+        - issue:
+            image:
+              _type: image
+              asset:
+                _ref: image-LA5zSofUOP0i_ozrAvgAmZcXUCtjrAqEJCEFi-8192x4096-png
+                _type: reference
+            slug:
+              auto: true
+              current: labour
+            title: Labour
+          lead: First lead
+        - issue:
+            image:
+              _type: image
+              asset:
+                _ref: image-LA5zSofUOP0i_Ax04jt14Bj34Lpxvy7I6itVl-8192x4096-png
+                _type: reference
+            slug:
+              auto: true
+              current: environment
+            title: Environment
+          lead: Second lead
+        - issue:
+            image:
+              _type: image
+              asset:
+                _ref: image-LA5zSofUOP0i_5imhgxiMKh2L4v7QiqNoTJCL-8192x4096-png
+                _type: reference
+            slug:
+              auto: true
+              current: feminism
+            title: Feminism
+          lead: Third lead
+        image: null
+  features:
+  - groqV2

@@ -132,6 +132,7 @@ tests:
       result: ["aa", "aA", "A😀", "Aå", "Aa"]
 
 - name: "Document mixed values"
+  features: [groqV2]
   query: |
     *[_type in ["order-boolean", "order-decimal", "order-integer", "order-null", "order-string"]]|order(value ~dir~)[].value
   tests:

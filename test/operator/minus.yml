@@ -1,4 +1,5 @@
 name: "Minus operator"
+features: [groqV2]
 
 tests:
 - name: "Unknown types"

@@ -1,0 +1,59 @@
+name: Query structure
+documents:
+- _id: district-9
+  _type: movie
+  title: District 9
+  year: 2009
+  director: Neill Blomkamp
+- _id: alien
+  _type: movie
+  title: Alien
+  year: 1979
+  director: Ridley Scott
+- _id: blade-runner-2049
+  _type: movie
+  title: Blade Runner 2049
+  year: 2017
+  director: Denis Villeneuve
+tests:
+- name: Literal
+  query: '"string"'
+  result: string
+- name: Expression
+  query: 2 > 1
+  result: true
+- name: Pipeline
+  query: '*[ _type == "movie" ] | {title} | order(title)[0..1]'
+  result:
+  - title: Alien
+  - title: Blade Runner 2049
+- name: Implicit pipeline
+  query: '*[ _type == "movie" ]{title} | order(title)[0..1]'
+  result:
+  - title: Alien
+  - title: Blade Runner 2049
+- name: Object queries
+  query: |-
+    {
+      "recent-movies": *[ year >= 2017 ]{title, year},
+      "directors": * | order(director asc)[].director
+    }
+  result:
+    directors:
+    - Denis Villeneuve
+    - Neill Blomkamp
+    - Ridley Scott
+    recent-movies:
+    - title: Blade Runner 2049
+      year: 2017
+- name: Array queries
+  query: |-
+    [
+      count(*[ _type == "movie"]),
+      * | order(director asc)[].director
+    ]
+  result:
+  - 3
+  - - Denis Villeneuve
+    - Neill Blomkamp
+    - Ridley Scott

@@ -1,0 +1,124 @@
+name: ".. operator"
+documents:
+- _id: id
+  _type: test
+  v_array:
+  - 1
+  - string
+  - true
+  - null
+  - - 1
+    - 2
+    - 3
+  - key: value
+  v_decimal: 3.14
+  v_deep:
+    k:
+      k:
+        k:
+          k:
+            k:
+              k:
+                k:
+                  k:
+                    k:
+                      k: v
+  v_false: false
+  v_integer: 1
+  v_null: null
+  v_object:
+    v_array:
+    - a
+    - b
+    - c
+    v_boolean: true
+    v_decimal: 2.718
+    v_integer: 2
+    v_null: null
+    v_object:
+      k: v
+    v_string: abc
+  v_string: string
+  v_true: true
+- _id: array
+  _type: test
+tests:
+- name: ".. attributes in range numeric"
+  query: |-
+    [
+      count(*[_id=='id' && v_decimal in 3..4]),
+      count(*[_id=='id' && v_decimal in 3.0..4.0]),
+      count(*[_id=='id' && v_decimal in 2..3]),
+      count(*[_id=='id' && v_decimal in 2.0..3.0]),
+      count(*[_id=='id' && v_decimal in 3..3.14]),
+      count(*[_id=='id' && v_decimal in 3.14..4]),
+    ]
+  result:
+  - 1
+  - 1
+  - 0
+  - 0
+  - 1
+  - 1
+- name: ".. attributes in range string"
+  query: |-
+    [
+      count(*[_id=='id' && v_string in "aaaaaa".."zzzzzz"]),
+      count(*[_id=='id' && v_string in "aaaaaa".."bbbbbb"]),
+      count(*[_id=='id' && v_string in "aaaaaa".."string"]),
+      count(*[_id=='id' && v_string in "string".."zzzzzz"]),
+    ]
+  result:
+  - 1
+  - 0
+  - 1
+  - 1
+- name: ".. attributes array slice"
+  query: "*[_id=='id'][0].v_array[0..2]"
+  result:
+  - 1
+  - string
+  - true
+  - null
+  - - 1
+    - 2
+    - 3
+  - key: value
+  features:
+  - groqV1
+- name: ".. attributes array slice"
+  query: "*[_id=='id'][0].v_array[0..2]"
+  result:
+  - 1
+  - string
+  - true
+  features:
+  - groqV2
+- name: ".. literals array slice"
+  query: |-
+    [
+      [1, 2, 3, 4, 5][-2..0],
+      [1, 2, 3, 4, 5][-2..-1],
+      [1, 2, 3, 4, 5][0..2],
+      [1, 2, 3, 4, 5][2..4],
+      [1, 2, 3, 4, 5][2..-1],
+      [1, 2, 3, 4, 5][2..0],
+      [1, 2, 3, 4, 5][4..6],
+      [1, 2, 3, 4, 5][6..8],
+    ]
+  result:
+  - []
+  - - 4
+    - 5
+  - - 1
+    - 2
+    - 3
+  - - 3
+    - 4
+    - 5
+  - - 3
+    - 4
+    - 5
+  - []
+  - - 5
+  - []

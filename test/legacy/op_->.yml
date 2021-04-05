@@ -1,0 +1,540 @@
+name: "-> operator"
+documents:
+- _id: e
+  _type: test
+  name: E
+- _id: c
+  _type: test
+  name: C
+  other:
+    _ref: e
+  arrayWithRefs:
+  - other:
+      _ref: e
+- _id: d
+  _type: test
+  name: D
+- _id: b
+  _type: test
+  name: B
+  other:
+    _ref: c
+  weakother:
+    _type: reference
+    _ref: c
+    _weak: true
+  arrayWithRefs:
+  - other:
+      _ref: e
+  - other:
+      _ref: c
+- _id: a
+  _type: test
+  name: A
+  other:
+    _ref: b
+  weakother:
+    _ref: b
+    _weak: true
+  others:
+  - _ref: e
+  - _ref: c
+  - _ref: b
+  - _ref: d
+  nestedArray:
+  - other:
+      _ref: e
+  - other:
+      _ref: b
+- _id: id
+  _type: values
+  v_array:
+  - 1
+  - string
+  - true
+  - null
+  - - 1
+    - 2
+    - 3
+  - key: value
+  v_decimal: 3.14
+  v_false: false
+  v_integer: 1
+  v_null: null
+  v_object:
+    v_array:
+    - a
+    - b
+    - c
+    v_boolean: true
+    v_decimal: 2.718
+    v_integer: 2
+    v_null: null
+    v_object:
+      k: v
+    v_string: abc
+  v_string: string
+  v_true: true
+tests:
+- name: "-> documents 1"
+  query: '*[_id == "a"][].other->_id'
+  result:
+  - null
+  features:
+  - groqV1
+- name: "-> documents 1"
+  query: '*[_id == "a"][].other->_id'
+  result:
+  - b
+  features:
+  - groqV2
+- name: "-> documents 2"
+  query: '*[_id == "a"][0].other->_id'
+  result: null
+  features:
+  - groqV1
+- name: "-> documents 2"
+  query: '*[_id == "a"][0].other->_id'
+  result: b
+  features:
+  - groqV2
+- name: "-> documents 3"
+  query: '*[_id == "a"][].other->name'
+  result:
+  - null
+  features:
+  - groqV1
+- name: "-> documents 3"
+  query: '*[_id == "a"][].other->name'
+  result:
+  - B
+  features:
+  - groqV2
+- name: "-> documents 4"
+  query: '*[_id == "a"][0].other->name'
+  result: null
+  features:
+  - groqV1
+- name: "-> documents 4"
+  query: '*[_id == "a"][0].other->name'
+  result: B
+  features:
+  - groqV2
+- name: "-> documents 5"
+  query: '*[_id == "a"][].other->missing'
+  result:
+  - null
+- name: "-> documents 6"
+  query: '*[_id == "a"][0].other->missing'
+  result: null
+- name: "-> documents 7"
+  query: '*[_id == "a"][].missing->name'
+  result:
+  - null
+- name: "-> documents 8"
+  query: '*[_id == "a"][0].missing->name'
+  result: null
+- name: "-> documents weak 1"
+  query: '*[_id == "a"][].weakother->_id'
+  result:
+  - null
+  features:
+  - groqV1
+- name: "-> documents weak 1"
+  query: '*[_id == "a"][].weakother->_id'
+  result:
+  - b
+  features:
+  - groqV2
+- name: "-> documents weak 2"
+  query: '*[_id == "a"][0].weakother->_id'
+  result: null
+  features:
+  - groqV1
+- name: "-> documents weak 2"
+  query: '*[_id == "a"][0].weakother->_id'
+  result: b
+  features:
+  - groqV2
+- name: "-> documents weak 3"
+  query: '*[_id == "a"][].weakother->name'
+  result:
+  - null
+  features:
+  - groqV1
+- name: "-> documents weak 3"
+  query: '*[_id == "a"][].weakother->name'
+  result:
+  - B
+  features:
+  - groqV2
+- name: "-> documents weak 4"
+  query: '*[_id == "a"][0].weakother->name'
+  result: null
+  features:
+  - groqV1
+- name: "-> documents weak 4"
+  query: '*[_id == "a"][0].weakother->name'
+  result: B
+  features:
+  - groqV2
+- name: "-> documents weak 5"
+  query: '*[_id == "a"][].weakother->missing'
+  result:
+  - null
+- name: "-> documents weak 6"
+  query: '*[_id == "a"][0].weakother->missing'
+  result: null
+- name: "-> documents projection"
+  query: |-
+    [
+      *[_id == "a"]{"other": other->name},
+      *[_id == "a"][0]{"other": other->name},
+      *[_id == "a"]{"other": other->missing},
+      *[_id == "a"][0]{"other": other->missing},
+      *[_id == "a"]{"other": missing->name},
+      *[_id == "a"][0]{"other": missing->name},
+    ]
+  result:
+  - - other: B
+  - other: B
+  - - {}
+  - {}
+  - - {}
+  - {}
+  features:
+  - groqV1
+- name: "-> documents projection"
+  query: |-
+    [
+      *[_id == "a"]{"other": other->name},
+      *[_id == "a"][0]{"other": other->name},
+      *[_id == "a"]{"other": other->missing},
+      *[_id == "a"][0]{"other": other->missing},
+      *[_id == "a"]{"other": missing->name},
+      *[_id == "a"][0]{"other": missing->name},
+    ]
+  result:
+  - - other: B
+  - other: B
+  - - other: null
+  - other: null
+  - - other: null
+  - other: null
+  features:
+  - groqV2
+- name: "-> documents projection array"
+  query: |-
+    [
+      *[_id == "a"]{"others": others->name},
+      *[_id == "a"][0]{"others": others->name},
+      *[_id == "a"]{"others": others[]->name},
+      *[_id == "a"][0]{"others": others[]->name},
+      *[_id == "a"]{"others": others[]->missing},
+      *[_id == "a"][0]{"others": others[]->missing},
+    ]
+  result:
+  - - {}
+  - {}
+  - - others:
+      - E
+      - C
+      - B
+      - D
+  - others:
+    - E
+    - C
+    - B
+    - D
+  - - others:
+      - null
+      - null
+      - null
+      - null
+  - others:
+    - null
+    - null
+    - null
+    - null
+  features:
+  - groqV1
+- name: "-> documents projection array"
+  query: |-
+    [
+      *[_id == "a"]{"others": others->name},
+      *[_id == "a"][0]{"others": others->name},
+      *[_id == "a"]{"others": others[]->name},
+      *[_id == "a"][0]{"others": others[]->name},
+      *[_id == "a"]{"others": others[]->missing},
+      *[_id == "a"][0]{"others": others[]->missing},
+    ]
+  result:
+  - - others: null
+  - others: null
+  - - others:
+      - E
+      - C
+      - B
+      - D
+  - others:
+    - E
+    - C
+    - B
+    - D
+  - - others:
+      - null
+      - null
+      - null
+      - null
+  - others:
+    - null
+    - null
+    - null
+    - null
+  features:
+  - groqV2
+- name: "-> documents projection array deep"
+  query: |-
+    [
+      *[_id == "a"]{"others": others[]->other->name},
+      *[_id == "a"][0]{"others": others[]->other->name},
+      *[_id == "a"]{"others": others[]->other->missing},
+      *[_id == "a"][0]{"others": others[]->other->missing},
+    ]
+  result:
+  - - others:
+      - null
+      - E
+      - C
+      - null
+  - others:
+    - null
+    - E
+    - C
+    - null
+  - - others:
+      - null
+      - null
+      - null
+      - null
+  - others:
+    - null
+    - null
+    - null
+    - null
+- name: "-> documents projection deep"
+  query: |-
+    [
+      *[_id == "a"]{"another": other->other->name},
+      *[_id == "a"][0]{"another": other->other->name},
+      *[_id == "a"]{"another": other->other->missing},
+      *[_id == "a"][0]{"another": other->other->missing},
+    ]
+  result:
+  - - another: C
+  - another: C
+  - - {}
+  - {}
+  features:
+  - groqV1
+- name: "-> documents projection deep"
+  query: |-
+    [
+      *[_id == "a"]{"another": other->other->name},
+      *[_id == "a"][0]{"another": other->other->name},
+      *[_id == "a"]{"another": other->other->missing},
+      *[_id == "a"][0]{"another": other->other->missing},
+    ]
+  result:
+  - - another: C
+  - another: C
+  - - another: null
+  - another: null
+  features:
+  - groqV2
+- name: "-> documents projection this"
+  query: '*[_id == "a"][0]{_id, others[]{_ref, "ref": ^->{_id}}}'
+  result:
+    _id: a
+    others:
+    - _ref: e
+      ref:
+        _id: e
+    - _ref: c
+      ref:
+        _id: c
+    - _ref: b
+      ref:
+        _id: b
+    - _ref: d
+      ref:
+        _id: d
+  features:
+  - groqV1
+- name: "-> documents projection this"
+  query: '*[_id == "a"][0]{_id, others[]{_ref, "ref": ^->{_id}}}'
+  result:
+    _id: a
+    others:
+    - _ref: e
+      ref: null
+    - _ref: c
+      ref: null
+    - _ref: b
+      ref: null
+    - _ref: d
+      ref: null
+  features:
+  - groqV2
+- name: "-> documents projection weak"
+  query: |-
+    [
+      *[_id == "a"]{"other": weakother->name},
+      *[_id == "a"][0]{"other": weakother->name},
+      *[_id == "a"]{"other": weakother->missing},
+      *[_id == "a"][0]{"other": weakother->missing},
+    ]
+  result:
+  - - other: B
+  - other: B
+  - - {}
+  - {}
+  features:
+  - groqV1
+- name: "-> documents projection weak"
+  query: |-
+    [
+      *[_id == "a"]{"other": weakother->name},
+      *[_id == "a"][0]{"other": weakother->name},
+      *[_id == "a"]{"other": weakother->missing},
+      *[_id == "a"][0]{"other": weakother->missing},
+    ]
+  result:
+  - - other: B
+  - other: B
+  - - other: null
+  - other: null
+  features:
+  - groqV2
+- name: "-> literals invalid"
+  query: |-
+    [
+      "abc"->ref,
+      1->ref,
+      3.14->ref,
+      ["abc", 1, 3.14][]->ref,
+      {"key": "value"}->ref,
+      {"key": "value"}->key,
+    ]
+  result:
+  - null
+  - null
+  - null
+  - - null
+    - null
+    - null
+  - null
+  - null
+- name: "-> documents projection array deep nested"
+  query: '*[_id == "b"]{"others": arrayWithRefs[]{"name": other->name}}'
+  result:
+  - others:
+    - name: E
+    - name: C
+- name: "-> documents projection array deep nested, missing"
+  query: '*[_id == "b"]{"others": arrayWithRefs[]{"name": other->missing}}'
+  result:
+  - others:
+    - {}
+    - {}
+  features:
+  - groqV1
+- name: "-> documents projection array deep nested, missing"
+  query: '*[_id == "b"]{"others": arrayWithRefs[]{"name": other->missing}}'
+  result:
+  - others:
+    - name: null
+    - name: null
+  features:
+  - groqV2
+- name: "-> documents projection array subscript deep nested"
+  query: '*[_id == "b"]{"other": arrayWithRefs[0]{"name": other->name}}'
+  result:
+  - other:
+      name: E
+- name: "-> documents projection array subscript deep nested, missing"
+  query: '*[_id == "b"]{"others": arrayWithRefs[0]{"name": other->missing}}'
+  result:
+  - others: {}
+  features:
+  - groqV1
+- name: "-> documents projection array subscript deep nested, missing"
+  query: '*[_id == "b"]{"others": arrayWithRefs[0]{"name": other->missing}}'
+  result:
+  - others:
+      name: null
+  features:
+  - groqV2
+- name: "-> documents projection missing array deep nested"
+  query: '*[_id == "b"]{"others": missing[0]{"name": other->name}}'
+  result:
+  - {}
+  features:
+  - groqV1
+- name: "-> documents projection missing array deep nested"
+  query: '*[_id == "b"]{"others": missing[0]{"name": other->name}}'
+  result:
+  - others: null
+  features:
+  - groqV2
+- name: "-> documents projection, array deep nested, with root-level join"
+  query: |-
+    *[_id == "b"] {
+      "o": other->name,
+      "array": arrayWithRefs[] {
+        "name": other->name
+      }
+    }
+  result:
+  - o: C
+    array:
+    - name: E
+    - name: C
+- name: "-> single document projection, array deep nested, with root-level join"
+  query: |-
+    *[_id == "b"][0] {
+      "o": other->name,
+      "array": arrayWithRefs[] {
+        "name": other->name
+      }
+    }
+  result:
+    o: C
+    array:
+    - name: E
+    - name: C
+- name: "-> on array"
+  query: |-
+    *[_id == "a"] {
+      _id,
+      "others": others[_ref == "e"]->{
+        _id
+      }
+    }
+  result:
+  - _id: a
+    others:
+    - _id: e
+- name: "-> on subscript"
+  query: |-
+    *[_id == "a"] {
+      _id,
+      "others": others[0...4]->_id
+    }
+  result:
+  - _id: a
+    others:
+    - e
+    - c
+    - b
+    - d

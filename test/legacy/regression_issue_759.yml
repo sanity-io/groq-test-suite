@@ -1,0 +1,68 @@
+name: 'Regressions: issue 759'
+documents:
+- _id: match-01
+  _type: footballMatch
+  stadium: a
+  timespan:
+    start: '2018-01-02T12:00:00Z'
+    end: '2018-01-02T14:00:00Z'
+- _id: match-02
+  _type: footballMatch
+  stadium: a
+  timespan:
+    start: '2018-01-05T12:00:00Z'
+    end: '2018-01-05T14:00:00Z'
+- _id: match-03
+  _type: footballMatch
+  stadium: b
+  timespan:
+    start: '2018-01-04T12:00:00Z'
+    end: '2018-01-04T14:00:00Z'
+- _id: match-04
+  _type: footballMatch
+  stadium: b
+  timespan:
+    start: '2018-01-01T12:00:00Z'
+    end: '2018-01-01T14:00:00Z'
+- _id: match-05
+  _type: footballMatch
+  stadium: b
+  timespan:
+    start: '2018-01-03T12:00:00Z'
+    end: '2018-01-03T14:00:00Z'
+- _id: content-01
+  _type: content
+  knownEntities:
+  - _ref: match-01
+- _id: content-02
+  _type: content
+  knownEntities:
+  - _ref: match-02
+- _id: content-03
+  _type: content
+  knownEntities:
+  - _ref: match-03
+- _id: content-04
+  _type: content
+  knownEntities:
+  - _ref: match-04
+- _id: content-05
+  _type: content
+  knownEntities:
+  - _ref: match-05
+tests:
+- name: Issue 759
+  query: |-
+    *[_type == "content" && references(*[_type == "footballMatch" && stadium == "b"][]._id)] {
+      _id,
+      "metacenter": *[_type == "footballMatch" && _id in (^.knownEntities[]._ref)][0]{
+        _id,
+        timespan,
+      }
+    }|order(metacenter.timespan.start asc)[0..10][]._id
+  result:
+  - content-04
+  - content-05
+  - content-03
+  features:
+  - groqV1

@@ -1,4 +1,5 @@
 name: "In operator"
+features: [groqV2]
 
 tests:
 - name: Invalid

@@ -1,4 +1,5 @@
 name: "Range"
+features: [groqV2]
 
 tests:
 - name: "Invalid"

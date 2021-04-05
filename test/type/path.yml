@@ -1,4 +1,5 @@
 name: "Path"
+features: [groqV2]
 
 tests:
 - query: "path('a.b')"
