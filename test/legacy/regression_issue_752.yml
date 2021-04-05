@@ -1,0 +1,9 @@
+name: 'Regressions: issue 752'
+documents:
+- _id: a
+  _type: test
+  name: A
+tests:
+- title: Issue 752
+  query: "*[references(*)]"
+  result: []

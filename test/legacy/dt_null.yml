@@ -1,0 +1,50 @@
+name: 'Datatype: null'
+documents:
+- _id: 'null'
+  _type: test
+  value: null
+  'null': value
+tests:
+- title: Null attributes
+  query: '*[ _id == "null" ][0]{value}'
+  result: {}
+  features:
+  - groqV1
+- title: Null attributes
+  query: '*[ _id == "null" ][0]{value}'
+  result:
+    value: null
+  features:
+  - groqV2
+- title: Null attribute name 1
+  query: '*[_id == ''null''][0]{"value": null}'
+  result: {}
+  features:
+  - groqV1
+- title: Null attribute name 1
+  query: '*[_id == ''null''][0]{"value": null}'
+  result:
+    value: null
+  features:
+  - groqV2
+- title: Null attribute name 2
+  query: '*[_id == ''null''][0]{"value": @[''null'']}'
+  result:
+    value: value
+- title: Null attributes missing
+  query: '*[ _id == "null" ][0].other'
+  result: null
+- title: Null literals
+  query: 'null'
+  result: null
+- title: Null literals
+  query: 'null'
+  result: null
+- title: Null literals nil
+  query: nil
+  result: null
+- title: Null literals non-lowercase
+  query: "[Null, NULL]"
+  result:
+  - null
+  - null

@@ -1,0 +1,130 @@
+name: "... operator (splat)"
+documents:
+- _id: id
+  _type: test
+  v_array:
+  - 1
+  - string
+  - true
+  - null
+  - - 1
+    - 2
+    - 3
+  - key: value
+  v_decimal: 3.14
+  v_deep:
+    k:
+      k:
+        k:
+          k:
+            k:
+              k:
+                k:
+                  k:
+                    k:
+                      k: v
+  v_false: false
+  v_integer: 1
+  v_null: null
+  v_object:
+    v_array:
+    - a
+    - b
+    - c
+    v_boolean: true
+    v_decimal: 2.718
+    v_integer: 2
+    v_null: null
+    v_object:
+      k: v
+    v_string: abc
+  v_string: string
+  v_true: true
+- _id: a
+  _type: test
+  a: A
+- _id: b
+  _type: test
+  b: B
+tests:
+- title: "... array attributes"
+  query: '*[_id=="id"][0]{"array": [...v_array, ...v_null, ...v_object.v_array]}'
+  result:
+    array:
+    - 1
+    - string
+    - true
+    - null
+    - - 1
+      - 2
+      - 3
+    - key: value
+    - a
+    - b
+    - c
+- title: "... array attributes"
+  query: '*[_id=="id"][0]{"array": [...v_object.v_array, ...[1, 2], ...v_object.v_array]}'
+  result:
+    array:
+    - a
+    - b
+    - c
+    - 1
+    - 2
+    - a
+    - b
+    - c
+- title: "... array literals"
+  query: |-
+    [
+      [...[1,2], ...[3,4]],
+      [...[1,2], ...null, ...[3,4]],
+      [...null, ...[], ...null],
+    ]
+  result:
+  - - 1
+    - 2
+    - 3
+    - 4
+  - - 1
+    - 2
+    - 3
+    - 4
+  - []
+- title: "... object literals"
+  query: |-
+    [
+      {...{"a":1,"b":2}, ...{"c":3,"d":4}},
+      {...{"a":1,"b":2}, ...null, ...{"c":3,"d":4}},
+      {...null, ...{}, ...null},
+    ]
+  result:
+  - a: 1
+    b: 2
+    c: 3
+    d: 4
+  - a: 1
+    b: 2
+    c: 3
+    d: 4
+  - {}
+- title: old merge order
+  query: |-
+    *[_id == "a"] {
+      "a": 123,
+      ...
+    }[0]{a}
+  result:
+    a: 123
+  features:
+  - groqV1
+- title: old merge order
+  query: |-
+    *[_id == "a"] {
+      ...,
+      "a": 123
+    }[0]{a}
+  result:
+    a: 123
+  features:
+  - groqV1

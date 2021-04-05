@@ -1,0 +1,6 @@
+name: identity() function
+documents: []
+tests:
+- title: identity()
+  query: identity()
+  result: someuser

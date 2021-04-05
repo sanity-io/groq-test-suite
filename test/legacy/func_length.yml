@@ -1,0 +1,98 @@
+name: length() function
+documents:
+- _id: id
+  _type: values
+  v_array:
+  - 1
+  - 3.14
+  - string
+  - true
+  - - 1
+    - 2
+    - 3
+  - key: value
+  v_array_empty: []
+  v_array_null:
+  - null
+  - 1
+  - 3.14
+  - string
+  - true
+  - - 1
+    - 2
+    - 3
+  - key: value
+  v_decimal: 3.14
+  v_false: false
+  v_integer: 1
+  v_null: null
+  v_object:
+    v_array:
+    - a
+    - b
+    - c
+    v_boolean: true
+    v_decimal: 2.718
+    v_integer: 2
+    v_null: null
+    v_object:
+      k: v
+    v_string: abc
+  v_object_empty: {}
+  v_string: string
+  v_true: true
+- _id: a
+  _type: test
+  value: 1
+- _id: b
+  _type: test
+  value: 2
+- _id: c
+  _type: test
+  value: 3
+tests:
+- title: attributes
+  query: length(*[_id=="id"][0].v_array)
+  result: 6
+- title: attributes
+  query: length(*[_id=="id"][0].v_array_empty)
+  result: 0
+- title: attributes
+  query: length(*[_id=="id"][0].v_array_null)
+  result: 7
+- title: attributes
+  query: length(*[_id=="id"][0].v_null)
+  result: null
+- title: attributes
+  query: length(*[_id=="id"][0].v_string)
+  result: 6
+- title: attributes
+  query: length(*[_id=="id"][0].missing)
+  result: null
+- title: documents
+  query: length(*)
+  result: 4
+- title: documents
+  query: length(*[_type == 'test' && value <= 2])
+  result: 2
+- title: documents
+  query: length(*[false])
+  result: 0
+- title: literals
+  query: length([1, 2, 3])
+  result: 3
+- title: literals
+  query: length([1, 2, null, 3])
+  result: 4
+- title: literals
+  query: length([])
+  result: 0
+- title: literals
+  query: length(null)
+  result: null
+- title: literals
+  query: length("string")
+  result: 6
+- title: literals
+  query: length(missing)
+  result: null

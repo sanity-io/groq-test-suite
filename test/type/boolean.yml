@@ -1,5 +1,6 @@
-# Tests for booleans.
 name: "Boolean"
+features: [groqV2]
+
 documents:
 - _id: "booleans"
   _type: "test"

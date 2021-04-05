@@ -1,0 +1,77 @@
+name: upper() function
+documents:
+- _id: id
+  _type: values
+  v_string1: string
+  v_string2: String
+  v_string3: STRING
+- _id: '1'
+  _type: value
+  value: Zanzibar
+- _id: '2'
+  _type: value
+  value: Planet
+- _id: '3'
+  _type: value
+  value: Mouse
+- _id: '4'
+  _type: value
+  value: Pandemic
+- _id: '5'
+  _type: value
+  value: Sky
+- _id: '6'
+  _type: value
+  value: Axe
+- _id: '7'
+  _type: value
+  value: Åge
+- _id: '8'
+  _type: value
+  value: Aardvark
+- _id: '9'
+  _type: value
+  value: Mousé
+tests:
+- title: literal string
+  query: upper("hello")
+  result: HELLO
+- title: literal string
+  query: upper("Hello")
+  result: HELLO
+- title: literal string
+  query: upper("HELLO")
+  result: HELLO
+- title: attribute
+  query: upper(*[_id == "id"][0].v_string1)
+  result: STRING
+- title: attribute
+  query: upper(*[_id == "id"][0].v_string2)
+  result: STRING
+- title: attribute
+  query: upper(*[_id == "id"][0].v_string3)
+  result: STRING
+- title: order on upper asc
+  query: '*[_type == "value"] | order(upper(value))[].value'
+  result:
+  - Aardvark
+  - Axe
+  - Mouse
+  - Mousé
+  - Pandemic
+  - Planet
+  - Sky
+  - Zanzibar
+  - Åge
+- title: order on upper desc
+  query: '*[_type == "value"] | order(upper(value) desc)[].value'
+  result:
+  - Åge
+  - Zanzibar
+  - Sky
+  - Planet
+  - Pandemic
+  - Mousé
+  - Mouse
+  - Axe
+  - Aardvark

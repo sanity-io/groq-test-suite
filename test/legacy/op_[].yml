@@ -1,0 +1,823 @@
+name: "[] operator"
+documents:
+- _id: arrays
+  _type: test
+  arrays:
+  - - 11
+    - 12
+  - - 21
+    - 22
+- _id: arrays-unbalanced
+  _type: test
+  arrays:
+  - - 11
+    - 12
+  - - - 211
+      - 212
+    - 22
+  - 3
+- _id: arrays-arrays
+  _type: test
+  arrays:
+  - - - 11
+      - 12
+    - - 21
+      - 22
+  - - - 31
+      - 32
+    - - 41
+      - 42
+- _id: integers
+  _type: test
+  integers:
+  - 1
+  - 2
+  - 3
+- _id: objects
+  _type: test
+  objects:
+  - value: 1
+  - value: 2
+  - value: 3
+- _id: objects-array
+  _type: test
+  objects:
+  - array:
+    - 11
+    - 12
+  - array:
+    - 21
+    - 22
+- _id: objects-arrays
+  _type: test
+  objects:
+  - arrays:
+    - - 11
+      - 12
+    - - 21
+      - 22
+  - arrays:
+    - - 31
+      - 32
+    - - 41
+      - 42
+- _id: objects-objects
+  _type: test
+  objects:
+  - objects:
+    - value: 11
+    - value: 12
+  - objects:
+    - value: 21
+    - value: 22
+- _id: objects-object-objects
+  _type: test
+  objects:
+  - object:
+      objects:
+      - value: 11
+      - value: 12
+  - object:
+      objects:
+      - value: 21
+      - value: 22
+- _id: objects-object-arrays-object
+  _type: test
+  objects:
+  - object:
+      arrays:
+      - - value: 11
+        - value: 12
+      - - value: 21
+        - value: 22
+  - object:
+      arrays:
+      - - value: 31
+        - value: 32
+      - - value: 41
+        - value: 42
+- _id: refs
+  _type: test
+  refs:
+  - _ref: arrays
+  - _ref: integers
+  - _ref: objects
+- _id: objects-ref
+  _type: test
+  objects:
+  - ref:
+      _ref: arrays
+  - ref:
+      _ref: integers
+  - ref:
+      _ref: objects
+  - ref:
+      _ref: refs
+tests:
+- title: arrays
+  query: '*[_id=="arrays"][0].arrays'
+  result:
+  - - 11
+    - 12
+  - - 21
+    - 22
+- title: arrays
+  query: '*[_id=="arrays"][0].arrays'
+  result:
+  - - 11
+    - 12
+  - - 21
+    - 22
+- title: arrays
+  query: '*[_id=="arrays"].arrays'
+  result:
+  - - - 11
+      - 12
+    - - 21
+      - 22
+  features:
+  - groqV1
+- title: "{...}._id"
+  query: '*[_id=="arrays"]{...}._id'
+  result:
+  - arrays
+  features:
+  - groqV1
+- title: arrays
+  query: '*[_id=="arrays"][].arrays'
+  result:
+  - - - 11
+      - 12
+    - - 21
+      - 22
+- title: arrays[]
+  query: '*[_id=="arrays"][0].arrays[]'
+  result:
+  - - 11
+    - 12
+  - - 21
+    - 22
+- title: arrays[][]
+  query: '*[_id=="arrays"][0].arrays[][]'
+  result:
+  - - 11
+    - 12
+  - - 21
+    - 22
+  features:
+  - groqV1
+- title: arrays-arrays
+  query: '*[_id=="arrays-arrays"][0].arrays'
+  result:
+  - - - 11
+      - 12
+    - - 21
+      - 22
+  - - - 31
+      - 32
+    - - 41
+      - 42
+- title: arrays-arrays[]
+  query: '*[_id=="arrays-arrays"][0].arrays[]'
+  result:
+  - - - 11
+      - 12
+    - - 21
+      - 22
+  - - - 31
+      - 32
+    - - 41
+      - 42
+- title: arrays-arrays[][]
+  query: '*[_id=="arrays-arrays"][0].arrays[][]'
+  result:
+  - - - 11
+      - 12
+    - - 21
+      - 22
+  - - - 31
+      - 32
+    - - 41
+      - 42
+  features:
+  - groqV1
+- title: arrays-arrays[][][] (legacy array semantics)
+  query: '*[_id=="arrays-arrays"][0].arrays[][][]'
+  result:
+  - - - 11
+      - 12
+    - - 21
+      - 22
+  - - - 31
+      - 32
+    - - 41
+      - 42
+  features:
+  - groqV1
+- title: arrays-arrays[1][]
+  query: '*[_id=="arrays-arrays"][0].arrays[1][]'
+  result:
+  - - 11
+    - 12
+  - - 21
+    - 22
+  features:
+  - groqV1
+- title: arrays-arrays[1][][]
+  query: '*[_id=="arrays-arrays"][0].arrays[1][][]'
+  result:
+  - - 11
+    - 12
+  - - 21
+    - 22
+  features:
+  - groqV1
+- title: arrays-arrays[][1]
+  query: '*[_id=="arrays-arrays"][0].arrays[][1]'
+  result:
+  - - 11
+    - 12
+  - - 21
+    - 22
+  features:
+  - groqV1
+- title: arrays-arrays[][1][]
+  query: '*[_id=="arrays-arrays"][0].arrays[][1][]'
+  result:
+  - - 11
+    - 12
+  - - 21
+    - 22
+  features:
+  - groqV1
+- title: arrays-arrays[][][1]
+  query: '*[_id=="arrays-arrays"][0].arrays[][][1]'
+  result:
+  - - 11
+    - 12
+  - - 21
+    - 22
+  features:
+  - groqV1
+- title: arrays-arrays[1][1][]
+  query: '*[_id=="arrays-arrays"][0].arrays[1][1][]'
+  result:
+  - 11
+  - 12
+  features:
+  - groqV1
+- title: arrays-arrays[1][][1]
+  query: '*[_id=="arrays-arrays"][0].arrays[1][][1]'
+  result:
+  - 11
+  - 12
+  features:
+  - groqV1
+- title: integers
+  query: '*[_id=="integers"][0].integers'
+  result:
+  - 1
+  - 2
+  - 3
+- title: integers[]
+  query: '*[_id=="integers"][0].integers[]'
+  result:
+  - 1
+  - 2
+  - 3
+- title: integers[].attr
+  query: '*[_id=="integers"][0].integers[].attr'
+  result:
+  - null
+  - null
+  - null
+- title: integers[].attr[]
+  query: '*[_id=="integers"][0].integers[].attr[]'
+  result:
+  - null
+  - null
+  - null
+- title: integers[]->
+  query: '*[_id=="integers"][0].integers[]->'
+  result:
+  - null
+  - null
+  - null
+- title: integers[]->[]
+  query: '*[_id=="integers"][0].integers[]->[]'
+  result:
+  - null
+  - null
+  - null
+- title: objects
+  query: '*[_id=="objects"][0].objects'
+  result:
+  - value: 1
+  - value: 2
+  - value: 3
+- title: objects[]
+  query: '*[_id=="objects"][0].objects[]'
+  result:
+  - value: 1
+  - value: 2
+  - value: 3
+- title: objects[value==2]
+  query: '*[_id=="objects"][0].objects[value==2]'
+  result: null
+  features:
+  - groqV1
+- title: objects[value==2].value
+  query: '*[_id=="objects"][0].objects[value==2].value'
+  result: null
+  features:
+  - groqV1
+- title: objects[value==2][].value
+  query: '*[_id=="objects"][0].objects[value==2][].value'
+  result: null
+  features:
+  - groqV1
+- title: objects[].value
+  query: '*[_id=="objects"][0].objects[].value'
+  result:
+  - 1
+  - 2
+  - 3
+- title: objects[].array
+  query: '*[_id=="objects-array"][0].objects[].array'
+  result:
+  - - 11
+    - 12
+  - - 21
+    - 22
+- title: objects[].array[]
+  query: '*[_id=="objects-array"][0].objects[].array[]'
+  result:
+  - - 11
+    - 12
+  - - 21
+    - 22
+  features:
+  - groqV1
+- title: objects[].arrays
+  query: '*[_id=="objects-arrays"][0].objects[].arrays'
+  result:
+  - - - 11
+      - 12
+    - - 21
+      - 22
+  - - - 31
+      - 32
+    - - 41
+      - 42
+- title: objects[].arrays[]
+  query: '*[_id=="objects-arrays"][0].objects[].arrays[]'
+  result:
+  - - - 11
+      - 12
+    - - 21
+      - 22
+  - - - 31
+      - 32
+    - - 41
+      - 42
+  features:
+  - groqV1
+- title: objects[].arrays[][]
+  query: '*[_id=="objects-arrays"][0].objects[].arrays[][]'
+  result:
+  - - - 11
+      - 12
+    - - 21
+      - 22
+  - - - 31
+      - 32
+    - - 41
+      - 42
+  features:
+  - groqV1
+- title: objects[].arrays[][1]
+  query: '*[_id=="objects-arrays"][0].objects[].arrays[][1]'
+  result:
+  - - 11
+    - 12
+  - - 21
+    - 22
+  features:
+  - groqV1
+- title: objects[].objects
+  query: '*[_id=="objects-objects"][0].objects[].objects'
+  result:
+  - - value: 11
+    - value: 12
+  - - value: 21
+    - value: 22
+- title: objects[].objects[]
+  query: '*[_id=="objects-objects"][0].objects[].objects[]'
+  result:
+  - - value: 11
+    - value: 12
+  - - value: 21
+    - value: 22
+  features:
+  - groqV1
+- title: objects[].objects[].value
+  query: '*[_id=="objects-objects"][0].objects[].objects[].value'
+  result:
+  - null
+  - null
+  features:
+  - groqV1
+- title: objects[].objects[ value >= 20 ]
+  query: '*[_id=="objects-objects"][0].objects[].objects[ value >= 20 ]'
+  result: null
+  features:
+  - groqV1
+- title: objects[].objects[ value >= 20 ][]
+  query: '*[_id=="objects-objects"][0].objects[].objects[ value >= 20 ][]'
+  result: null
+  features:
+  - groqV1
+- title: objects[].objects[][ value >= 20 ]
+  query: '*[_id=="objects-objects"][0].objects[].objects[][ value >= 20 ]'
+  result: null
+  features:
+  - groqV1
+- title: "(objects[].objects[])[ value >= 20 ]"
+  query: (*[_id=="objects-objects"][0].objects[].objects[])[ value >= 20 ]
+  result: null
+  features:
+  - groqV1
+- title: objects[21 in objects[].value][].objects[].value
+  query: '*[_id=="objects-objects"][0].objects[21 in objects[].value][].objects[].value'
+  result: null
+  features:
+  - groqV1
+- title: objects[].objects[1].value
+  query: '*[_id=="objects-objects"][0].objects[].objects[1].value'
+  result: null
+  features:
+  - groqV1
+- title: objects[].object.arrays
+  query: '*[_id=="objects-object-arrays-object"][0].objects[].object.arrays'
+  result:
+  - - - value: 11
+      - value: 12
+    - - value: 21
+      - value: 22
+  - - - value: 31
+      - value: 32
+    - - value: 41
+      - value: 42
+- title: objects[].object.arrays[]
+  query: '*[_id=="objects-object-arrays-object"][0].objects[].object.arrays[]'
+  result:
+  - - - value: 11
+      - value: 12
+    - - value: 21
+      - value: 22
+  - - - value: 31
+      - value: 32
+    - - value: 41
+      - value: 42
+  features:
+  - groqV1
+- title: objects[].object.arrays[][]
+  query: '*[_id=="objects-object-arrays-object"][0].objects[].object.arrays[][]'
+  result:
+  - - - value: 11
+      - value: 12
+    - - value: 21
+      - value: 22
+  - - - value: 31
+      - value: 32
+    - - value: 41
+      - value: 42
+  features:
+  - groqV1
+- title: objects[].object.arrays[][].value
+  query: '*[_id=="objects-object-arrays-object"][0].objects[].object.arrays[][].value'
+  result:
+  - null
+  - null
+  features:
+  - groqV1
+- title: objects[].object.arrays[21 in @[].value][][].value
+  query: '*[_id=="objects-object-arrays-object"][0].objects[].object.arrays[21 in
+    @[].value][][].value'
+  result: null
+  features:
+  - groqV1
+- title: objects[].object.arrays[21 in @[].value][][0].value
+  query: '*[_id=="objects-object-arrays-object"][0].objects[].object.arrays[21 in
+    @[].value][][0].value'
+  result: null
+  features:
+  - groqV1
+- title: objects[].object.arrays[21 in @[].value][][1].value
+  query: '*[_id=="objects-object-arrays-object"][0].objects[].object.arrays[21 in
+    @[].value][][1].value'
+  result: null
+  features:
+  - groqV1
+- title: "(objects[].object.arrays[21 in @[].value])[0][0][0].value"
+  query: (*[_id=="objects-object-arrays-object"][0].objects[].object.arrays[21 in
+    @[].value])[0][0][0].value
+  result: null
+  features:
+  - groqV1
+- title: "(objects[].object.arrays[21 in @[].value])[0][0][1].value"
+  query: (*[_id=="objects-object-arrays-object"][0].objects[].object.arrays[21 in
+    @[].value])[0][0][1].value
+  result: null
+  features:
+  - groqV1
+- title: objects[].object.objects
+  query: '*[_id=="objects-object-objects"][0].objects[].object.objects'
+  result:
+  - - value: 11
+    - value: 12
+  - - value: 21
+    - value: 22
+- title: objects[].object.objects[]
+  query: '*[_id=="objects-object-objects"][0].objects[].object.objects[]'
+  result:
+  - - value: 11
+    - value: 12
+  - - value: 21
+    - value: 22
+  features:
+  - groqV1
+- title: objects[].object.objects[].value
+  query: '*[_id=="objects-object-objects"][0].objects[].object.objects[].value'
+  result:
+  - null
+  - null
+  features:
+  - groqV1
+- title: objects[].object.objects[1].value
+  query: '*[_id=="objects-object-objects"][0].objects[].object.objects[1].value'
+  result: null
+  features:
+  - groqV1
+- title: objects[].object.objects[value in [12, 21]][].value
+  query: '*[_id=="objects-object-objects"][0].objects[].object.objects[value in [12,
+    21]][].value'
+  result: null
+  features:
+  - groqV1
+- title: objects[].ref
+  query: '*[_id=="objects-ref"][0].objects[].ref'
+  result:
+  - _ref: arrays
+  - _ref: integers
+  - _ref: objects
+  - _ref: refs
+- title: objects[].ref->{_id, _type}
+  query: '*[_id=="objects-ref"][0].objects[].ref->{_id, _type}'
+  result:
+  - {}
+  - {}
+  - {}
+  - {}
+  features:
+  - groqV1
+- title: objects[].ref->arrays
+  query: '*[_id=="objects-ref"][0].objects[].ref->arrays'
+  result:
+  - null
+  - null
+  - null
+  - null
+  features:
+  - groqV1
+- title: objects[].ref->arrays[]
+  query: '*[_id=="objects-ref"][0].objects[].ref->arrays[]'
+  result:
+  - null
+  - null
+  - null
+  - null
+  features:
+  - groqV1
+- title: objects[].ref->arrays[][]
+  query: '*[_id=="objects-ref"][0].objects[].ref->arrays[][]'
+  result:
+  - null
+  - null
+  - null
+  - null
+  features:
+  - groqV1
+- title: objects[].ref->refs[]->objects[].value
+  query: '*[_id=="objects-ref"][0].objects[].ref->refs[]->objects[].value'
+  result:
+  - null
+  - null
+  - null
+  - null
+  features:
+  - groqV1
+- title: objects[].ref->refs[]->objects[value==2][].value
+  query: '*[_id=="objects-ref"][0].objects[].ref->refs[]->objects[value==2][].value'
+  result: []
+  features:
+  - groqV1
+- title: objects[].ref->refs[_ref=="objects"][]->objects[].value
+  query: '*[_id=="objects-ref"][0].objects[].ref->refs[_ref=="objects"][]->objects[].value'
+  result: []
+  features:
+  - groqV1
+- title: objects[][ref._ref=="refs"][].ref->refs[_ref=="objects"][]->objects[value
+    in [1,3]][].value
+  query: (*[_id=="objects-ref"][].objects)[][ref._ref=="refs"][].ref->refs[_ref=="objects"][]->objects[value
+    in [1,3]][].value
+  result: []
+  features:
+  - groqV1
+- title: "(objects[])[3].ref->refs[2]->objects[value in [1,3]][].value"
+  query: (*[_id=="objects-ref"][].objects[])[3].ref->refs[2]->objects[value in [1,3]][].value
+  result: null
+  features:
+  - groqV1
+- title: objects[2].ref->refs[2]->objects[value in [1,3]][].value
+  query: '*[_id=="objects-ref"][].objects[2].ref->refs[2]->objects[value in [1,3]][].value'
+  result: null
+  features:
+  - groqV1
+- title: objects[3].ref->refs[3]->objects[value in [1,3]].value
+  query: (*[_id=="objects-ref"][].objects[])[3].ref->refs[3]->objects[value in [1,3]][].value
+  result: null
+  features:
+  - groqV1
+- title: objects[3].ref->refs[2]->objects[value==4][].value
+  query: '*[_id=="objects-ref"][].objects[3].ref->refs[2]->objects[value==4][].value'
+  result: null
+  features:
+  - groqV1
+- title: objects[ref._ref=="refs"][].ref->refs[]->objects[value in [1,3]][1].value
+  query: '*[_id=="objects-ref"][0].objects[ref._ref=="refs"][].ref->refs[]->objects[value
+    in [1,3]][1].value'
+  result: null
+  features:
+  - groqV1
+- title: objects[ref._ref=="refs"][].ref->refs[]->objects[value == 2][].value
+  query: '*[_id=="objects-ref"][0].objects[ref._ref=="refs"][].ref->refs[]->objects[value
+    == 2][].value'
+  result: null
+  features:
+  - groqV1
+- title: objects[ref._ref=="arrays"][0].ref->refs[_ref=="objects"][0]->objects[value==2][0].value
+  query: '*[_id=="objects-ref"][0].objects[ref._ref=="arrays"][0].ref->refs[_ref=="objects"][0]->objects[value==2][0].value'
+  result: null
+- title: refs
+  query: '*[_id=="refs"][0].refs'
+  result:
+  - _ref: arrays
+  - _ref: integers
+  - _ref: objects
+- title: refs[]->{_id, _type}
+  query: '*[_id=="refs"][0].refs[]->{_id, _type}'
+  result:
+  - {}
+  - {}
+  - {}
+  features:
+  - groqV1
+- title: refs[]->_id
+  query: '*[_id=="refs"][0].refs[]->_id'
+  result:
+  - null
+  - null
+  - null
+  features:
+  - groqV1
+- title: refs[]->arrays
+  query: '*[_id=="refs"][0].refs[]->arrays'
+  result:
+  - null
+  - null
+  - null
+  features:
+  - groqV1
+- title: refs[]->arrays[]
+  query: '*[_id=="refs"][0].refs[]->arrays[]'
+  result:
+  - null
+  - null
+  - null
+  features:
+  - groqV1
+- title: refs[]->arrays[][]
+  query: '*[_id=="refs"][0].refs[]->arrays[][]'
+  result:
+  - null
+  - null
+  - null
+  features:
+  - groqV1
+- title: refs[]->arrays[1][]
+  query: '*[_id=="refs"][0].refs[]->arrays[1][]'
+  result: null
+  features:
+  - groqV1
+- title: refs[]->arrays[][1]
+  query: '*[_id=="refs"][0].refs[]->arrays[][1]'
+  result: null
+  features:
+  - groqV1
+- title: refs[]->arrays[1][1]
+  query: '*[_id=="refs"][0].refs[]->arrays[1][1]'
+  result: null
+  features:
+  - groqV1
+- title: refs[]->objects
+  query: '*[_id=="refs"][0].refs[]->objects'
+  result:
+  - null
+  - null
+  - null
+  features:
+  - groqV1
+- title: refs[]->objects[]
+  query: '*[_id=="refs"][0].refs[]->objects[]'
+  result:
+  - null
+  - null
+  - null
+  features:
+  - groqV1
+- title: refs[]->objects[].value
+  query: '*[_id=="refs"][0].refs[]->objects[].value'
+  result:
+  - null
+  - null
+  - null
+  features:
+  - groqV1
+- title: refs[]->objects[1].value
+  query: '*[_id=="refs"][0].refs[]->objects[1].value'
+  result: null
+  features:
+  - groqV1
+- title: refs[2]->objects[1].value
+  query: '*[_id=="refs"][0].refs[2]->objects[1].value'
+  result: null
+  features:
+  - groqV1
+- title: "*[0..1]._id"
+  query: "*[0..1]._id"
+  result:
+  - arrays
+  - arrays-arrays
+  features:
+  - groqV1
+- title: "*[0..-1]._id"
+  query: "*[0..-1]._id"
+  result: []
+  features:
+  - groqV1
+- title: Subscript range 0..2
+  query: '*[_type == "test"][0..2][]._id'
+  result:
+  - arrays
+  - arrays-arrays
+  - arrays-unbalanced
+- title: Subscript range 1..2
+  query: '*[_type == "test"][1..2][]._id'
+  result:
+  - arrays-arrays
+  - arrays-unbalanced
+- title: Subscript range 1..-1
+  query: '*[_type == "test"][1..-1][]._id'
+  result:
+  - arrays-arrays
+  - arrays-unbalanced
+  - integers
+  - objects
+  - objects-array
+  - objects-arrays
+  - objects-object-arrays-object
+  - objects-object-objects
+  - objects-objects
+  - objects-ref
+  - refs
+- title: Subscript range 1..-2
+  query: '*[_type == "test"][1..-2][]._id'
+  result: []
+  features:
+  - groqV1
+- title: Subscript range 1..-2
+  query: '*[_type == "test"][1..-2][]._id'
+  result:
+  - arrays-arrays
+  - arrays-unbalanced
+  - integers
+  - objects
+  - objects-array
+  - objects-arrays
+  - objects-object-arrays-object
+  - objects-object-objects
+  - objects-objects
+  - objects-ref
+  features:
+  - groqV2

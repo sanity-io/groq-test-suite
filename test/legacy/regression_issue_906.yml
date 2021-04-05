@@ -1,0 +1,30 @@
+name: 'Regressions: issue 906'
+documents:
+- _id: team
+  _type: team
+  name: Dream Team
+- _id: game
+  _type: game
+  team:
+    _ref: team
+- _id: product
+  _type: product
+  game:
+    _ref: game
+  name: Product
+  price: 1000
+tests:
+- title: Issue 906
+  query: |-
+    *[_type == "team"] {
+      _id,
+      name,
+      "products": *[_type == "product" && game._ref == *[_type == "game" && references(^._id)]] {
+        name,
+        price
+      }
+    }
+  result:
+  - _id: team
+    name: Dream Team
+    products: []

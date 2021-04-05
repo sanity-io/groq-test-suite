@@ -1,0 +1,60 @@
+name: Keywords
+documents:
+- _id: keywords
+  _type: test
+  'null': 'null'
+  'false': 'false'
+  'true': 'true'
+- _id: operators
+  _type: test
+  asc: asc
+  desc: desc
+  in: in
+  match: match
+tests:
+- title: Keywords projection
+  query: '*[_id=="keywords"]{"false": false, "true": true, "null": null}'
+  result:
+  - 'false': false
+    'true': true
+  features:
+  - groqV1
+- title: Keywords projection
+  query: '*[_id=="keywords"]{"false": false, "true": true, "null": null}'
+  result:
+  - 'false': false
+    'true': true
+    'null': null
+  features:
+  - groqV2
+- title: Keywords filters
+  query: |-
+    [
+      count(*[_id=="keywords" && false == "false"]) > 0,
+      count(*[_id=="keywords" && true == "true"]) > 0,
+      count(*[_id=="keywords" && null == "null"]) > 0,
+    ]
+  result:
+  - false
+  - false
+  - false
+- title: Operators projection
+  query: '*[_id=="operators"]{asc, desc, in, match}'
+  result:
+  - asc: asc
+    desc: desc
+    in: in
+    match: match
+- title: Operators filters
+  query: |-
+    [
+      count(*[_id=="operators" && asc == "asc"]) > 0,
+      count(*[_id=="operators" && desc == "desc"]) > 0,
+      count(*[_id=="operators" && in == "in"]) > 0,
+      count(*[_id=="operators" && match == "match"]) > 0,
+    ]
+  result:
+  - true
+  - true
+  - true
+  - true

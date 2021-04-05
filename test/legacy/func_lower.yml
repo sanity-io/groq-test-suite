@@ -1,0 +1,77 @@
+name: lower() function
+documents:
+- _id: id
+  _type: values
+  v_string1: string
+  v_string2: String
+  v_string3: STRING
+- _id: '1'
+  _type: value
+  value: Zanzibar
+- _id: '2'
+  _type: value
+  value: Planet
+- _id: '3'
+  _type: value
+  value: Mouse
+- _id: '4'
+  _type: value
+  value: Pandemic
+- _id: '5'
+  _type: value
+  value: Sky
+- _id: '6'
+  _type: value
+  value: Axe
+- _id: '7'
+  _type: value
+  value: Åge
+- _id: '8'
+  _type: value
+  value: Aardvark
+- _id: '9'
+  _type: value
+  value: Mousé
+tests:
+- title: literal string
+  query: lower("hello")
+  result: hello
+- title: literal string
+  query: lower("Hello")
+  result: hello
+- title: literal string
+  query: lower("HELLO")
+  result: hello
+- title: attribute
+  query: lower(*[_id == "id"][0].v_string1)
+  result: string
+- title: attribute
+  query: lower(*[_id == "id"][0].v_string2)
+  result: string
+- title: attribute
+  query: lower(*[_id == "id"][0].v_string3)
+  result: string
+- title: order on lower asc
+  query: '*[_type == "value"] | order(lower(value))[].value'
+  result:
+  - Aardvark
+  - Axe
+  - Mouse
+  - Mousé
+  - Pandemic
+  - Planet
+  - Sky
+  - Zanzibar
+  - Åge
+- title: order on lower desc
+  query: '*[_type == "value"] | order(lower(value) desc)[].value'
+  result:
+  - Åge
+  - Zanzibar
+  - Sky
+  - Planet
+  - Pandemic
+  - Mousé
+  - Mouse
+  - Axe
+  - Aardvark

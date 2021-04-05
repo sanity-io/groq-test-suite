@@ -1,0 +1,36 @@
+name: Conditions
+documents:
+- _id: a
+  _type: test
+  fortytwo: 42
+  object:
+    fortytwo: 42
+tests:
+- title: object
+  query: |-
+    *[_id == "a"][0]{
+      "x": object.[fortytwo == 42]
+    }
+  result:
+    x:
+      fortytwo: 42
+  features:
+  - groqV1
+- title: object with attribute
+  query: |-
+    *[_id == "a"][0]{
+      "x": object.[fortytwo == 42].fortytwo
+    }
+  result:
+    x: 42
+  features:
+  - groqV1
+- title: parent scope
+  query: |-
+    *[_id == "a"][0]{
+      "x": object.[^.fortytwo == fortytwo].fortytwo
+    }
+  result:
+    x: 42
+  features:
+  - groqV1

@@ -1,0 +1,67 @@
+name: 'Regressions: issue 882'
+documents:
+- _id: canis-latrans
+  _type: species
+  genus: canis
+  specie: latrans
+  name: Coyote
+- _id: canis-aureus
+  _type: species
+  genus: canis
+  specie: aureus
+  name: Golden Jackal
+- _id: canis-rufus
+  _type: species
+  genus: canis
+  specie: rufus
+  name: Red Wolf
+tests:
+- title: Issue 882 in projection
+  query: |-
+    *[ _type == "species" && _id == "canis-latrans"] {
+      _id,
+      "asc": *[ _type == "species" ] | order(genus asc, _id asc)[]._id,
+      "desc": *[ _type == "species" ] | order(genus desc, _id desc)[]._id,
+    }[0]
+  result:
+    _id: canis-latrans
+    asc:
+    - canis-aureus
+    - canis-latrans
+    - canis-rufus
+    desc:
+    - canis-rufus
+    - canis-latrans
+    - canis-aureus
+- title: Issue 882 in projection, primary sort order
+  query: |-
+    *[ _type == "species" && _id == "canis-latrans"] {
+      _id,
+      "asc": *[ _type == "species" ] | order(_id asc)[]._id,
+      "desc": *[ _type == "species" ] | order(_id desc)[]._id,
+    }[0]
+  result:
+    _id: canis-latrans
+    asc:
+    - canis-aureus
+    - canis-latrans
+    - canis-rufus
+    desc:
+    - canis-rufus
+    - canis-latrans
+    - canis-aureus
+- title: Issue 882 at root
+  query: |-
+    {
+      "asc": *[ _type == "species" ] | order(genus asc, _id asc)[]._id,
+      "desc": *[ _type == "species" ] | order(genus desc, _id desc)[]._id,
+    }
+  result:
+    asc:
+    - canis-aureus
+    - canis-latrans
+    - canis-rufus
+    desc:
+    - canis-rufus
+    - canis-latrans
+    - canis-aureus

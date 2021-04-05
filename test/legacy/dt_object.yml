@@ -1,0 +1,144 @@
+name: 'Datatype: object'
+documents:
+- _id: object-empty
+  _type: test
+  value: {}
+- _id: object-nested-limit
+  _type: test
+  value:
+    k:
+      k:
+        k:
+          k:
+            k:
+              k:
+                k:
+                  k:
+                    k:
+                      k:
+                        k:
+                          k:
+                            k:
+                              k:
+                                k:
+                                  k:
+                                    k:
+                                      k: v
+- _id: object-types
+  _type: test
+  value:
+    string: value
+    integer: 1
+    decimal: 3.14
+    boolean: true
+    array:
+    - 1
+    object:
+      key: value
+tests:
+- title: object attributes datatypes
+  query: '*[ _id == "object-types" ][0].value'
+  result:
+    string: value
+    integer: 1
+    decimal: 3.14
+    boolean: true
+    array:
+    - 1
+    object:
+      key: value
+- title: object attributes empty
+  query: '*[ _id == "object-empty" ][0].value'
+  result: {}
+- title: object attributes nested limit
+  query: '*[ _id == "object-nested-limit" ][0].value'
+  result:
+    k:
+      k:
+        k:
+          k:
+            k:
+              k:
+                k:
+                  k:
+                    k:
+                      k:
+                        k:
+                          k:
+                            k:
+                              k:
+                                k:
+                                  k:
+                                    k:
+                                      k: v
+- title: object literals datatypes
+  query: |-
+    {
+      "string": "value",
+      "integer": 1,
+      "decimal": 3.14,
+      "boolean": true,
+      "array": [1],
+      "object": {"key": "value"}
+    }
+  result:
+    string: value
+    integer: 1
+    decimal: 3.14
+    boolean: true
+    array:
+    - 1
+    object:
+      key: value
+- title: object literals empty
+  query: "{}"
+  result: {}
+- title: object literals nested deep
+  query: '{"k":{"k":{"k":{"k":{"k":{"k":{"k":{"k":{"k":{"k":{"k":{"k":{"k":{"k":{"k":{"k":{"k":{"k":{"k":{"k":{"k":{"k":{"k":{"k":{"k":{"k":{"k":{"k":{"k":{"k":{"k":{"k":"v"}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}'
+  result:
+    k:
+      k:
+        k:
+          k:
+            k:
+              k:
+                k:
+                  k:
+                    k:
+                      k:
+                        k:
+                          k:
+                            k:
+                              k:
+                                k:
+                                  k:
+                                    k:
+                                      k:
+                                        k:
+                                          k:
+                                            k:
+                                              k:
+                                                k:
+                                                  k:
+                                                    k:
+                                                      k:
+                                                        k:
+                                                          k:
+                                                            k:
+                                                              k:
+                                                                k:
+                                                                  k: v
+- title: object literals trailing comma
+  query: |-
+    [
+      {
+        "a": 1,
+        "b": 2,
+      },
+      {"a": 1, "b": 2,}
+    ]
+  result:
+  - a: 1
+    b: 2
+  - a: 1
+    b: 2

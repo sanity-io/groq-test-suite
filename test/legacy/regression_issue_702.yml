@@ -1,0 +1,37 @@
+name: 'Regressions: issue 702'
+documents:
+- _id: abcd
+  _type: test
+  body:
+  - text: a
+  - text: b
+    children:
+    - text: b01
+    - text: b02
+    - text: b03
+  - text: c
+  - text: d
+    children:
+    - text: d01
+    - text: d02
+- _id: ef
+  _type: test
+  body:
+  - text: e
+    children:
+    - text: e01
+    - text: e02
+  - text: f
+tests:
+- title: Issue 702
+  query: "*[ body[].children[].text match 'd*' ][]._id"
+  result:
+  - abcd
+- title: Issue 702 (with array of term)
+  query: "*[ body[].children[].text match ['d*'] ][]._id"
+  result:
+  - abcd
+- title: Issue 702 (with array of terms and path constraint)
+  query: "*[(!(_id in path('drafts.*'))) && body[].children[].text match ['d*'] ][]._id"
+  result:
+  - abcd

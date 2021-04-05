@@ -91,6 +91,7 @@ tests:
   - {variables: {text: '[]'}, result: false}
 
 - name: "Unsupported RHS"
+  features: [groqV2]
   variables:
     expr:
     - '123'
@@ -106,6 +107,7 @@ tests:
   result: false
 
 - name: "Unsupported LHS"
+  features: [groqV2]
   variables:
     expr:
     - '{}'

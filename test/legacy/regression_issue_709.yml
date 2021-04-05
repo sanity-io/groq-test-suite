@@ -1,0 +1,75 @@
+name: 'Regressions: issue 709'
+documents:
+- _id: product
+  _type: product
+  name: Brochure Design
+  category: specific
+- _id: byCategory-1
+  _type: byCategory
+  all: true
+  category: all
+- _id: byCategory-2
+  _type: byCategory
+  all: false
+  category: all
+- _id: byCategory-3
+  _type: byCategory
+  all: true
+  category: specific
+- _id: byRef-1
+  _type: byRef
+  all: false
+  category: specific
+  products:
+  - _key: 0e08b9ddfd51
+    _ref: product
+    _type: reference
+- _id: byRef-2
+  _type: productAffix
+  category: other
+  products:
+  - _key: 47bb020788d8
+    _ref: product
+    _type: reference
+- _id: byRef-3
+  _type: byRef
+  all: false
+  category: specific
+  products:
+  - _key: 19bd6a598db3
+    _ref: product
+    _type: reference
+tests:
+- title: Issue 709
+  query: |-
+    *[_type == "product" && category=="specific"][0]{
+      _id,
+      "related": *[
+         category == "all"
+         || (category == "specific" && all == true)
+         || references(^._id)
+      ]|order(_id)[]._id,
+    }
+  result:
+    _id: product
+    related:
+    - byCategory-1
+    - byCategory-2
+    - byCategory-3
+    - byRef-1
+    - byRef-2
+    - byRef-3
+- title: Issue 709 &&
+  query: |-
+    *[_type == "product" && category=="specific"][0]{
+      _id,
+      "related": *[
+         category == "specific"
+         && (_id == "byRef-2" || _id == "byRef-3")
+         && references(^._id)
+      ]|order(_id)[]._id,
+    }
+  result:
+    _id: product
+    related:
+    - byRef-3

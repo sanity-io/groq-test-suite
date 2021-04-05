@@ -1,0 +1,16 @@
+name: function syntax
+documents: []
+tests:
+- title: Function call
+  query: length("abc")
+  result: 3
+- title: Function call with space
+  query: length ("abc")
+  result: 3
+  features:
+  - groqV1
+- title: Function call without parens
+  query: length "abc"
+  result: 3
+  features:
+  - groqV1

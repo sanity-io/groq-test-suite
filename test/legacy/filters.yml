@@ -1,0 +1,321 @@
+name: Filters
+documents:
+- _id: e
+  _type: test
+  name: E
+- _id: c
+  _type: test
+  name: C
+  other:
+    _ref: e
+- _id: d
+  _type: test
+  name: D
+- _id: b
+  _type: test
+  name: B
+  other:
+    _ref: c
+  weakother:
+    _type: reference
+    _ref: c
+    _weak: true
+- _id: a
+  _type: test
+  name: A
+  other:
+    _ref: b
+  weakother:
+    _ref: b
+    _weak: true
+  others:
+  - _ref: e
+  - _ref: c
+  - _ref: b
+  - _ref: d
+- _id: id
+  _type: values
+  v_array:
+  - 1
+  - string
+  - true
+  - null
+  - - 1
+    - 2
+    - 3
+  - key: value
+  v_decimal: 3.14
+  v_false: false
+  v_integer: 1
+  v_null: null
+  v_boolean: true
+  v_object:
+    v_array:
+    - a
+    - b
+    - c
+    v_boolean: true
+    v_decimal: 2.718
+    v_integer: 2
+    v_null: null
+    v_object:
+      k: v
+    v_string: abc
+  v_string: string
+  v_true: true
+tests:
+- title: empty constraint
+  query: "*[]._id|order(_id)"
+  result:
+  - a
+  - b
+  - c
+  - d
+  - e
+  - id
+- title: true constraint
+  query: "*[true][]._id|order(_id)"
+  result:
+  - a
+  - b
+  - c
+  - d
+  - e
+  - id
+- title: false constraint
+  query: "*[false][]._id|order(_id)"
+  result: []
+- title: null constraint
+  query: "*[null][]._id|order(_id)"
+  result: []
+- title: simple constraint
+  query: '*[_type == "test"][]._id'
+  result:
+  - a
+  - b
+  - c
+  - d
+  - e
+- title: compound constraint
+  query: '*[_id == "a" && _type == "test"][]._id'
+  result:
+  - a
+- title: false compound constraint
+  query: '*[_id == "a" && _type != "test"][]._id'
+  result: []
+- title: documents, multiple 1
+  query: "*[true][true][true][true][true][true][true][true][true][true][]._id|order(_id)"
+  result:
+  - a
+  - b
+  - c
+  - d
+  - e
+  - id
+- title: documents, multiple 2
+  query: "*[true][true][true][true][true][false][true][true][true][true][]._id|order(_id)"
+  result: []
+- title: documents, multiple 3
+  query: "*[true][true][true][true][true][true][true][true][true][false][]._id|order(_id)"
+  result: []
+- title: documents, multiple 4
+  query: '*[ _type == "test" ][ _id > "c" ][ defined(name) ][]._id|order(_id)'
+  result:
+  - d
+  - e
+- title: documents, multiple 5
+  query: '*[ _type == "test" ][ _id > "c" ][ !defined(name) ][]._id|order(_id)'
+  result: []
+- title: documents, multiple 6
+  query: '*[ _type == "test" ][ defined(name) ] | order(_id)[0..10][ _id > "c" ][]._id'
+  result:
+  - d
+  - e
+- title: documents, multiple 7
+  query: '*[ _type == "test" ][ !defined(name) ] | order(_id)[0..10][ _id > "c" ][]._id'
+  result: []
+- title: documents, nested 1
+  query: '*[_id in *[_id != "a"][_type == "test"]|order(_id)[]._id && _id >= "c"]|order(_id)[]._id'
+  result:
+  - c
+  - d
+  - e
+- title: documents, nested 2
+  query: |-
+    *[
+      _id in *[_id != "e"][]._id &&
+      _id in *[_type == "test"][]._id &&
+      _id in *[_id >= "c"][]._id
+    ] | order(_id)[]._id
+  result:
+  - c
+  - d
+- title: documents, nested 3
+  query: |-
+    *[
+      _id in *[
+        _id in *[
+          _id in *[
+            _id in *[
+              _id in *[
+                _id in *[
+                  _id in *[
+                    _id in *[
+                      _id in *[
+                        _id in *[
+                          _id >= "c" && _type == "test"
+                        ][]._id
+                      ][]._id
+                    ][]._id
+                  ][]._id
+                ][]._id
+              ][]._id
+            ][]._id
+          ][]._id
+        ][]._id
+      ][]._id
+    ] | order(_id)[]._id
+  result:
+  - c
+  - d
+  - e
+- title: literals, empty constraint
+  query: '[{"v":1},{"v":2},{"v":3}][].v'
+  result:
+  - 1
+  - 2
+  - 3
+- title: literals, true constraint
+  query: '[{"v":1},{"v":2},{"v":3}][true][].v'
+  result:
+  - 1
+  - 2
+  - 3
+- title: literals, false constraint
+  query: '[{"v":1},{"v":2},{"v":3}][false][].v'
+  result: []
+  features:
+  - groqV2
+- title: literals, false constraint
+  query: '[{"v":1},{"v":2},{"v":3}][false][].v'
+  result: null
+  features:
+  - groqV1
+- title: literals, null constraint
+  query: '[{"v":1},{"v":2},{"v":3}][null][].v'
+  result: []
+- title: literals, simple constraint
+  query: '[{"v":1},{"v":2},{"v":3}][v >= 2][].v'
+  result:
+  - 2
+  - 3
+- title: literals, compound constraint
+  query: '[{"v":1},{"v":2},{"v":3}][v >= 2 && v == 3][].v'
+  result:
+  - 3
+- title: literals, compound constraint 2
+  query: '[{"v":1},{"v":2},{"v":3}][v >= 2 && v < 2][].v'
+  result: []
+- title: Literals multiple 1
+  query: '[{"v":1},{"v":2},{"v":3}][true][true][true][true][true][true][true][true][true][true][].v'
+  result:
+  - 1
+  - 2
+  - 3
+- title: Literals multiple 2
+  query: '[{"v":1},{"v":2},{"v":3}][true][true][true][true][false][true][true][true][true][true][].v'
+  result: null
+  features:
+  - groqV1
+- title: Literals multiple 2
+  query: '[{"v":1},{"v":2},{"v":3}][true][true][true][true][false][true][true][true][true][true][].v'
+  result: []
+  features:
+  - groqV2
+- title: Literals multiple 3
+  query: '[{"v":1},{"v":2},{"v":3}][true][true][true][true][true][true][true][true][true][false][].v'
+  result: null
+  features:
+  - groqV1
+- title: Literals multiple 3
+  query: '[{"v":1},{"v":2},{"v":3}][true][true][true][true][true][true][true][true][true][false][].v'
+  result: []
+  features:
+  - groqV2
+- title: Literals multiple 4
+  query: '[{"v":1},{"v":2},{"v":3}][v >= 2][v < 4][v == 3][].v'
+  result:
+  - 3
+- title: Literals multiple 5
+  query: '[{"v":1},{"v":2},{"v":3}][v >= 2][v < 4][v == 1][].v'
+  result: []
+- title: Literals multiple 6
+  query: '[{"v":1},{"v":2},{"v":3}][v >= 2][v < 4]|order(v)[0...10][v == 3][].v'
+  result:
+  - 3
+- title: Literals multiple 7
+  query: '[{"v":1},{"v":2},{"v":3}][v >= 2][v < 4]|order(v)[0...10][v == 1][].v'
+  result: []
+- title: Literals nested 1
+  query: '[{"v":1},{"v":2},{"v":3}][v in [{"v":1},{"v":2},{"v":3}][v>=2][v==3][].v][].v'
+  result:
+  - 3
+- title: Literals nested 2
+  query: |-
+    [
+      {"v":1},
+      {"v":2},
+      {"v":3}
+    ][v in [
+      {"v":1},
+      {"v":2},
+      {"v":3}
+    ][defined(v)][].v && v in [
+      {"v":1},
+      {"v":2},
+      {"v":3}
+    ][v >= 2][].v && v in [
+      {"v":1},
+      {"v":2},
+      {"v":3}
+    ][v == 2][].v][].v
+  result:
+  - 2
+- title: Literals nested 3
+  query: '[{"v":1},{"v":2},{"v":3}][v in [{"v":1},{"v":2},{"v":3}][v in [{"v":1},{"v":2},{"v":3}][v
+    in [{"v":1},{"v":2},{"v":3}][v in [{"v":1},{"v":2},{"v":3}][v in [{"v":1},{"v":2},{"v":3}][v
+    in [{"v":1},{"v":2},{"v":3}][v in [{"v":1},{"v":2},{"v":3}][v in [{"v":1},{"v":2},{"v":3}][v>=2][].v][].v][].v][].v][].v][].v][].v][].v][].v'
+  result:
+  - 2
+  - 3
+- title: expression without operator, attribute
+  query: "*[v_boolean][]._id"
+  result:
+  - id
+- title: expression without operator, attribute on @
+  query: "*[@.v_boolean][]._id"
+  result:
+  - id
+- title: expression without operator, dotted attributes
+  query: "*[v_object.v_boolean][]._id"
+  result:
+  - id
+- title: expression without operator, dotted attributes on @
+  query: "*[@.v_object.v_boolean][]._id"
+  result:
+  - id
+- title: expression without operator, @
+  query: "*[@][]._id"
+  result: []
+- title: expression without operator, non-boolean attribute
+  query: "*[v_array][]._id"
+  result: []
+- title: expression without operator, non-boolean attribute
+  query: "*[v_array[].foo][]._id"
+  result: []
+- title: expression without operator, non-boolean attribute
+  query: "*[v_array[]][]._id"
+  result: []
+- title: expression without operator, non-existent attribute
+  query: "*[fnord][]._id"
+  result: []

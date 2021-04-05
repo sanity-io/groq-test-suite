@@ -1,0 +1,479 @@
+name: match operator
+documents:
+- _id: k1
+  _type: koan
+  text: What is your original face before you were born?
+  v_match:
+  - before
+  - bo*
+- _id: k2
+  _type: koan
+  text: When you can do nothing, what can you do?
+  v_match: noth*
+- _id: k3
+  _type: koan
+  text: When the many are reduced to one, to what is the one reduced?
+  v_match: missing
+- _id: embedded
+  _type: koan-list
+  koans:
+  - _key: k1
+    text: What is your original face before you were born?
+  - _key: k2
+    text: When you can do nothing, what can you do?
+  - _key: k3
+    text: When the many are reduced to one, to what is the one reduced?
+- _id: id
+  _type: values
+  v_array:
+  - 1
+  - string
+  - true
+  - null
+  - - 1
+    - 2
+    - 3
+  - key: value
+  v_decimal: 3.14
+  v_false: false
+  v_integer: 1
+  v_null: null
+  v_object:
+    v_array:
+    - a
+    - b
+    - c
+    v_boolean: true
+    v_decimal: 2.718
+    v_integer: 2
+    v_null: null
+    v_object:
+      k: v
+    v_string: abc
+  v_string: string
+  v_true: true
+  v_dottedString: foo.bar
+tests:
+- title: empty left hand side on text
+  query: '[] match "foo"'
+  result: false
+- title: literal
+  tests:
+  - result: true
+    query: '"When you can do nothing, what can you do?" match "when"'
+  - result: true
+    query: '"When you can do nothing, what can you do?" match "WhEn"'
+  - result: false
+    query: '"When you can do nothing, what can you do?" match "foo"'
+  - result: true
+    query: '"When you can do nothing, what can you do?" match "noth*"'
+  - result: true
+    query: '"When you can do nothing, what can you do?" match "nothing*"'
+  - result: false
+    query: '"When you can do nothing, what can you do?" match "nothingx*"'
+  - result: true
+    query: '"When you can do nothing, what can you do?" match "*nothing"'
+  - result: true
+    query: '"When you can do nothing, what can you do?" match "*thing"'
+  - result: true
+    query: '"When you can do nothing, what can you do?" match "no*ing"'
+  - result: true
+    query: '"When you can do nothing, what can you do?" match "*"'
+- title: null on right side
+  query: '"text" match null'
+  result: null
+  features:
+  - groqV1
+- title: null on right side
+  query: '"text" match null'
+  result: false
+  features:
+  - groqV2
+- title: null on left side
+  query: null match "test"
+  result: null
+  features:
+  - groqV1
+- title: null on left side
+  query: null match "test"
+  result: false
+  features:
+  - groqV2
+- title: array on left side
+  tests:
+  - result: true
+    query: |-
+      ["When you can do nothing, what can you do?",
+      "What is your original face before you were born?"] match "when"
+  - result: true
+    query: |-
+      ["When you can do nothing, what can you do?",
+      "What is your original face before you were born?"] match "nothing"
+  - result: true
+    query: |-
+      ["When you can do nothing, what can you do?",
+      "What is your original face before you were born?"] match "nothin*"
+  - result: true
+    query: |-
+      ["When you can do nothing, what can you do?",
+      "What is your original face before you were born?"] match "nothing*"
+  - result: true
+    query: |-
+      ["When you can do nothing, what can you do?",
+      "What is your original face before you were born?"] match "*nothing"
+  - result: true
+    query: |-
+      ["When you can do nothing, what can you do?",
+      "What is your original face before you were born?"] match "*ing"
+  - result: true
+    query: |-
+      ["When you can do nothing, what can you do?",
+      "What is your original face before you were born?"] match "no*ing"
+  - result: true
+    query: |-
+      ["When you can do nothing, what can you do?",
+      "What is your original face before you were born?"] match "NOTHING"
+  - result: true
+    query: |-
+      ["When you can do nothing, what can you do?",
+      "What is your original face before you were born?"] match "NOTHIN*"
+  - result: true
+    query: |-
+      ["When you can do nothing, what can you do?",
+      "What is your original face before you were born?"] match "NOTHING*"
+  - result: true
+    query: |-
+      ["When you can do nothing, what can you do?",
+      "What is your original face before you were born?"] match "*ING"
+  - result: true
+    query: |-
+      ["When you can do nothing, what can you do?",
+      "What is your original face before you were born?"] match "NO*ING"
+  - result: true
+    query: |-
+      ["When you can do nothing, what can you do?",
+      "What is your original face before you were born?"] match "original"
+  - result: true
+    query: |-
+      ["When you can do nothing, what can you do?",
+      "What is your original face before you were born?"] match "orig*"
+  - result: true
+    query: |-
+      ["When you can do nothing, what can you do?",
+      "What is your original face before you were born?"] match "original*"
+  - result: true
+    query: |-
+      ["When you can do nothing, what can you do?",
+      "What is your original face before you were born?"] match "*original"
+  - result: true
+    query: |-
+      ["When you can do nothing, what can you do?",
+      "What is your original face before you were born?"] match "*ginal"
+  - result: true
+    query: |-
+      ["When you can do nothing, what can you do?",
+      "What is your original face before you were born?"] match "ORIGINAL"
+  - result: true
+    query: |-
+      ["When you can do nothing, what can you do?",
+      "What is your original face before you were born?"] match "ORIG*"
+  - result: true
+    query: |-
+      ["When you can do nothing, what can you do?",
+      "What is your original face before you were born?"] match "ORIGINAL*"
+  - result: true
+    query: |-
+      ["When you can do nothing, what can you do?",
+      "What is your original face before you were born?"] match "*ORIGINAL"
+  - result: true
+    query: |-
+      ["When you can do nothing, what can you do?",
+      "What is your original face before you were born?"] match "*GINAL"
+  - result: true
+    query: |-
+      ["When you can do nothing, what can you do?",
+      "What is your original face before you were born?"] match "*"
+  - result: true
+    query: |-
+      ["When you can do nothing, what can you do?",
+      "What is your original face before you were born?"] match "**"
+  - result: false
+    query: |-
+      ["When you can do nothing, what can you do?",
+      "What is your original face before you were born?"] match ""
+- title: array on left side with null
+  tests:
+  - result: true
+    query: '["test", null] match "test"'
+  - result: true
+    query: '["test", null] match "te*"'
+  - result: null
+    features:
+    - groqV1
+    query: '["test", null] match "foo"'
+  - result: false
+    features:
+    - groqV2
+    query: '["test", null] match "foo"'
+- title: array on right side with null
+  tests:
+  - result: null
+    query: '"text" match ["text", null]'
+  - result: null
+    query: '"foo" match ["text", null]'
+  features:
+  - groqV1
+- title: array on right side with null
+  tests:
+  - result: false
+    query: '"text" match ["text", null]'
+  - result: false
+    query: '"foo" match ["text", null]'
+  features:
+  - groqV2
+- title: array on right side with null
+  query: null match ["text", null]
+  result: null
+  features:
+  - groqV1
+- title: array on right side with null
+  query: null match ["text", null]
+  result: false
+  features:
+  - groqV2
+- title: array on right side
+  tests:
+  - result: true
+    query: '"When you can do nothing, what can you do?" match ["WhEn","what"]'
+  - result: false
+    query: '"When you can do nothing, what can you do?" match ["foo","what"]'
+  - result: false
+    query: '"When you can do nothing, what can you do?" match ["foo","bar"]'
+- title: array on left and right sides
+  tests:
+  - result: true
+    query: '["When you can do nothing", "what can yo do?"] match ["can","do"]'
+  - result: true
+    query: '["When you can do nothing", "what can yo do?"] match ["can","what"]'
+  - result: true
+    query: '["When you can do nothing", "what can yo do?"] match ["when","can"]'
+  - result: false
+    query: '["When you can do nothing", "what can yo do?"] match ["can","foo"]'
+  - result: true
+    query: '["When you can do nothing", "what can yo do?"] match "can"'
+  - result: true
+    query: '["When you can do nothing", "what can yo do?"] match "when"'
+  - result: false
+    query: '["When you can do nothing", "what can yo do?"] match "foo"'
+- title: filter simple
+  tests:
+  - result:
+    - k2
+    - k3
+    query: '*[_type == "koan" && text match "when"][]._id'
+  - result:
+    - k3
+    query: '*[_type == "koan" && text match "reduced"][]._id'
+  - result:
+    - k3
+    query: '*[_type == "koan" && text match "ReDuCeD"][]._id'
+  - result: []
+    query: '*[_type == "koan" && text match "foo"][]._id'
+- title: filter on attribute
+  query: '*[_type == "koan" && text match v_match][]._id'
+  result:
+  - k1
+  - k2
+- title: filter multiple terms
+  tests:
+  - result:
+    - k3
+    query: '*[_type == "koan" && text match ["what","ReDuCeD"]][]._id'
+  - result: []
+    query: '*[_type == "koan" && text match ["original","reduced"]][]._id'
+  - result: []
+    query: '*[_type == "koan" && text match ["foo","bar"]][]._id'
+- title: filter multiple fields against terms
+  tests:
+  - result:
+    - k3
+    query: '*[_type == "koan" && [_id, text] match ["what","reduced"]][]._id'
+  - result: []
+    query: '*[_type == "koan" && [_id, text] match ["original","reduced"]][]._id'
+  - result: []
+    query: '*[_type == "koan" && [_id, text] match ["foo","bar"]][]._id'
+  - result: []
+    query: '*[_type == "koan" && [_id, text] match ["k3","reduced"]][]._id'
+  - result:
+    - k3
+    query: '*[_type == "koan" && [_id, text] match "k3"][]._id'
+  - result:
+    - k3
+    query: '*[_type == "koan" && [_id, text] match "reduced"][]._id'
+  features:
+  - groqV1
+- title: filter wildcards
+  tests:
+  - result:
+    - k3
+    query: '*[_type == ''koan'' && text match "ReDuC*"] | order(_id)[]._id'
+  - result: []
+    query: '*[_type == ''koan'' && text match "reducedx*"] | order(_id)[]._id'
+  - result:
+    - k3
+    query: '*[_type == ''koan'' && text match "reduced*"] | order(_id)[]._id'
+  - result:
+    - k3
+    query: '*[_type == ''koan'' && text match "reduce*"] | order(_id)[]._id'
+  - result:
+    - k3
+    query: '*[_type == ''koan'' && text match "*reduced"] | order(_id)[]._id'
+  - result:
+    - k3
+    query: '*[_type == ''koan'' && text match "*educed"] | order(_id)[]._id'
+  - result: []
+    query: '*[_type == ''koan'' && text match "*reducedx"] | order(_id)[]._id'
+  - result:
+    - k1
+    - k2
+    - k3
+    query: '*[_type == ''koan'' && text match "*"] | order(_id)[]._id'
+  - result:
+    - k3
+    query: '*[_type == ''koan'' && text match "red*ced"] | order(_id)[]._id'
+  - result: []
+    query: '*[_type == ''koan'' && text match "reduc*edx"] | order(_id)[]._id'
+  - result: []
+    query: '*[_type == ''koan'' && text match "reduc*one"] | order(_id)[]._id'
+- title: projection, embedded filter, simple
+  tests:
+  - result:
+    - k2
+    - k3
+    query: |-
+      *[_type == 'koan-list']{
+        'koans': koans[text match "when"] | order(_key)[]._key
+      }[0].koans
+  - result:
+    - k3
+    query: |-
+      *[_type == 'koan-list']{
+        'koans': koans[text match "reduced"] | order(_key)[]._key
+      }[0].koans
+  - result:
+    - k3
+    query: |-
+      *[_type == 'koan-list']{
+        'koans': koans[text match "ReDuCeD"] | order(_key)[]._key
+      }[0].koans
+  - result: []
+    query: |-
+      *[_type == 'koan-list']{
+        'koans': koans[text match "foo"] | order(_key)[]._key
+      }[0].koans
+- title: projection embedded filter multiple
+  tests:
+  - result:
+    - k3
+    query: |-
+      *[_type == "koan-list"]{
+        "koans": koans[text match ["what","ReDuCeD"]] | order(_key)[]._key
+      }[0].koans
+  - result: []
+    query: |-
+      *[_type == "koan-list"]{
+        "koans": koans[text match ["original","reduced"]] | order(_key)[]._key
+      }[0].koans
+  - result: []
+    query: |-
+      *[_type == "koan-list"]{
+        "koans": koans[text match ["foo","bar"]] | order(_key)[]._key
+      }[0].koans
+  features:
+  - groqV1
+- title: projection embedded filter multiple fields
+  tests:
+  - result:
+    - k3
+    query: |-
+      *[_type == "koan-list"]{
+        "koans": koans[[_key, text] match ["what","reduced"]] | order(_key)[]._key
+      }[0].koans
+  - result: []
+    query: |-
+      *[_type == "koan-list"]{
+        "koans": koans[[_key, text] match ["original","reduced"]] | order(_key)[]._key
+      }[0].koans
+  - result: []
+    query: |-
+      *[_type == "koan-list"]{
+        "koans": koans[[_key, text] match ["foo","bar"]] | order(_key)[]._key
+      }[0].koans
+  - result: []
+    query: |-
+      *[_type == "koan-list"]{
+        "koans": koans[[_key, text] match ["k3","reduced"]] | order(_key)[]._key
+      }[0].koans
+  - result:
+    - k3
+    query: |-
+      *[_type == "koan-list"]{
+        "koans": koans[[_key, text] match "k3"] | order(_key)[]._key
+      }[0].koans
+  - result:
+    - k3
+    query: |-
+      *[_type == "koan-list"]{
+        "koans": koans[[_key, text] match "reduced"] | order(_key)[]._key
+      }[0].koans
+  features:
+  - groqV1
+- title: projection embedded filter wildcard
+  tests:
+  - result:
+    - k3
+    query: |-
+      *[_type == 'koan-list']{
+        'koans': koans[text match "ReDuC*"] | order(_key)[]._key
+      }[0].koans
+  - result:
+    - k3
+    query: |-
+      *[_type == 'koan-list']{
+        'koans': koans[text match "reduced*"] | order(_key)[]._key
+      }[0].koans
+  - result: []
+    query: |-
+      *[_type == 'koan-list']{
+        'koans': koans[text match "reducedx*"] | order(_key)[]._key
+      }[0].koans
+  - result:
+    - k3
+    query: |-
+      *[_type == 'koan-list']{
+        'koans': koans[text match "*reduced"] | order(_key)[]._key
+      }[0].koans
+  - result:
+    - k3
+    query: |-
+      *[_type == 'koan-list']{
+        'koans': koans[text match "*educed"] | order(_key)[]._key
+      }[0].koans
+  - result:
+    - k3
+    query: |-
+      *[_type == 'koan-list']{
+        'koans': koans[text match "red*ced"] | order(_key)[]._key
+      }[0].koans
+  - result:
+    - k1
+    - k2
+    - k3
+    query: |-
+      *[_type == 'koan-list']{
+        'koans': koans[text match "*"] | order(_key)[]._key
+      }[0].koans
+- title: wildcard with punctuation
+  query: '*[v_dottedString match "foo.*"]._id'
+  result:
+  - id

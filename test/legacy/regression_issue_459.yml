@@ -1,0 +1,39 @@
+name: 'Regressions: issue 459'
+documents:
+- _id: article-0
+  _type: article
+  title: Article 0
+- _id: article-1
+  _type: article
+  title: Article 1
+- _id: article-2
+  _type: article
+  title: Article 2
+- _id: drafts.article-0
+  _type: article
+  title: Draft 0
+- _id: drafts.article-1
+  _type: article
+  title: Draft 1
+- _id: drafts.article-2
+  _type: article
+  title: Draft 2
+tests:
+- title: Issue 459 (legacy array semantics)
+  query: |-
+    *[ _type == "article" && !(_id match "drafts.*") ]{
+      _id,
+      "drafts": *[_id == joinPaths("drafts", ^._id)]._id
+    } | order(_id asc)
+  result:
+  - _id: article-0
+    drafts:
+    - drafts.article-0
+  - _id: article-1
+    drafts:
+    - drafts.article-1
+  - _id: article-2
+    drafts:
+    - drafts.article-2
+  features:
+  - groqV1

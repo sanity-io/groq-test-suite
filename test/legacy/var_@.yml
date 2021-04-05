@@ -1,0 +1,102 @@
+name: "@ special variable"
+documents:
+- _id: target
+  _type: test
+  name: Target
+- _id: test
+  _type: test
+  name: Name
+  array:
+  - value: 1
+  - value: 2
+  - value: 3
+  arrays:
+  - - 11
+    - 12
+    - 13
+  - - 21
+    - 22
+  - - 31
+  object:
+    name: Object
+  ref:
+    _ref: target
+    _type: reference
+tests:
+- title: "@ documents filter"
+  query: |-
+    [
+      *[ @.name == "Name" ][]._id,
+      *[ @.object.name == "Object" ][]._id,
+      *[ @["name"] == "Name" ][]._id,
+      *[ @["object"]["name"] == "Object" ][]._id,
+      *[ @.array[1].value == 2 ][]._id,
+      *[ @.ref->name == "Target" ][]._id,
+      *[ @ == @ ][]._id,
+      *[ @._id == @._id ] | order(_id)[]._id,
+    ]
+  result:
+  - - test
+  - - test
+  - - test
+  - - test
+  - - test
+  - - test
+  - []
+  - - target
+    - test
+- title: "@ documents projections"
+  query: |-
+    [
+      *[_id=="test"][0]{"name": @.name},
+      *[_id=="test"][0]{"this": @{_id, _type, name}},
+      *[_id=="test"][0]{"items": array[]{"this": @}},
+      *[_id=="test"][0]{"o": object{"on": @.name}},
+      *[_id=="test"][0]{"r": ref->{"this": @{_id, _type, name}}},
+      *[_id=="test"][0]{"child": @{"child": @{"child": @{"child": @{"child": @{"child": @{"child": @{"child": @{"child": @{"child": @.name}}}}}}}}}},
+    ]
+  result:
+  - name: Name
+  - this:
+      _id: test
+      _type: test
+      name: Name
+  - items:
+    - this:
+        value: 1
+    - this:
+        value: 2
+    - this:
+        value: 3
+  - o:
+      'on': Object
+  - r:
+      this:
+        _id: target
+        _type: test
+        name: Target
+  - child:
+      child:
+        child:
+          child:
+            child:
+              child:
+                child:
+                  child:
+                    child:
+                      child: Name
+- title: "@ literals filter"
+  query: |-
+    [
+      [{"name": "Name"}][@.name == "Name"][0],
+      [{"name": "Name"}][@["name"] == "Name"][0],
+      [{"object": {"name": "Name"}}][@.object.name == "Name"][0],
+      [{"object": {"name": "Name"}}][@["object"]["name"] == "Name"][0],
+    ]
+  result:
+  - name: Name
+  - name: Name
+  - object:
+      name: Name
+  - object:
+      name: Name

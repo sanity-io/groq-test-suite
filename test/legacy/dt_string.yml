@@ -1,0 +1,127 @@
+name: 'Datatype: string'
+documents:
+- _id: strings-empty
+  _type: test
+  value:
+  - ''
+- _id: strings-escaped
+  _type: test
+  value:
+  - "\\"
+  - "/"
+  - "\""
+  - "\b"
+  - "\f"
+  - "\n"
+  - "\r"
+  - "\t"
+- _id: strings-utf8
+  _type: test
+  value:
+  - Plane 0, Basic Latin
+  - 'Plane 0, Latin-1 Supplement: æøå'
+  - 'Plane 0, Latin-1 Supplement escaped: æøå'
+  - 'Plane 0, Kangxi Radicals: ⼈⽂⿋'
+  - 'Plane 0, Kangxi Radicals escaped: ⼈⽂⿋'
+  - 'Plane 1, Arabic (RTL): ڨضؠ'
+  - 'Plane 1, Arabic (RTL) escaped: ڨضؠ'
+  - "Plane 1, Emoji: \U0001F44B\U0001F600\U0001F31F"
+  - "Plane 2, CJK Compatibility: \U0002F877\U0002F86D\U0002F8ED"
+tests:
+- title: String attributes empty
+  query: '*[ _id == "strings-empty" ][0].value'
+  result:
+  - ''
+- title: String attributes escaped
+  query: '*[ _id == "strings-escaped" ][0].value'
+  result:
+  - "\\"
+  - "/"
+  - "\""
+  - "\b"
+  - "\f"
+  - "\n"
+  - "\r"
+  - "\t"
+- title: String attributes UTF-8
+  query: '*[ _id == "strings-utf8" ][0].value'
+  result:
+  - Plane 0, Basic Latin
+  - 'Plane 0, Latin-1 Supplement: æøå'
+  - 'Plane 0, Latin-1 Supplement escaped: æøå'
+  - 'Plane 0, Kangxi Radicals: ⼈⽂⿋'
+  - 'Plane 0, Kangxi Radicals escaped: ⼈⽂⿋'
+  - 'Plane 1, Arabic (RTL): ڨضؠ'
+  - 'Plane 1, Arabic (RTL) escaped: ڨضؠ'
+  - "Plane 1, Emoji: \U0001F44B\U0001F600\U0001F31F"
+  - "Plane 2, CJK Compatibility: \U0002F877\U0002F86D\U0002F8ED"
+- title: String literals empty
+  query: '['''', ""]'
+  result:
+  - ''
+  - ''
+- title: String literals escaped
+  query: |-
+    [
+      "\\",
+      "\/",
+      "\"",
+      "\'",
+      '\"',
+      '\'',
+      "\b",
+      "\f",
+      "\n",
+      "\r",
+      "\t"
+    ]
+  result:
+  - "\\"
+  - "/"
+  - "\""
+  - "'"
+  - "\""
+  - "'"
+  - "\b"
+  - "\f"
+  - "\n"
+  - "\r"
+  - "\t"
+- title: String literals UTF-8
+  query: "[\n  \"Plane 0, Basic Latin\",\n  \"Plane 0, Latin-1 Supplement: æøå\",\n
+    \ \"Plane 0, Latin-1 Supplement escaped: \\u00E6\\u00f8\\u00E5\",\n  \"Plane 0,
+    Kangxi Radicals: ⼈⽂⿋\",\n  \"Plane 0, Kangxi Radicals escaped: \\u2F08\\u2f42\\u2FCB\",\n
+    \ \"Plane 1, Arabic (RTL): ڨضؠ\",\n  \"Plane 1, Arabic (RTL) escaped: \\u06a8\\u0636\\u0620\",\n
+    \ \"Plane 1, Emoji: \U0001F44B\U0001F600\U0001F31F\",\n  \"Plane 1, Emoji escaped:
+    \\uD83D\\udc4B\\uD83D\\ude00\\uD83C\\udf1f\",\n  \"Plane 2, CJK Compatibility:
+    \U0002F877\U0002F86D\U0002F8ED\",\n  \"Plane 2, CJK Compatibility escaped: \\uD87E\\udc77\\uD87E\\udc6d\\uD87E\\udced\",\n
+    \ 'Plane 0, Basic Latin',\n  'Plane 0, Latin-1 Supplement: æøå',\n  'Plane 0,
+    Latin-1 Supplement escaped: \\u00E6\\u00f8\\u00E5',\n  'Plane 0, Kangxi Radicals:
+    ⼈⽂⿋',\n  'Plane 0, Kangxi Radicals escaped: \\u2F08\\u2f42\\u2FCB',\n  'Plane
+    1, Arabic (RTL): ڨضؠ',\n  'Plane 1, Arabic (RTL) escaped: \\u06a8\\u0636\\u0620',\n
+    \ 'Plane 1, Emoji: \U0001F44B\U0001F600\U0001F31F',\n  'Plane 1, Emoji escaped:
+    \\uD83D\\udc4B\\uD83D\\ude00\\uD83C\\udf1f',\n  'Plane 2, CJK Compatibility: \U0002F877\U0002F86D\U0002F8ED',\n
+    \ 'Plane 2, CJK Compatibility escaped: \\uD87E\\udc77\\uD87E\\udc6d\\uD87E\\udced',\n]"
+  result:
+  - Plane 0, Basic Latin
+  - 'Plane 0, Latin-1 Supplement: æøå'
+  - 'Plane 0, Latin-1 Supplement escaped: æøå'
+  - 'Plane 0, Kangxi Radicals: ⼈⽂⿋'
+  - 'Plane 0, Kangxi Radicals escaped: ⼈⽂⿋'
+  - 'Plane 1, Arabic (RTL): ڨضؠ'
+  - 'Plane 1, Arabic (RTL) escaped: ڨضؠ'
+  - "Plane 1, Emoji: \U0001F44B\U0001F600\U0001F31F"
+  - "Plane 1, Emoji escaped: \U0001F44B\U0001F600\U0001F31F"
+  - "Plane 2, CJK Compatibility: \U0002F877\U0002F86D\U0002F8ED"
+  - "Plane 2, CJK Compatibility escaped: \U0002F877\U0002F86D\U0002F8ED"
+  - Plane 0, Basic Latin
+  - 'Plane 0, Latin-1 Supplement: æøå'
+  - 'Plane 0, Latin-1 Supplement escaped: æøå'
+  - 'Plane 0, Kangxi Radicals: ⼈⽂⿋'
+  - 'Plane 0, Kangxi Radicals escaped: ⼈⽂⿋'
+  - 'Plane 1, Arabic (RTL): ڨضؠ'
+  - 'Plane 1, Arabic (RTL) escaped: ڨضؠ'
+  - "Plane 1, Emoji: \U0001F44B\U0001F600\U0001F31F"
+  - "Plane 1, Emoji escaped: \U0001F44B\U0001F600\U0001F31F"
+  - "Plane 2, CJK Compatibility: \U0002F877\U0002F86D\U0002F8ED"
+  - "Plane 2, CJK Compatibility escaped: \U0002F877\U0002F86D\U0002F8ED"

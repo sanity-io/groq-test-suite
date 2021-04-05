@@ -1,0 +1,118 @@
+name: "** operator"
+documents:
+- _id: id
+  _type: test
+  v_array:
+  - 1
+  - string
+  - true
+  - null
+  - - 1
+    - 2
+    - 3
+  - key: value
+  v_decimal: 3.14
+  v_false: false
+  v_integer: 2
+  v_null: null
+  v_object:
+    v_array:
+    - a
+    - b
+    - c
+    v_boolean: true
+    v_decimal: 2.718
+    v_integer: 2
+    v_null: null
+    v_object:
+      k: v
+    v_string: abc
+  v_string: string
+  v_true: true
+tests:
+- title: "** attributes"
+  query: |-
+    [
+      *[_id=='id'][0].v_integer ** *[_id=='id'][0].v_integer,
+      *[_id=='id'][0].v_integer ** *[_id=='id'][0].v_decimal,
+      *[_id=='id'][0].v_integer ** *[_id=='id'][0].v_null,
+      *[_id=='id'][0].v_decimal ** *[_id=='id'][0].v_integer,
+      round(*[_id=='id'][0].v_decimal ** *[_id=='id'][0].v_decimal, 13), // Avoid spurious errors
+      *[_id=='id'][0].v_decimal ** *[_id=='id'][0].v_null,
+      *[_id=='id'][0].v_null ** *[_id=='id'][0].v_integer,
+      *[_id=='id'][0].v_null ** *[_id=='id'][0].v_decimal,
+      *[_id=='id'][0].v_null ** *[_id=='id'][0].v_null,
+    ]
+  result:
+  - 4
+  - 8.815240927012887
+  - null
+  - 9.8596
+  - 36.3378388801747
+  - null
+  - null
+  - null
+  - null
+- title: "** attributes invalid types"
+  query: |-
+    [
+      *[_id=='id'][0].v_boolean ** *[_id=='id'][0].v_string,
+    ]
+  result:
+  - null
+- title: "** literals"
+  query: |-
+    [
+      2 ** 4,
+      4 ** (1/2),
+      2 ** -2,
+      1 ** 2 ** 3 ** 4,
+      4 ** 3 ** 2 ** 1,
+      1 ** 2 ** 3 ** 4 ** 5 ** 6,
+      -2 ** 3,
+      2 ** 3.14,
+      3.14 ** 2,
+      round(3.14 ** 2.718, 13), // Avoid spurious rounding errors
+      -2 ** 3.14,
+      2 ** -3.14,
+      1 ** null,
+      null ** 1,
+      null ** null,
+      2 ** 62,
+      -2 ** 62,
+      2 ** 55,
+      -2 ** 55,
+      2 ** 32 * 10 ** 63,
+      314 ** 314,
+      3 ** -1000,
+    ]
+  result:
+  - 16
+  - 2
+  - 0.25
+  - 1
+  - 262144
+  - null
+  - -8
+  - 8.815240927012887
+  - 9.8596
+  - 22.4209899217777
+  - -8.815240927012887
+  - 0.11343989441464508
+  - null
+  - null
+  - null
+  - 4611686018427388000
+  - -4611686018427388000
+  - 36028797018963970
+  - -36028797018963970
+  - 4.294967296e+72
+  - null
+  - 0
+- title: "** literals invalid types"
+  query: |-
+    [
+      3 ** {"k": "v"},
+    ]
+  result:
+  - null

@@ -1,0 +1,578 @@
+name: in-operator
+documents:
+- _id: olderThanFiller
+  _type: doc
+- _id: filler-0
+  _type: dummy
+- _id: filler-1
+  _type: dummy
+- _id: filler-2
+  _type: dummy
+- _id: filler-3
+  _type: dummy
+- _id: filler-4
+  _type: dummy
+- _id: filler-5
+  _type: dummy
+- _id: filler-6
+  _type: dummy
+- _id: filler-7
+  _type: dummy
+- _id: filler-8
+  _type: dummy
+- _id: filler-9
+  _type: dummy
+- _id: filler-10
+  _type: dummy
+- _id: filler-11
+  _type: dummy
+- _id: filler-12
+  _type: dummy
+- _id: filler-13
+  _type: dummy
+- _id: filler-14
+  _type: dummy
+- _id: filler-15
+  _type: dummy
+- _id: filler-16
+  _type: dummy
+- _id: filler-17
+  _type: dummy
+- _id: filler-18
+  _type: dummy
+- _id: filler-19
+  _type: dummy
+- _id: filler-20
+  _type: dummy
+- _id: filler-21
+  _type: dummy
+- _id: filler-22
+  _type: dummy
+- _id: filler-23
+  _type: dummy
+- _id: filler-24
+  _type: dummy
+- _id: filler-25
+  _type: dummy
+- _id: filler-26
+  _type: dummy
+- _id: filler-27
+  _type: dummy
+- _id: filler-28
+  _type: dummy
+- _id: filler-29
+  _type: dummy
+- _id: filler-30
+  _type: dummy
+- _id: filler-31
+  _type: dummy
+- _id: filler-32
+  _type: dummy
+- _id: filler-33
+  _type: dummy
+- _id: filler-34
+  _type: dummy
+- _id: filler-35
+  _type: dummy
+- _id: filler-36
+  _type: dummy
+- _id: filler-37
+  _type: dummy
+- _id: filler-38
+  _type: dummy
+- _id: filler-39
+  _type: dummy
+- _id: filler-40
+  _type: dummy
+- _id: filler-41
+  _type: dummy
+- _id: filler-42
+  _type: dummy
+- _id: filler-43
+  _type: dummy
+- _id: filler-44
+  _type: dummy
+- _id: filler-45
+  _type: dummy
+- _id: filler-46
+  _type: dummy
+- _id: filler-47
+  _type: dummy
+- _id: filler-48
+  _type: dummy
+- _id: filler-49
+  _type: dummy
+- _id: filler-50
+  _type: dummy
+- _id: filler-51
+  _type: dummy
+- _id: filler-52
+  _type: dummy
+- _id: filler-53
+  _type: dummy
+- _id: filler-54
+  _type: dummy
+- _id: filler-55
+  _type: dummy
+- _id: filler-56
+  _type: dummy
+- _id: filler-57
+  _type: dummy
+- _id: filler-58
+  _type: dummy
+- _id: filler-59
+  _type: dummy
+- _id: filler-60
+  _type: dummy
+- _id: filler-61
+  _type: dummy
+- _id: filler-62
+  _type: dummy
+- _id: filler-63
+  _type: dummy
+- _id: filler-64
+  _type: dummy
+- _id: filler-65
+  _type: dummy
+- _id: filler-66
+  _type: dummy
+- _id: filler-67
+  _type: dummy
+- _id: filler-68
+  _type: dummy
+- _id: filler-69
+  _type: dummy
+- _id: filler-70
+  _type: dummy
+- _id: filler-71
+  _type: dummy
+- _id: filler-72
+  _type: dummy
+- _id: filler-73
+  _type: dummy
+- _id: filler-74
+  _type: dummy
+- _id: filler-75
+  _type: dummy
+- _id: filler-76
+  _type: dummy
+- _id: filler-77
+  _type: dummy
+- _id: filler-78
+  _type: dummy
+- _id: filler-79
+  _type: dummy
+- _id: filler-80
+  _type: dummy
+- _id: filler-81
+  _type: dummy
+- _id: filler-82
+  _type: dummy
+- _id: filler-83
+  _type: dummy
+- _id: filler-84
+  _type: dummy
+- _id: filler-85
+  _type: dummy
+- _id: filler-86
+  _type: dummy
+- _id: filler-87
+  _type: dummy
+- _id: filler-88
+  _type: dummy
+- _id: filler-89
+  _type: dummy
+- _id: filler-90
+  _type: dummy
+- _id: filler-91
+  _type: dummy
+- _id: filler-92
+  _type: dummy
+- _id: filler-93
+  _type: dummy
+- _id: filler-94
+  _type: dummy
+- _id: filler-95
+  _type: dummy
+- _id: filler-96
+  _type: dummy
+- _id: filler-97
+  _type: dummy
+- _id: filler-98
+  _type: dummy
+- _id: filler-99
+  _type: dummy
+- _id: newerThanFiller
+  _type: doc
+- _id: id
+  _type: test
+  v_array:
+  - 1
+  - 3.14
+  - string
+  - true
+  - - 1
+    - 2
+    - 3
+  - key: value
+  v_array_null:
+  - 1
+  - 3.14
+  - string
+  - true
+  - - 1
+    - 2
+    - 3
+  - key: value
+  - null
+  v_decimal: 3.14
+  v_false: false
+  v_integer: 1
+  v_null: null
+  v_object:
+    v_array:
+    - a
+    - b
+    - c
+    v_boolean: true
+    v_decimal: 2.718
+    v_integer: 2
+    v_null: null
+    v_object:
+      k: v
+    v_string: abc
+  v_path: some.**
+  v_ref:
+    _ref: filler-0
+  v_refs:
+  - _ref: filler-0
+  - _ref: filler-1
+  - _ref: filler-2
+  v_string: string
+  v_true: true
+- _id: some.deep.path
+  _type: test
+  present: true
+tests:
+- title: in attributes array boolean
+  query: |-
+    [
+      true in *[_id=='id'][0].v_array,
+      true in *[_id=='id'][0].v_array_null,
+      false in *[_id=='id'][0].v_array,
+      false in *[_id=='id'][0].v_array_null,
+      *[_id=='id'][0].v_true in *[_id=='id'][0].v_array,
+      *[_id=='id'][0].v_true in *[_id=='id'][0].v_array_null,
+      *[_id=='id'][0].v_false in *[_id=='id'][0].v_array,
+      *[_id=='id'][0].v_false in *[_id=='id'][0].v_array_null,
+    ]
+  result:
+  - true
+  - true
+  - false
+  - false
+  - true
+  - true
+  - false
+  - false
+- title: in attributes array decimal
+  query: |-
+    [
+      3.14 in *[_id=='id'][0].v_array,
+      3.14 in *[_id=='id'][0].v_array_null,
+      2.718 in *[_id=='id'][0].v_array,
+      2.718 in *[_id=='id'][0].v_array_null,
+      *[_id=='id'][0].v_decimal in *[_id=='id'][0].v_array,
+      *[_id=='id'][0].v_decimal in *[_id=='id'][0].v_array_null,
+      *[_id=='id'][0].v_object.v_decimal in *[_id=='id'][0].v_array,
+      *[_id=='id'][0].v_object.v_decimal in *[_id=='id'][0].v_array_null,
+    ]
+  result:
+  - true
+  - true
+  - false
+  - false
+  - true
+  - true
+  - false
+  - false
+- title: in attributes array integer
+  query: |-
+    [
+      1 in *[_id=='id'][0].v_array,
+      1 in *[_id=='id'][0].v_array_null,
+      2 in *[_id=='id'][0].v_array,
+      2 in *[_id=='id'][0].v_array_null,
+      *[_id=='id'][0].v_integer in *[_id=='id'][0].v_array,
+      *[_id=='id'][0].v_integer in *[_id=='id'][0].v_array_null,
+      *[_id=='id'][0].v_object.v_integer in *[_id=='id'][0].v_array,
+      *[_id=='id'][0].v_object.v_integer in *[_id=='id'][0].v_array_null,
+    ]
+  result:
+  - true
+  - true
+  - false
+  - false
+  - true
+  - true
+  - false
+  - false
+- title: in attributes array null
+  query: |-
+    [
+      null in *[_id=='id'][0].v_array,
+      null in *[_id=='id'][0].v_array_null,
+      *[_id=='id'][0].v_null in *[_id=='id'][0].v_array,
+      *[_id=='id'][0].v_null in *[_id=='id'][0].v_array_null,
+    ]
+  result:
+  - false
+  - false
+  - false
+  - false
+  features:
+  - groqV1
+- title: in attributes array null
+  query: |-
+    [
+      null in *[_id=='id'][0].v_array,
+      null in *[_id=='id'][0].v_array_null,
+      *[_id=='id'][0].v_null in *[_id=='id'][0].v_array,
+      *[_id=='id'][0].v_null in *[_id=='id'][0].v_array_null,
+    ]
+  result:
+  - false
+  - true
+  - false
+  - true
+  features:
+  - groqV2
+- title: in attributes array ref
+  query: |-
+    [
+      "filler-0" in *[_id=='id'][0].v_refs[]._ref,
+      "missing" in *[_id=='id'][0].v_refs[]._ref,
+      *[_id=='id'][0].v_ref._ref in *[_id=='id'][0].v_refs[]._ref,
+      *[_id=='id'][0].v_null in *[_id=='id'][0].v_refs[]._ref,
+      *[_id=='id'][0].v_string in *[_id=='id'][0].v_refs[]._ref,
+    ]
+  result:
+  - true
+  - false
+  - true
+  - false
+  - false
+- title: in attributes array string
+  query: |-
+    [
+      "string" in *[_id=='id'][0].v_array,
+      "string" in *[_id=='id'][0].v_array_null,
+      "missing" in *[_id=='id'][0].v_array,
+      "missing" in *[_id=='id'][0].v_array_null,
+      *[_id=='id'][0].v_string in *[_id=='id'][0].v_array,
+      *[_id=='id'][0].v_string in *[_id=='id'][0].v_array_null,
+      *[_id=='id'][0].v_object.v_string in *[_id=='id'][0].v_array,
+      *[_id=='id'][0].v_object.v_string in *[_id=='id'][0].v_array_null,
+    ]
+  result:
+  - true
+  - true
+  - false
+  - false
+  - true
+  - true
+  - false
+  - false
+- title: in attributes path
+  query: |-
+    [
+      *[_id=='some.deep.path'][0]._id in path("some.**"),
+      *[_id=='some.deep.path'][0]._id in path(*[_id=='id'][0].v_path),
+      *[_id=='id'][0]._id in path("some.**"),
+      *[_id=='id'][0]._id in path(*[_id=='id'][0].v_path),
+      *[_id=='some.deep.path'][0]._id in path("other.**"),
+      *[_id=='some.deep.path'][0]._id in [path("other.**"), path("some.**")],
+      *[_id=='some.deep.path'][0]._id in [path("other.**"), path("another.**")],
+    ]
+  result:
+  - true
+  - true
+  - false
+  - false
+  - false
+  - false
+  - false
+- title: in attributes range decimal
+  query: |-
+    [
+      count(*[_id=='id' && v_decimal in 3..4]),
+      count(*[_id=='id' && v_decimal in 3...4]),
+      count(*[_id=='id' && v_decimal in 3.0..4.0]),
+      count(*[_id=='id' && v_decimal in 3.0...4.0]),
+      count(*[_id=='id' && v_decimal in 2..3]),
+      count(*[_id=='id' && v_decimal in 2...3]),
+      count(*[_id=='id' && v_decimal in 2.0..3.0]),
+      count(*[_id=='id' && v_decimal in 2.0...3.0]),
+      count(*[_id=='id' && v_decimal in 3.0..3.14]),
+      count(*[_id=='id' && v_decimal in 3.0...3.14]),
+      count(*[_id=='id' && v_decimal in 3.14..4.0]),
+      count(*[_id=='id' && v_decimal in 3.14...4.0]),
+    ]
+  result:
+  - 1
+  - 1
+  - 1
+  - 1
+  - 0
+  - 0
+  - 0
+  - 0
+  - 1
+  - 0
+  - 1
+  - 1
+- title: in attributes range integer
+  query: |-
+    [
+      count(*[_id=='id' && v_integer in 0..2]),
+      count(*[_id=='id' && v_integer in 0...2]),
+      count(*[_id=='id' && v_integer in 0.0..2.0]),
+      count(*[_id=='id' && v_integer in 0.0...2.0]),
+      count(*[_id=='id' && v_integer in 2..3]),
+      count(*[_id=='id' && v_integer in 2...3]),
+      count(*[_id=='id' && v_integer in 2.0..3.0]),
+      count(*[_id=='id' && v_integer in 2.0...3.0]),
+      count(*[_id=='id' && v_integer in 0..1]),
+      count(*[_id=='id' && v_integer in 0...1]),
+      count(*[_id=='id' && v_integer in 1..2]),
+      count(*[_id=='id' && v_integer in 1...2]),
+    ]
+  result:
+  - 1
+  - 1
+  - 1
+  - 1
+  - 0
+  - 0
+  - 0
+  - 0
+  - 1
+  - 0
+  - 1
+  - 1
+- title: in attributes range string
+  query: |-
+    [
+      count(*[_id=='id' && v_string in "aaaaaa".."zzzzzz"]),
+      count(*[_id=='id' && v_string in "aaaaaa"..."zzzzzz"]),
+      count(*[_id=='id' && v_string in "aaaaaa".."bbbbbb"]),
+      count(*[_id=='id' && v_string in "aaaaaa"..."bbbbbb"]),
+      count(*[_id=='id' && v_string in "aaaaaa".."string"]),
+      count(*[_id=='id' && v_string in "aaaaaa"..."string"]),
+      count(*[_id=='id' && v_string in "string".."zzzzzz"]),
+      count(*[_id=='id' && v_string in "string"..."zzzzzz"]),
+    ]
+  result:
+  - 1
+  - 1
+  - 0
+  - 0
+  - 1
+  - 0
+  - 1
+  - 1
+- title: in literals array boolean
+  query: |-
+    [
+      true in [1, 3.14, "string", true, [1, 2, 3], {"key": "value"}],
+      true in [1, 3.14, null, "string", true, [1, 2, 3], {"key": "value"}],
+      false in [1, 3.14, "string", true, [1, 2, 3], {"key": "value"}],
+      false in [1, 3.14, null, "string", true, [1, 2, 3], {"key": "value"}],
+    ]
+  result:
+  - true
+  - true
+  - false
+  - false
+- title: in literals array decimal
+  query: |-
+    [
+      3.14 in [1, 3.14, "string", true, [1, 2, 3], {"key": "value"}],
+      3.14 in [1, 3.14, null, "string", true, [1, 2, 3], {"key": "value"}],
+      2.718 in [1, 3.14, "string", true, [1, 2, 3], {"key": "value"}],
+      2.718 in [1, 3.14, null, "string", true, [1, 2, 3], {"key": "value"}],
+    ]
+  result:
+  - true
+  - true
+  - false
+  - false
+- title: in literals array integer
+  query: |-
+    [
+      1 in [1, 3.14, "string", true, [1, 2, 3], {"key": "value"}],
+      1 in [1, 3.14, null, "string", true, [1, 2, 3], {"key": "value"}],
+      2 in [1, 3.14, "string", true, [1, 2, 3], {"key": "value"}],
+      2 in [1, 3.14, null, "string", true, [1, 2, 3], {"key": "value"}],
+    ]
+  result:
+  - true
+  - true
+  - false
+  - false
+- title: in literals array null
+  query: |-
+    [
+      null in [1, 3.14, "string", true, [1, 2, 3], {"key": "value"}],
+      null in [1, 3.14, null, "string", true, [1, 2, 3], {"key": "value"}],
+    ]
+  result:
+  - false
+  - false
+  features:
+  - groqV1
+- title: in literals array null
+  query: |-
+    [
+      null in [1, 3.14, "string", true, [1, 2, 3], {"key": "value"}],
+      null in [1, 3.14, null, "string", true, [1, 2, 3], {"key": "value"}],
+    ]
+  result:
+  - false
+  - true
+  features:
+  - groqV2
+- title: in literals array string
+  query: |-
+    [
+      "string" in [1, 3.14, "string", true, [1, 2, 3], {"key": "value"}],
+      "string" in [1, 3.14, null, "string", true, [1, 2, 3], {"key": "value"}],
+      "missing" in [1, 3.14, "string", true, [1, 2, 3], {"key": "value"}],
+      "missing" in [1, 3.14, null, "string", true, [1, 2, 3], {"key": "value"}],
+    ]
+  result:
+  - true
+  - true
+  - false
+  - false
+- title: in literals path
+  query: |-
+    [
+      "another.deep.path" in path("another.**"),
+      path("another.deep.path") in path("another.**"),
+      "other" in path("another.**"),
+      path("other") in path("another.**"),
+    ]
+  result:
+  - true
+  - true
+  - false
+  - false
+- title: "'in' across ES pages"
+  query: '*[_id in ["olderThanFiller", "newerThanFiller"]][0..1]|order(_id)[]._id'
+  result:
+  - newerThanFiller
+  - olderThanFiller
+- title: not 'in' on empty array
+  query: count(*[!(_id in [])]) > 0
+  result: true

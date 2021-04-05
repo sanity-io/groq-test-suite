@@ -1,0 +1,318 @@
+name: Ranges
+documents:
+- _id: one
+  ord: 1
+  _type: any.type
+- _id: two
+  ord: 2
+  _type: any.type
+- _id: three
+  ord: 3
+  _type: any.type
+- _id: four
+  ord: 4
+  _type: any.type
+- _id: five
+  ord: 5
+  _type: any.type
+tests:
+- title: documents all
+  query: "*|order(ord asc)[].ord"
+  result:
+  - 1
+  - 2
+  - 3
+  - 4
+  - 5
+- title: documents single
+  query: "*|order(ord asc)[0].ord"
+  result: 1
+- title: documents single
+  query: "*|order(ord asc)[2].ord"
+  result: 3
+- title: documents single
+  query: "*|order(ord asc)[4].ord"
+  result: 5
+- title: documents single
+  query: "*|order(ord asc)[5].ord"
+  result: null
+- title: documents single
+  query: "*|order(ord asc)[8].ord"
+  result: null
+- title: documents single
+  query: "*|order(ord asc)[-2].ord"
+  result: 3
+  features:
+  - groqV1
+- title: documents single
+  query: "*|order(ord asc)[-2].ord"
+  result: 4
+  features:
+  - groqV2
+- title: documents single
+  query: "*|order(ord asc)[-1].ord"
+  result: 2
+  features:
+  - groqV1
+- title: documents single
+  query: "*|order(ord asc)[-1].ord"
+  result: 5
+  features:
+  - groqV2
+- title: documents single
+  query: "*|order(ord asc)[3*(2+45%2)/3].ord"
+  result: 4
+- title: documents .. 1
+  query: "*|order(ord asc)[0..2][].ord"
+  result:
+  - 1
+  - 2
+  - 3
+- title: documents .. 2
+  query: "*|order(ord asc)[1..3][].ord"
+  result:
+  - 2
+  - 3
+  - 4
+- title: documents .. 3
+  query: "*|order(ord asc)[2..4][].ord"
+  result:
+  - 3
+  - 4
+  - 5
+- title: documents .. 4
+  query: "*|order(ord asc)[3..6][].ord"
+  result:
+  - 4
+  - 5
+- title: documents .. 5
+  query: "*|order(ord asc)[5..8][].ord"
+  result: []
+- title: documents .. 6
+  query: "*|order(ord asc)[10..15][].ord"
+  result: []
+- title: documents .. 7
+  query: "*|order(ord asc)[-3..-1][].ord"
+  result: []
+  features:
+  - groqV1
+- title: documents .. 7
+  query: "*|order(ord asc)[-3..-1][].ord"
+  result:
+  - 3
+  - 4
+  - 5
+  features:
+  - groqV2
+- title: documents .. 8
+  query: "*|order(ord asc)[-1..-3][].ord"
+  result: []
+- title: documents .. 9
+  query: "*|order(ord asc)[3..1][].ord"
+  result:
+  - 4
+  - 5
+  features:
+  - groqV1
+- title: documents .. 9
+  query: "*|order(ord asc)[3..1][].ord"
+  result: []
+  features:
+  - groqV2
+- title: documents .. 10
+  query: "*|order(ord asc)[1.0..3.0][].ord"
+  result:
+  - 2
+  - 3
+  - 4
+- title: documents .. 11
+  query: "*|order(ord asc)[2**3-7..3*(2+45%2)/3][].ord"
+  result:
+  - 2
+  - 3
+  - 4
+- title: documents ... 1
+  query: "*|order(ord asc)[0...2][].ord"
+  result:
+  - 1
+  - 2
+- title: documents ... 2
+  query: "*|order(ord asc)[1...4][].ord"
+  result:
+  - 2
+  - 3
+  - 4
+- title: documents ... 3
+  query: "*|order(ord asc)[3...6][].ord"
+  result:
+  - 4
+  - 5
+- title: documents ... 4
+  query: "*|order(ord asc)[5...8][].ord"
+  result: []
+- title: documents ... 5
+  query: "*|order(ord asc)[10...15][].ord"
+  result: []
+- title: documents ... 6
+  query: "*|order(ord asc)[-3...-1][].ord"
+  result: []
+  features:
+  - groqV1
+- title: documents ... 6
+  query: "*|order(ord asc)[-3...-1][].ord"
+  result:
+  - 3
+  - 4
+  features:
+  - groqV2
+- title: documents ... 7
+  query: "*|order(ord asc)[-1...-3][].ord"
+  result: []
+- title: documents ... 8
+  query: "*|order(ord asc)[1.0...4.0][].ord"
+  result:
+  - 2
+  - 3
+  - 4
+- title: documents ... 9
+  query: "*|order(ord asc)[2**3-7...3*(2+45%2)/3][].ord"
+  result:
+  - 2
+  - 3
+- title: documents multiple
+  query: |-
+    [
+      *|order(ord asc)[2...6][0..3][0..1][].ord,
+    ]
+  result:
+  - - 3
+    - 4
+- title: literals single
+  query: "[1, 2, 3, 4, 5][0]"
+  result: 1
+- title: literals single
+  query: "[1, 2, 3, 4, 5][2]"
+  result: 3
+- title: literals single
+  query: "[1, 2, 3, 4, 5][4]"
+  result: 5
+- title: literals single
+  query: "[1, 2, 3, 4, 5][5]"
+  result: null
+- title: literals single
+  query: "[1, 2, 3, 4, 5][8]"
+  result: null
+- title: literals single
+  query: "[1, 2, 3, 4, 5][-2]"
+  result: 4
+- title: literals single
+  query: "[1, 2, 3, 4, 5][-1]"
+  result: 5
+- title: literals single
+  query: "[1, 2, 3, 4, 5][2.0]"
+  result: 3
+- title: literals single
+  query: "[1, 2, 3, 4, 5][3*(2+45%2)/3]"
+  result: 4
+- title: literals ..
+  query: "[1,2,3,4,5][0..2]"
+  result:
+  - 1
+  - 2
+  - 3
+- title: literals ..
+  query: "[1,2,3,4,5][1..3]"
+  result:
+  - 2
+  - 3
+  - 4
+- title: literals ..
+  query: "[1,2,3,4,5][2..4]"
+  result:
+  - 3
+  - 4
+  - 5
+- title: literals ..
+  query: "[1,2,3,4,5][3..6]"
+  result:
+  - 4
+  - 5
+- title: literals ..
+  query: "[1,2,3,4,5][5..8]"
+  result: []
+- title: literals ..
+  query: "[1,2,3,4,5][10..15]"
+  result: []
+- title: literals ..
+  query: "[1,2,3,4,5][-3..-1]"
+  result:
+  - 3
+  - 4
+  - 5
+- title: literals ..
+  query: "[1,2,3,4,5][-1..-3]"
+  result: []
+- title: literals ..
+  query: "[1,2,3,4,5][3..1]"
+  result: []
+- title: literals ..
+  query: "[1,2,3,4,5][1.0..3.0]"
+  result:
+  - 2
+  - 3
+  - 4
+- title: literals ..
+  query: "[1,2,3,4,5][2**3-7..3*(2+45%2)/3]"
+  result:
+  - 2
+  - 3
+  - 4
+- title: literals ...
+  query: "[1, 2, 3, 4, 5][0...2]"
+  result:
+  - 1
+  - 2
+- title: literals ...
+  query: "[1, 2, 3, 4, 5][1...4]"
+  result:
+  - 2
+  - 3
+  - 4
+- title: literals ...
+  query: "[1, 2, 3, 4, 5][3...6]"
+  result:
+  - 4
+  - 5
+- title: literals ...
+  query: "[1, 2, 3, 4, 5][5...8]"
+  result: []
+- title: literals ...
+  query: "[1, 2, 3, 4, 5][10...15]"
+  result: []
+- title: literals ...
+  query: "[1, 2, 3, 4, 5][-3...-1]"
+  result:
+  - 3
+  - 4
+- title: literals ...
+  query: "[1, 2, 3, 4, 5][-1...-3]"
+  result: []
+- title: literals ...
+  query: "[1, 2, 3, 4, 5][3...1]"
+  result: []
+- title: literals ...
+  query: "[1, 2, 3, 4, 5][1.0...4.0]"
+  result:
+  - 2
+  - 3
+  - 4
+- title: literals ...
+  query: "[1, 2, 3, 4, 5][2**3-7...3*(2+45%2)/3]"
+  result:
+  - 2
+  - 3
+- title: literals multiple
+  query: "[1, 2, 3, 4, 5][2...6][0..1][-2..-1]"
+  result:
+  - 3
+  - 4

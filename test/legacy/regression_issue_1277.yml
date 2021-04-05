@@ -1,0 +1,19 @@
+name: 'Regressions: issue 1277'
+documents: []
+tests:
+- title: Issue 1277
+  query: |-
+    *[_type == "team" && @[""] == "bar"] {
+      _id
+    }
+  result: []
+  features:
+  - groqV1
+- title: Issue 1277
+  query: |-
+    *[_type == "team" && @[""] == "bar"] {
+      _id
+    }
+  error: true
+  features:
+  - groqV2

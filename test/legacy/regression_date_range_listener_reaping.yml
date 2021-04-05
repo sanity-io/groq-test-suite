@@ -1,0 +1,46 @@
+name: 'Regressions: date ranges'
+documents:
+- _id: a.b._1
+  _type: banana.ordinal
+  pingedAt: '2017-05-08T10:52:11+02:00'
+  claims: '{"g":[{"p":["create","manage","read","update"],"s":"**"}],"i":"god"}'
+  identity: god
+  params: {}
+  query: "*"
+- _id: a.b._2
+  _type: banana.ordinal
+  pingedAt: '2017-05-09T10:52:11+02:00'
+  claims: '{"g":[{"p":["create","manage","read","update"],"s":"**"}],"i":"god"}'
+  identity: god
+  params: {}
+  query: "*"
+tests:
+- title: pingedAt out of range
+  query: '*[_type == "banana.ordinal" && pingedAt < "2017-05-08T10:52:11+02:00"][]._id'
+  result: []
+- title: pingedAt slightly in range
+  query: '*[_type == "banana.ordinal" && pingedAt < "2017-05-08T10:53:11+02:00"][]._id'
+  result:
+  - a.b._1
+- title: pingedAt well within range
+  query: '*[_type == "banana.ordinal" && pingedAt > "2017-05-08T10:53:11+02:00"][]._id'
+  result:
+  - a.b._2
+- title: slightly in range combined with a type constraint
+  query: '*[_type == "banana.ordinal" && pingedAt < "2017-05-08T10:53:11+02:00"][]._id'
+  result:
+  - a.b._1
+- title: slightly in range combined with a path constraint
+  query: '*[_id in path("a.b.*") && pingedAt < "2017-05-08T10:53:11+02:00"][]._id'
+  result:
+  - a.b._1
+- title: slightly in range combined with a type constraint and a path constraint
+  query: '*[_type == "banana.ordinal" && _id in path("a.b.*") && pingedAt < "2017-05-08T10:53:11+02:00"][]._id'
+  result:
+  - a.b._1
+- title: pingedAt out of range combined with a type constraint and a path constraint
+  query: '*[_type == "banana.ordinal" && _id in path("a.b.*") && pingedAt < "2017-05-08T09:40:44+02:00"][]._id'
+  result: []
+- title: pingedAt out of range combined with a type constraint and a path constraint
+  query: '*[_type == "banana.ordinal" && _id in path("a.b.*") && pingedAt < "2017-05-08T09:40:44+02:00"][]._id'
+  result: []

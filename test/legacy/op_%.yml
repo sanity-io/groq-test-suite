@@ -1,0 +1,110 @@
+name: "% operator"
+documents:
+- _id: id
+  _type: test
+  v_array:
+  - 1
+  - string
+  - true
+  - null
+  - - 1
+    - 2
+    - 3
+  - key: value
+  v_decimal: 3.14
+  v_false: false
+  v_integer: 2
+  v_null: null
+  v_object:
+    v_array:
+    - a
+    - b
+    - c
+    v_boolean: true
+    v_decimal: 2.718
+    v_integer: 2
+    v_null: null
+    v_object:
+      k: v
+    v_string: abc
+  v_string: string
+  v_true: true
+tests:
+- title: "% attributes"
+  query: |-
+    [
+      *[_id=='id'][0].v_integer % *[_id=='id'][0].v_integer,
+      *[_id=='id'][0].v_integer % *[_id=='id'][0].v_decimal,
+      *[_id=='id'][0].v_integer % *[_id=='id'][0].v_null,
+      *[_id=='id'][0].v_decimal % *[_id=='id'][0].v_integer,
+      *[_id=='id'][0].v_decimal % *[_id=='id'][0].v_decimal,
+      *[_id=='id'][0].v_decimal % *[_id=='id'][0].v_null,
+      *[_id=='id'][0].v_null % *[_id=='id'][0].v_integer,
+      *[_id=='id'][0].v_null % *[_id=='id'][0].v_decimal,
+      *[_id=='id'][0].v_null % *[_id=='id'][0].v_null,
+    ]
+  result:
+  - 0
+  - 2
+  - null
+  - 1.1400000000000001
+  - 0
+  - null
+  - null
+  - null
+  - null
+- title: "% attributes invalid types"
+  query: |-
+    [
+      *[_id=='id'][0].v_boolean % *[_id=='id'][0].v_string,
+    ]
+  result:
+  - null
+- title: "% literals"
+  query: |-
+    [
+      2 % 4,
+      4 % 2,
+      10 % 9 % 8 % 7 % 6 % 5 % 4 % 3 % 2 % 1,
+      -2 % 3,
+      2 % 3.14,
+      3.14 % 2,
+      3.14 % 2.718,
+      -2 % 3.14,
+      2 % -3.14,
+      1 % null,
+      null % 1,
+      null % null,
+      9223372036854775806 % 8,
+      9223372036854775806 % -8,
+      27021597764222979 % 3,
+      27021597764222979 % -3,
+      3.14e100 % 2.718e50,
+      1 % 0,
+    ]
+  result:
+  - 2
+  - 0
+  - 0
+  - -2
+  - 2
+  - 1.1400000000000001
+  - 0.42200000000000015
+  - -2
+  - 2
+  - null
+  - null
+  - null
+  - 0
+  - 0
+  - 1
+  - 1
+  - 5.980074137542846e+48
+  - null
+- title: "% literals invalid types"
+  query: |-
+    [
+      3 % {"k": "v"},
+    ]
+  result:
+  - null
