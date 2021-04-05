@@ -1,0 +1,21 @@
+name: "=> operator"
+documents:
+- _id: id
+  _type: test
+  value: 42
+tests:
+- name: literals
+  query: 1 => 2
+  result:
+  - 1
+  - 2
+  version: "1.0.0"
+- name: inside object
+  query: |-
+    {
+      false => {"a": 1},
+      true => {"b": 2}
+    }
+  result:
+    b: 2
+  version: "1.0.0"

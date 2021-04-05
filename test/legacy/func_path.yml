@@ -1,0 +1,65 @@
+name: path() function
+documents:
+- _id: id
+  _type: values
+  v_array:
+  - 1
+  - 3.14
+  - string
+  - true
+  - - 1
+    - 2
+    - 3
+  - key: value
+  v_array_empty: []
+  v_array_null:
+  - null
+  - 1
+  - 3.14
+  - string
+  - true
+  - - 1
+    - 2
+    - 3
+  - key: value
+  v_decimal: 3.14
+  v_false: false
+  v_integer: 1
+  v_null: null
+  v_object:
+    v_array:
+    - a
+    - b
+    - c
+    v_boolean: true
+    v_decimal: 2.718
+    v_integer: 2
+    v_null: null
+    v_object:
+      k: v
+    v_string: abc
+  v_object_empty: {}
+  v_path: a.b.c
+  v_string: string
+  v_true: true
+tests:
+- name: literal
+  query: path("a.b.c") in path("a.**")
+  result: true
+- name: literal
+  query: path("a.b.c") in path("b.**")
+  result: false
+- name: literal
+  query: path("string") == path("string")
+  result: true
+- name: literal
+  query: path("string") == path("abc")
+  result: false
+- name: invalid path
+  query: '*[_id in path("5-**")]'
+  error: true
+  version: "1.0.0"
+- name: invalid path
+  query: '*[_id in path("5-**")]'
+  result: []
+  version: '>= 2.0.0'

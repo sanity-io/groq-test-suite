@@ -1,0 +1,196 @@
+name: 'Regressions: Gitter 2018-05-03'
+documents:
+- _id: image-customer-itch
+  _type: image
+  url: https://cdn.sanity.io/image-customer-itch.jpg
+- _id: image-sprint-1
+  _type: image
+  url: https://cdn.sanity.io/image-sprint-1.jpg
+- _id: image-sprint-2
+  _type: image
+  url: https://cdn.sanity.io/image-sprint-2.jpg
+- _id: image-sprint-3
+  _type: image
+  url: https://cdn.sanity.io/image-sprint-3.jpg
+- _id: image-phase-1
+  _type: image
+  url: https://cdn.sanity.io/image-phase-1.jpg
+- _id: image-phase-2
+  _type: image
+  url: https://cdn.sanity.io/image-phase-2.jpg
+- _id: image-phase-3
+  _type: image
+  url: https://cdn.sanity.io/image-phase-3.jpg
+- _id: image-task-1
+  _type: image
+  url: https://cdn.sanity.io/image-task-1.jpg
+- _id: image-task-2
+  _type: image
+  url: https://cdn.sanity.io/image-task-2.jpg
+- _id: image-task-3
+  _type: image
+  url: https://cdn.sanity.io/image-task-3.jpg
+- _id: task-1
+  _type: task
+  name: Task 1
+- _id: task-2
+  _type: task
+  name: Task 2
+- _id: task-3
+  _type: task
+  name: Task 3
+- _id: phase-1
+  _type: phase
+  name: Phase 1
+  image:
+    asset:
+      _type: reference
+      _ref: image-phase-1
+  tasks:
+  - _type: reference
+    _ref: task-1
+  - _type: reference
+    _ref: task-2
+- _id: phase-2
+  _type: phase
+  name: Phase 2
+  image:
+    asset:
+      _type: reference
+      _ref: image-phase-2
+  tasks:
+  - _type: reference
+    _ref: task-2
+  - _type: reference
+    _ref: task-3
+- _id: phase-3
+  _type: phase
+  name: Phase 3
+  image:
+    asset:
+      _type: reference
+      _ref: image-phase-3
+  tasks:
+  - _type: reference
+    _ref: task-1
+  - _type: reference
+    _ref: task-3
+- _id: sprint-1
+  _type: sprint
+  name: Sprint 1
+  image:
+    asset:
+      _type: reference
+      _ref: image-sprint-1
+  phases:
+  - _type: reference
+    _ref: phase-1
+  - _type: reference
+    _ref: phase-3
+- _id: sprint-2
+  _type: sprint
+  name: Sprint 2
+  image:
+    asset:
+      _type: reference
+      _ref: image-sprint-2
+  phases:
+  - _type: reference
+    _ref: phase-2
+  - _type: reference
+    _ref: phase-3
+- _id: sprint-3
+  _type: sprint
+  name: Sprint 3
+  image:
+    asset:
+      _type: reference
+      _ref: image-sprint-3
+  phases:
+  - _type: reference
+    _ref: phase-1
+  - _type: reference
+    _ref: phase-2
+  - _type: reference
+    _ref: phase-3
+- _id: customer-itch
+  _type: customer
+  name: itch
+  shortname: itch
+  image:
+    asset:
+      _type: reference
+      _ref: image-customer-itch
+  sprints:
+  - _type: reference
+    _ref: sprint-1
+  - _type: reference
+    _ref: sprint-2
+  - _type: reference
+    _ref: sprint-3
+tests:
+- name: Gitter 2018-05-03
+  query: |-
+    *[ _type=='customer' && name == 'itch' ]{
+      name,
+      'shortName': shortname,
+      'image': image.asset->url,
+      sprints[]->{
+        name,
+        'imageUrl': image.asset->url,
+        phases[]->{
+          name,
+          'imageUrl': image.asset->url,
+          tasks[]->{name}
+        }
+      }
+    }[0]
+  result:
+    image: https://cdn.sanity.io/image-customer-itch.jpg
+    name: itch
+    shortName: itch
+    sprints:
+    - imageUrl: https://cdn.sanity.io/image-sprint-1.jpg
+      name: Sprint 1
+      phases:
+      - imageUrl: https://cdn.sanity.io/image-phase-1.jpg
+        name: Phase 1
+        tasks:
+        - name: Task 1
+        - name: Task 2
+      - imageUrl: https://cdn.sanity.io/image-phase-3.jpg
+        name: Phase 3
+        tasks:
+        - name: Task 1
+        - name: Task 3
+    - imageUrl: https://cdn.sanity.io/image-sprint-2.jpg
+      name: Sprint 2
+      phases:
+      - imageUrl: https://cdn.sanity.io/image-phase-2.jpg
+        name: Phase 2
+        tasks:
+        - name: Task 2
+        - name: Task 3
+      - imageUrl: https://cdn.sanity.io/image-phase-3.jpg
+        name: Phase 3
+        tasks:
+        - name: Task 1
+        - name: Task 3
+    - imageUrl: https://cdn.sanity.io/image-sprint-3.jpg
+      name: Sprint 3
+      phases:
+      - imageUrl: https://cdn.sanity.io/image-phase-1.jpg
+        name: Phase 1
+        tasks:
+        - name: Task 1
+        - name: Task 2
+      - imageUrl: https://cdn.sanity.io/image-phase-2.jpg
+        name: Phase 2
+        tasks:
+        - name: Task 2
+        - name: Task 3
+      - imageUrl: https://cdn.sanity.io/image-phase-3.jpg
+        name: Phase 3
+        tasks:
+        - name: Task 1
+        - name: Task 3

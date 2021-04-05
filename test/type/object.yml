@@ -1,3 +1,6 @@
+name: "Object"
+version: '>= 2.0.0'
+
 documents:
 - _id: "a"
   _type: "doc"

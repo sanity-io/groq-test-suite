@@ -1,0 +1,17 @@
+name: 'Regressions: issue 1277'
+documents: []
+tests:
+- name: Issue 1277
+  query: |-
+    *[_type == "team" && @[""] == "bar"] {
+      _id
+    }
+  result: []
+  version: "1.0.0"
+- name: Issue 1277
+  query: |-
+    *[_type == "team" && @[""] == "bar"] {
+      _id
+    }
+  error: true
+  version: '>= 2.0.0'

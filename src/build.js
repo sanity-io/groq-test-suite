@@ -238,6 +238,12 @@ class Builder {
       throw new Error('Invalid parameters: ' + JSON.stringify(params))
     }
 
+    // TODO: Do semver range format validation here
+    let version = test.version
+    if (version != null && typeof version !== 'string') {
+      throw new Error(`[${_id}] invalid version: ${JSON.stringify(version)}`)
+    }
+
     let entry = {
       _id,
       _type: 'test',
@@ -246,6 +252,7 @@ class Builder {
       query: test.query,
       result: valid ? test.result : null,
       valid,
+      version,
       features,
       params,
       ...extra,

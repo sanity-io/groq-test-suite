@@ -8,8 +8,10 @@ tests:
     global::coalesce()
   result: null
 
-- query: |
+- name: "No args"
+  query: |
     coalesce()
+  version: '>= 2.0.0'
   result: null
 
 - query: |

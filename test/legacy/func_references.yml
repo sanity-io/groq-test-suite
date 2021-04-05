@@ -1,0 +1,227 @@
+name: references() function
+version: "1.0.0"
+
+documents:
+- _id: r1
+  _type: test.node
+- _id: r2
+  _type: test.node
+- _id: r3
+  _type: test.node
+- _id: r4
+  _type: test.node
+- _id: immediate
+  _type: test.node
+  immediate:
+    _ref: r1
+- _id: nested
+  _type: test.node
+  nested:
+    nested:
+      _ref: r1
+- _id: arrayOfRefs
+  _type: test.node
+  nested:
+  - _ref: r1
+  - _ref: r2
+  - _ref: r3
+- _id: arrayOfArraysOfRefs
+  _type: test.node
+  nested:
+  - nodes:
+    - _ref: r1
+  - nodes:
+    - _ref: r2
+- _id: arrayOfNestedObjects
+  _type: test.node
+  nested:
+  - node:
+      _ref: r1
+  - node:
+      _ref: r2
+  - node:
+      _ref: r3
+- _id: arrayOfArraysOfNestedObjects
+  _type: test.node
+  nested:
+  - nodes:
+    - node:
+        _ref: r1
+  - nodes:
+    - node:
+        _ref: r2
+  - nodes:
+    - node:
+        _ref: r3
+- _id: carrie-henn
+  _type: moviedb.person
+  name: Carrie Henn
+  nationality: us
+- _id: sigourney-weaver
+  _type: moviedb.person
+  name: Sigourney Weaver
+  nationality: us
+  famousFor:
+    _ref: aliens
+    _weak: true
+  deeply:
+    famousFor:
+      _ref: aliens
+      _weak: true
+  deepArray:
+  - famousFor:
+      _ref: aliens
+      _weak: true
+  deepNestedArray:
+  - famousFor:
+      reason: Awesome Movie
+      movie:
+        _ref: aliens
+        _weak: true
+- _id: james-cameron
+  _type: moviedb.person
+  name: James Cameron
+  nationality: ca
+- _id: aliens
+  _type: moviedb.movie
+  title: Aliens
+  directors:
+  - _ref: james-cameron
+  actors:
+  - character: Newt
+    actor:
+      _ref: carrie-henn
+  - character: Ellen Ripley
+    actor:
+      _ref: sigourney-weaver
+- _id: gorillas-in-the-mist
+  _type: moviedb.movie
+  title: Gorillas in the Mist
+  actors:
+  - character: Dian Fossey
+    actor:
+      _ref: sigourney-weaver
+tests:
+- name: references(r1)
+  query: (*[references("r1")] | order(_id asc))[]._id
+  result:
+  - arrayOfArraysOfNestedObjects
+  - arrayOfArraysOfRefs
+  - arrayOfNestedObjects
+  - arrayOfRefs
+  - immediate
+  - nested
+- name: references(r2)
+  query: (*[references("r2")] | order(_id asc))[]._id
+  result:
+  - arrayOfArraysOfNestedObjects
+  - arrayOfArraysOfRefs
+  - arrayOfNestedObjects
+  - arrayOfRefs
+- name: references(r1, r2)
+  query: (*[references("r1", "r2")] | order(_id asc))[]._id
+  result:
+  - arrayOfArraysOfNestedObjects
+  - arrayOfArraysOfRefs
+  - arrayOfNestedObjects
+  - arrayOfRefs
+  - immediate
+  - nested
+  version: "1.0.0"
+- name: references(r4)
+  query: (*[references("r4")] | order(_id asc))[]._id
+  result: []
+- name: basic references() query
+  query: '*[references("james-cameron")]{_id}'
+  result:
+  - _id: aliens
+- name: another basic references() query
+  query: '*[references("sigourney-weaver")]{_id}'
+  result:
+  - _id: aliens
+  - _id: gorillas-in-the-mist
+- name: references subquery
+  query: '*[references(*[_type match "moviedb.*"][]._id)]|order(_id)[]._id'
+  result:
+  - aliens
+  - gorillas-in-the-mist
+  - sigourney-weaver
+  version: "1.0.0"
+- name: hardcore explicit rejoin 1
+  query: |-
+    *[_type == "moviedb.movie" && title == "Aliens"]{
+      "actors": actors[]{
+        "actor": actor->{
+          "prop": *[name == ^.name][0]{name}
+        }
+      }
+    }
+  result:
+  - actors:
+    - actor:
+        prop:
+          name: Carrie Henn
+    - actor:
+        prop:
+          name: Sigourney Weaver
+- name: hardcore explicit rejoin 2
+  query: |-
+    *[_type == "moviedb.movie" && title == "Aliens"]{
+      "actors": actors{
+        "actor": actor->{
+          "prop": *[name == ^.name][0]{name}
+        }
+      }
+    }
+  result:
+  - actors: {}
+  version: "1.0.0"
+- name: hardcore explicit rejoin 2
+  query: |-
+    *[_type == "moviedb.movie" && title == "Aliens"]{
+      "actors": actors[]{
+        "actor": actor->{
+          "prop": *[name == ^.name][0]{name}
+        }
+      }
+    }
+  result:
+  - actors:
+    - actor:
+        prop:
+          name: Carrie Henn
+    - actor:
+        prop:
+          name: Sigourney Weaver
+  version: '>= 2.0.0'
+- name: People with movies
+  query: |-
+    *[_type == "moviedb.person"] | order(name) | {
+      name,
+      "movies": *[_type == "moviedb.movie" && references(^._id)] | order(title) | {title}
+    }
+  result:
+  - name: Carrie Henn
+    movies:
+    - title: Aliens
+  - name: James Cameron
+    movies:
+    - title: Aliens
+  - name: Sigourney Weaver
+    movies:
+    - title: Aliens
+    - title: Gorillas in the Mist
+- name: ref equality
+  query: '*["james-cameron" in directors[]._ref]{_id}'
+  result:
+  - _id: aliens
+- name: multiple references
+  query: "*[references('sigourney-weaver') || references('james-cameron')]|order(title
+    desc){title}"
+  result:
+  - title: Gorillas in the Mist
+  - title: Aliens
+- name: refs are also strings
+  query: '*[famousFor._ref == "aliens"][]._id'
+  result:
+  - sigourney-weaver

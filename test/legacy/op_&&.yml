@@ -1,0 +1,131 @@
+name: "&& operator"
+documents:
+- _id: id
+  _type: test
+  v_true: true
+  v_false: false
+  v_null: null
+  v_string: string
+  v_integer: 1
+tests:
+- name: "&& attributes booleans"
+  query: |-
+    [
+      *[_id=='id'][0].v_true && *[_id=='id'][0].v_true,
+      *[_id=='id'][0].v_true && *[_id=='id'][0].v_false,
+      *[_id=='id'][0].v_false && *[_id=='id'][0].v_true,
+      *[_id=='id'][0].v_false && *[_id=='id'][0].v_false,
+    ]
+  result:
+  - true
+  - false
+  - false
+  - false
+- name: "&& attributes nulls"
+  query: |-
+    [
+      *[_id=='id'][0].v_true && *[_id=='id'][0].v_null,
+      *[_id=='id'][0].v_null && *[_id=='id'][0].v_true,
+      *[_id=='id'][0].v_false && *[_id=='id'][0].v_null,
+      *[_id=='id'][0].v_null && *[_id=='id'][0].v_false,
+      *[_id=='id'][0].v_null && *[_id=='id'][0].v_null,
+    ]
+  result:
+  - null
+  - null
+  - null
+  - null
+  - null
+  version: "1.0.0"
+- name: "&& attributes nulls"
+  query: |-
+    [
+      *[_id=='id'][0].v_true && *[_id=='id'][0].v_null,
+      *[_id=='id'][0].v_null && *[_id=='id'][0].v_true,
+      *[_id=='id'][0].v_false && *[_id=='id'][0].v_null,
+      *[_id=='id'][0].v_null && *[_id=='id'][0].v_false,
+      *[_id=='id'][0].v_null && *[_id=='id'][0].v_null,
+    ]
+  result:
+  - null
+  - null
+  - false
+  - false
+  - null
+  version: '>= 2.0.0'
+- name: "&& attributes incompatible"
+  query: |-
+    [
+      *[_id=='id'][0].v_true && *[_id=='id'][0].v_integer,
+      *[_id=='id'][0].v_integer && *[_id=='id'][0].v_false,
+      *[_id=='id'][0].v_string && *[_id=='id'][0].v_integer,
+    ]
+  result:
+  - null
+  - null
+  - null
+  version: "1.0.0"
+- name: "&& attributes incompatible"
+  query: |-
+    [
+      *[_id=='id'][0].v_true && *[_id=='id'][0].v_integer,
+      *[_id=='id'][0].v_integer && *[_id=='id'][0].v_false,
+      *[_id=='id'][0].v_string && *[_id=='id'][0].v_integer,
+    ]
+  result:
+  - null
+  - false
+  - null
+  version: '>= 2.0.0'
+- name: "&& literals booleans"
+  query: |-
+    [
+      true && true,
+      true && false,
+      false && true,
+      false && false,
+    ]
+  result:
+  - true
+  - false
+  - false
+  - false
+- name: "&& literals nulls"
+  query: |-
+    [
+      true && null,
+      null && true,
+      false && null,
+      null && false,
+      null && null,
+    ]
+  result:
+  - null
+  - null
+  - false
+  - false
+  - null
+- name: "&& literals incompatible"
+  query: |-
+    [
+      true && 1,
+      1 && false,
+      "string" && 1,
+    ]
+  result:
+  - 1
+  - false
+  - null
+  version: "1.0.0"
+- name: "&& literals incompatible"
+  query: |-
+    [
+      true && 1,
+      1 && false,
+      "string" && 1,
+    ]
+  result:
+  - null
+  - false
+  - null
+  version: '>= 2.0.0'

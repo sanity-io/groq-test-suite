@@ -1,0 +1,205 @@
+name: defined() function
+version: "1.0.0"
+
+documents:
+- _id: target
+  _type: test
+- _id: id
+  _type: test
+  v_array:
+  - 1
+  - 3.14
+  - string
+  - true
+  - - 1
+    - 2
+    - 3
+  - key: value
+  v_array_empty: []
+  v_array_null:
+  - 1
+  - 3.14
+  - string
+  - true
+  - - 1
+    - 2
+    - 3
+  - key: value
+  - null
+  v_decimal: 3.14
+  v_false: false
+  v_integer: 1
+  v_null: null
+  v_object:
+    v_array:
+    - a
+    - b
+    - c
+    v_boolean: true
+    v_decimal: 2.718
+    v_integer: 2
+    v_null: null
+    v_object:
+      k: v
+    v_string: abc
+  v_object_empty: {}
+  v_ref:
+    _ref: target
+  v_string: string
+  v_true: true
+tests:
+- name: attributes
+  query: |-
+    [
+      defined(*[_id=="id"][0].v_array),
+      defined(*[_id=="id"][0].v_array_empty),
+      defined(*[_id=="id"][0].v_array_null),
+      defined(*[_id=="id"][0].v_decimal),
+      defined(*[_id=="id"][0].v_false),
+      defined(*[_id=="id"][0].v_integer),
+      defined(*[_id=="id"][0].v_null),
+      defined(*[_id=="id"][0].v_object),
+      defined(*[_id=="id"][0].v_object_empty),
+      defined(*[_id=="id"][0].v_string),
+      defined(*[_id=="id"][0].v_true),
+      defined(*[_id=="id"][0].v_missing),
+    ]
+  result:
+  - true
+  - false
+  - true
+  - true
+  - true
+  - true
+  - false
+  - true
+  - false
+  - true
+  - true
+  - false
+  version: "1.0.0"
+- name: attributes
+  query: |-
+    [
+      defined(*[_id=="id"][0].v_array),
+      defined(*[_id=="id"][0].v_array_empty),
+      defined(*[_id=="id"][0].v_array_null),
+      defined(*[_id=="id"][0].v_decimal),
+      defined(*[_id=="id"][0].v_false),
+      defined(*[_id=="id"][0].v_integer),
+      defined(*[_id=="id"][0].v_null),
+      defined(*[_id=="id"][0].v_object),
+      defined(*[_id=="id"][0].v_object_empty),
+      defined(*[_id=="id"][0].v_string),
+      defined(*[_id=="id"][0].v_true),
+      defined(*[_id=="id"][0].v_missing),
+    ]
+  result:
+  - true
+  - true
+  - true
+  - true
+  - true
+  - true
+  - false
+  - true
+  - true
+  - true
+  - true
+  - false
+  version: '>= 2.0.0'
+- name: attributes filter
+  query: |-
+    [
+      *[defined(v_array)][]._id,
+      *[defined(v_array_empty)][]._id,
+      *[defined(v_array_null)][]._id,
+      *[defined(v_decimal)][]._id,
+      *[defined(v_false)][]._id,
+      *[defined(v_integer)][]._id,
+      *[defined(v_null)][]._id,
+      *[defined(v_object)][]._id,
+      *[defined(v_object_empty)][]._id,
+      *[defined(v_string)][]._id,
+      *[defined(v_true)][]._id,
+      *[defined(v_missing)][]._id,
+    ]
+  result:
+  - - id
+  - []
+  - - id
+  - - id
+  - - id
+  - - id
+  - []
+  - - id
+  - []
+  - - id
+  - - id
+  - []
+  version: "1.0.0"
+- name: attributes projection
+  query: |-
+    *[_id=="id"][0]{
+      "v_array": defined(v_array),
+      "v_array_empty": defined(v_array_empty),
+      "v_array_null": defined(v_array_null),
+      "v_decimal": defined(v_decimal),
+      "v_false": defined(v_false),
+      "v_integer": defined(v_integer),
+      "v_null": defined(v_null),
+      "v_object": defined(v_object),
+      "v_object_empty": defined(v_object_empty),
+      "v_ref": defined(v_ref->),
+      "v_ref_missing": defined(v_ref_missing->),
+      "v_string": defined(v_string),
+      "v_true": defined(v_true),
+      "v_missing": defined(v_missing),
+    }
+  result:
+    v_array: true
+    v_array_empty: false
+    v_array_null: true
+    v_decimal: true
+    v_false: true
+    v_integer: true
+    v_null: false
+    v_object: true
+    v_object_empty: false
+    v_ref: true
+    v_ref_missing: false
+    v_string: true
+    v_true: true
+    v_missing: false
+  version: "1.0.0"
+- name: literals
+  query: |-
+    [
+      defined([1, 2, 3]),
+      defined([]),
+      defined([1, 2, null]),
+      defined(3.14),
+      defined(false),
+      defined(1),
+      defined(null),
+      defined({"a": 1}),
+      defined({}),
+      defined("abc"),
+      defined(true),
+      defined(missing),
+    ]
+  result:
+  - true
+  - false
+  - true
+  - true
+  - true
+  - true
+  - false
+  - true
+  - false
+  - true
+  - true
+  - false
+  version: "1.0.0"
+

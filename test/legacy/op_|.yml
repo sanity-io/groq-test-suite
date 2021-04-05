@@ -1,0 +1,62 @@
+name: "| operator"
+documents:
+- _id: c
+  _type: test
+  title: C
+- _id: a
+  _type: test
+  title: A
+- _id: b
+  _type: test
+  title: B
+tests:
+- name: complete pipeline
+  query: '*[ _type == "test" ] | {_id}[]._id | order(_id asc)'
+  result:
+  - a
+  - b
+  - c
+- name: complete pipeline implicit brace
+  query: '*[ _type == "test" ]{_id}[]._id | order(_id asc)'
+  result:
+  - a
+  - b
+  - c
+- name: complete pipeline implicit bracket
+  query: '*[ _type == "test" ] | {_id}[]._id | order(_id asc)'
+  result:
+  - a
+  - b
+  - c
+- name: complete pipeline explicit bracket
+  query: '*[_type == "test"][]{_id} | order(_id)[]._id'
+  result:
+  - a
+  - b
+  - c
+- name: deep pipeline
+  query: |-
+    *[ _type == "test" ] |
+      {_id} | {_id} | {_id} | {_id} | {_id} | {_id} | {_id} | {_id} | {_id} | {_id} |
+      {_id} | {_id} | {_id} | {_id} | {_id} | {_id} | {_id} | {_id} | {_id} | {_id} |
+      {_id} | {_id} | {_id} | {_id} | {_id} | {_id} | {_id} | {_id} | {_id} | {_id}[]._id | order(_id asc)
+  result:
+  - a
+  - b
+  - c
+- name: multiple filters
+  query: '*[ _type == "test" ][ _id == "a" ] | {_id}[]._id'
+  result:
+  - a
+- name: multiple projections
+  query: '*[ _type == "test" ] | {_id, title, index} | {title} | order(title asc)'
+  result:
+  - title: A
+  - title: B
+  - title: C
+- name: multiple orders
+  query: '*[ _type == "test" ] | {_id, title} | order(title asc) | order(_id desc)[]._id'
+  result:
+  - c
+  - b
+  - a

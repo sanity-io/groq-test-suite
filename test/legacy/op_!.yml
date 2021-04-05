@@ -1,0 +1,66 @@
+name: "! operator"
+documents:
+- _id: id
+  _type: test
+  v_true: true
+  v_false: false
+  v_null: null
+  v_string: string
+  v_integer: 1
+tests:
+- name: "! attributes booleans"
+  query: |-
+    [
+      !*[_id=='id'][0].v_true,
+      !*[_id=='id'][0].v_false,
+    ]
+  result:
+  - false
+  - true
+- name: "! attributes nulls"
+  query: |-
+    [
+      !*[_id=='id'][0].v_null,
+    ]
+  result:
+  - null
+- name: "! attributes incompatible"
+  query: |-
+    [
+      !*[_id=='id'][0].v_string,
+      !*[_id=='id'][0].v_integer,
+    ]
+  result:
+  - null
+  - null
+- name: "! literals booleans"
+  query: |-
+    [
+      !true,
+      !false,
+    ]
+  result:
+  - false
+  - true
+- name: "! literals nulls"
+  query: |-
+    [
+      !null,
+    ]
+  result:
+  - null
+- name: "! literals incompatible"
+  query: |-
+    [
+      !1,
+      !3.14,
+      !"string",
+      ![],
+      !{},
+    ]
+  result:
+  - null
+  - null
+  - null
+  - null
+  - null

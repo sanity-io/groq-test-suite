@@ -1,0 +1,28 @@
+name: 'Regressions: issue 758'
+documents:
+- _id: tos
+  _type: tos
+  version: 3
+  content: ToS
+- _id: accepted
+  _type: streamer
+  identity: accepted
+  tos:
+    _ref: tos
+- _id: notAccepted
+  _type: streamer
+  identity: notAccepted
+  tos: null
+tests:
+- name: Issue 758
+  query: '*[_type == "tos" && !("notAccepted" in *[_type == "streamer" && references(^._id)].identity)]
+    | order(version desc) { content } [0]'
+  result:
+    content: ToS
+  version: "1.0.0"
+- name: Issue 758
+  query: '*[_type == "tos" && !("notAccepted" in *[_type == "streamer" && references(^._id)][].identity)]
+    | order(version desc) { content } [0]'
+  result:
+    content: ToS
+  version: '>= 2.0.0'

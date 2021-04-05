@@ -1,0 +1,10 @@
+name: 'Regressions: issue 796'
+documents:
+- _id: id
+  _type: test
+  name: Test
+tests:
+- name: Issue 796
+  query: '*[_type == "test"]{"key": _id}[key == "id"]'
+  result:
+  - key: id

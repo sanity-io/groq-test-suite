@@ -1,4 +1,5 @@
 name: "Precedence and associativity"
+version: '>= 2.0.0'
 
 # Tests are structured as follows:
 #

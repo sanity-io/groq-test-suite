@@ -1,4 +1,5 @@
 name: "Minus operator"
+version: '>= 2.0.0'
 
 tests:
 - name: "Unknown types"

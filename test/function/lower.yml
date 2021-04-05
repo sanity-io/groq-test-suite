@@ -1,7 +1,7 @@
 name: "lower() function"
 
 features:
-  - namespaces
+- namespaces
 
 documents:
 - _id: "Movie-100"
