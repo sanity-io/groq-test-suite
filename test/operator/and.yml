@@ -1,4 +1,5 @@
 name: "And operator"
+version: '>= 2.0.0'
 
 tests:
 - variables:

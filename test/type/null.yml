@@ -1,4 +1,5 @@
-name: "Boolean"
+name: "Null"
+
 documents:
 - _id: "null"
   _type: "test"

@@ -1,0 +1,134 @@
+name: ". operator"
+documents:
+- _id: id
+  _type: test
+  v_array:
+  - 1
+  - string
+  - true
+  - null
+  - - 1
+    - 2
+    - 3
+  - key: value
+  v_decimal: 3.14
+  v_deep:
+    k:
+      k:
+        k:
+          k:
+            k:
+              k:
+                k:
+                  k:
+                    k:
+                      k: v
+  v_false: false
+  v_integer: 1
+  v_null: null
+  v_object:
+    v_array:
+    - a
+    - b
+    - c
+    v_boolean: true
+    v_decimal: 2.718
+    v_integer: 2
+    v_null: null
+    v_object:
+      k: v
+    v_string: abc
+  v_objArray:
+  - a: a
+  - b: b
+  v_string: string
+  v_true: true
+tests:
+- name: ". document"
+  query: |-
+    [
+      *[_id=='id'][0].v_array,
+      *[_id=='id'][0].v_decimal,
+      *[_id=='id'][0].v_false,
+      *[_id=='id'][0].v_integer,
+      *[_id=='id'][0].v_null,
+      *[_id=='id'][0].v_object,
+      *[_id=='id'][0].v_string,
+      *[_id=='id'][0].v_true,
+    ]
+  result:
+  - - 1
+    - string
+    - true
+    - null
+    - - 1
+      - 2
+      - 3
+    - key: value
+  - 3.14
+  - false
+  - 1
+  - null
+  - v_array:
+    - a
+    - b
+    - c
+    v_boolean: true
+    v_decimal: 2.718
+    v_integer: 2
+    v_null: null
+    v_object:
+      k: v
+    v_string: abc
+  - string
+  - true
+  version: "1.0.0"
+- name: ". document nested"
+  query: "*[_id=='id'][0].v_object.v_object.k"
+  result: v
+- name: ". document deep"
+  query: "*[_id=='id'][0].v_deep.k.k.k.k.k.k.k.k.k.k"
+  result: v
+- name: ". document null"
+  query: |-
+    [
+      *[_id=='id'][0].v_null.child,
+      *[_id=='id'][0].missing,
+      *[_id=='id'][0].missing.child,
+    ]
+  result:
+  - null
+  - null
+  - null
+- name: ". literal"
+  query: |-
+    [
+      {"k": "v"}.k,
+      {"k": {"k": {"k": {"k": {"k": {"k": {"k": {"k": {"k": {"k": "v"}}}}}}}}}}.k.k.k.k.k.k.k.k.k.k,
+    ]
+  result:
+  - v
+  - v
+- name: ". literal null"
+  query: |-
+    [
+      null.missing,
+      {"k": "v"}.missing,
+      {"k": "v"}.missing.child,
+    ]
+  result:
+  - null
+  - null
+  - null
+- name: ". array key 1"
+  query: '[{"a": 1}].a'
+  result:
+  - 1
+- name: ". array key 2"
+  query: |-
+    *[_id == "id"][0]{
+      "x": v_objArray[a == "a"].a
+    }
+  result:
+    x:
+    - a

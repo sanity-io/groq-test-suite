@@ -1,6 +1,6 @@
 name: "Equality"
-tests:
 
+tests:
 - name: "Inequal values"
   result: true
   variables:

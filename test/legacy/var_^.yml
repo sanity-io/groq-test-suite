@@ -1,0 +1,441 @@
+name: "^ special variable"
+documents:
+- _id: e
+  _type: test
+  name: E
+  value: foo
+- _id: c
+  _type: test
+  name: C
+  value: bar
+  other:
+    _ref: e
+  arrayWithRefs:
+  - other:
+      _ref: e
+- _id: d
+  _type: test
+  name: D
+  value: foo
+- _id: b
+  _type: test
+  name: B
+  value: bar
+  other:
+    _ref: c
+  weakother:
+    _type: reference
+    _ref: c
+    _weak: true
+  arrayWithRefs:
+  - other:
+      _ref: e
+  - other:
+      _ref: c
+- _id: a
+  _type: test
+  name: A
+  value: foo
+  other:
+    _ref: b
+  weakother:
+    _ref: b
+    _weak: true
+  others:
+  - _ref: e
+  - _ref: c
+  - _ref: b
+  - _ref: d
+- _id: id
+  _type: values
+  v_array:
+  - 1
+  - string
+  - true
+  - null
+  - - 1
+    - 2
+    - 3
+  - key: value
+  v_decimal: 3.14
+  v_false: false
+  v_integer: 1
+  v_null: null
+  v_object:
+    v_array:
+    - a
+    - b
+    - c
+    v_boolean: true
+    v_decimal: 2.718
+    v_integer: 2
+    v_null: null
+    v_object:
+      k: v
+    v_string: abc
+  v_string: string
+  v_true: true
+- _id: root
+  _type: nested
+  child:
+    _id: child-0
+    child:
+      _id: child-1
+      child:
+        _id: child-2
+        child:
+          _id: child-3
+          child:
+            _id: child-4
+tests:
+- name: "^ documents attributes"
+  query: |-
+    [
+      *[_id == "root"]{_id, child{
+        _id, "parent-0": ^._id, "parent-1": ^.^._id, child{
+          _id, "parent-0": ^._id, "parent-1": ^.^._id, child{
+            _id, "parent-0": ^._id, "parent-1": ^.^._id, child{
+              _id, "parent-0": ^._id, "parent-1": ^.^._id, child{
+                _id, "parent-0": ^._id, "parent-1": ^.^._id,
+              },
+            },
+          },
+        },
+      }},
+      *[_id == "a"]{_id, other->{_id, "parent": ^._id}},
+      *[_id == "a"]{_id, others[]->{_id, "parent": ^._id}},
+    ]
+  result:
+  - - _id: root
+      child:
+        _id: child-0
+        parent-0: child-0
+        parent-1: child-0
+        child:
+          _id: child-1
+          parent-0: child-1
+          parent-1: child-1
+          child:
+            _id: child-2
+            parent-0: child-2
+            parent-1: child-2
+            child:
+              _id: child-3
+              parent-0: child-3
+              parent-1: child-3
+              child:
+                _id: child-4
+                parent-0: child-4
+                parent-1: child-4
+  - - _id: a
+      other:
+        _id: b
+        parent: b
+  - - _id: a
+      others:
+      - _id: e
+        parent: e
+      - _id: c
+        parent: c
+      - _id: b
+        parent: b
+      - _id: d
+        parent: d
+  version: "1.0.0"
+- name: "^ documents attributes"
+  query: |-
+    [
+      *[_id == "root"]{_id, child{
+        _id, "parent-0": ^._id, "parent-1": ^.^._id, child{
+          _id, "parent-0": ^._id, "parent-1": ^.^._id, child{
+            _id, "parent-0": ^._id, "parent-1": ^.^._id, child{
+              _id, "parent-0": ^._id, "parent-1": ^.^._id, child{
+                _id, "parent-0": ^._id, "parent-1": ^.^._id,
+              },
+            },
+          },
+        },
+      }},
+      *[_id == "a"]{_id, other->{_id, "parent": ^._id}},
+      *[_id == "a"]{_id, others[]->{_id, "parent": ^.^._id}},
+    ]
+  result:
+  - - _id: root
+      child:
+        _id: child-0
+        parent-0: root
+        parent-1: null
+        child:
+          _id: child-1
+          parent-0: child-0
+          parent-1: root
+          child:
+            _id: child-2
+            parent-0: child-1
+            parent-1: child-0
+            child:
+              _id: child-3
+              parent-0: child-2
+              parent-1: child-1
+              child:
+                _id: child-4
+                parent-0: child-3
+                parent-1: child-2
+  - - _id: a
+      other:
+        _id: b
+        parent: a
+  - - _id: a
+      others:
+      - _id: e
+        parent: a
+      - _id: c
+        parent: a
+      - _id: b
+        parent: a
+      - _id: d
+        parent: a
+  version: '>= 2.0.0'
+- name: "^ documents projection joins"
+  query: |-
+    [
+      *[_id == "a"]{_id, "reverse": *[_id == ^.other._ref][]._id},
+      *[_id == "a"][0]{_id, "reverse": *[_id == ^.other._ref][]._id},
+      *[_id == "a"]{_id, "reverse": *[_id == ^.weakother._ref][]._id},
+      *[_id == "a"][0]{_id, "reverse": *[_id == ^.weakother._ref][]._id},
+      *[_id == "a"]{_id, "missing": *[_id == ^.missing][]._id},
+      *[_id == "a"][0]{_id, "missing": *[_id == ^.missing][]._id},
+      *[_id == "a"]{_id, "samevalue": *[value == ^.value]|order(_id)[]._id},
+      *[_id == "a"][0]{_id, "samevalue": *[value == ^.value]|order(_id)[]._id},
+      *[_id == "a"]{_id, "others": *[_id in ^.others[]._ref]|order(_id)[]._id},
+      *[_id == "a"][0]{_id, "others": *[_id in ^.others[]._ref]|order(_id)[]._id}
+    ]
+  result:
+  - - _id: a
+      reverse:
+      - b
+  - _id: a
+    reverse:
+    - b
+  - - _id: a
+      reverse:
+      - b
+  - _id: a
+    reverse:
+    - b
+  - - _id: a
+      missing: []
+  - _id: a
+    missing: []
+  - - _id: a
+      samevalue:
+      - a
+      - d
+      - e
+  - _id: a
+    samevalue:
+    - a
+    - d
+    - e
+  - - _id: a
+      others:
+      - b
+      - c
+      - d
+      - e
+  - _id: a
+    others:
+    - b
+    - c
+    - d
+    - e
+- name: "^ documents projection joins deep 1"
+  query: |-
+    *[_id == "a"]{
+      _id,
+      "reverse": *[_id == ^.other._ref]{
+        _id,
+        "grandparent": *[_id == ^.^._id][0]._id
+      }
+    }
+  result:
+  - _id: a
+    reverse:
+    - _id: b
+      grandparent: b
+  version: "1.0.0"
+- name: "^ documents projection joins deep 1"
+  query: |-
+    *[_id == "a"]{
+      _id,
+      "reverse": *[_id == ^.other._ref]{
+        _id,
+        "grandparent": *[_id == ^.^._id][0]._id
+      }
+    }
+  result:
+  - _id: a
+    reverse:
+    - _id: b
+      grandparent: a
+  version: '>= 2.0.0'
+- name: "^ documents projection joins deep 2"
+  query: |-
+    *[_id == "a"]{
+      _id,
+      others[]{
+        _ref,
+        "source": *[_id == ^.^._id][0].name
+      }
+    }
+  result:
+  - _id: a
+    others:
+    - _ref: e
+      source: A
+    - _ref: c
+      source: A
+    - _ref: b
+      source: A
+    - _ref: d
+      source: A
+  version: '>= 2.0.0'
+- name: "^ documents projection joins deep 3"
+  query: |-
+    *[_id == "a"]{
+      _id,
+      others[]{
+        _ref,
+        "source": *[_id == ^.^._id][0]._id
+      }
+    }
+  result:
+  - _id: a
+    others:
+    - _ref: e
+      source: a
+    - _ref: c
+      source: a
+    - _ref: b
+      source: a
+    - _ref: d
+      source: a
+  version: '>= 2.0.0'
+- name: "^ documents projection joins deep (^.^.^.)"
+  query: |-
+    *[_id == "a"]{
+      _id,
+      "reverse": *[_id == ^.other._ref]{
+        _id,
+        "grandparent": *[_id == ^.^._id][0]{
+          _id,
+          "grandgrandparent": *[_id == ^.^.^._id][0]._id
+        }
+      }
+    }
+  result:
+  - _id: a
+    reverse:
+    - _id: b
+      grandparent:
+        _id: b
+        grandgrandparent: b
+  version: "1.0.0"
+- name: "^ documents projection joins deep (^.^.^.)"
+  query: |-
+    *[_id == "a"]{
+      _id,
+      "reverse": *[_id == ^.other._ref]{
+        _id,
+        "grandparent": *[_id == ^.^._id][0]{
+          _id,
+          "grandgrandparent": *[_id == ^.^.^._id][0]._id
+        }
+      }
+    }
+  result:
+  - _id: a
+    reverse:
+    - _id: b
+      grandparent:
+        _id: a
+        grandgrandparent: a
+  version: '>= 2.0.0'
+- name: "^ documents projection joins types"
+  query: '*[_id == "id"]{_id, "self": *[v_decimal == ^.v_decimal][0]._id}'
+  result:
+  - _id: id
+    self: id
+- name: "^ documents projection joins types"
+  query: '*[_id == "id"][0]{_id, "self": *[v_decimal == ^.v_decimal][0]._id}'
+  result:
+    _id: id
+    self: id
+- name: "^ documents projection joins types"
+  query: '*[_id == "id"]{_id, "self": *[v_false == ^.v_false][0]._id}'
+  result:
+  - _id: id
+    self: id
+- name: "^ documents projection joins types"
+  query: '*[_id == "id"][0]{_id, "self": *[v_false == ^.v_false][0]._id}'
+  result:
+    _id: id
+    self: id
+- name: "^ documents projection joins types"
+  query: '*[_id == "id"]{_id, "self": *[v_integer == ^.v_integer][0]._id}'
+  result:
+  - _id: id
+    self: id
+- name: "^ documents projection joins types"
+  query: '*[_id == "id"][0]{_id, "self": *[v_integer == ^.v_integer][0]._id}'
+  result:
+    _id: id
+    self: id
+- name: "^ documents projection joins types"
+  query: '*[_id == "id"]{_id, "self": *[v_null == ^.v_null] | order(_id)[0]._id}'
+  result:
+  - _id: id
+  version: "1.0.0"
+- name: "^ documents projection joins types"
+  query: '*[_id == "id"]{_id, "self": *[v_null == ^.v_null] | order(_id)[0]._id}'
+  result:
+  - _id: id
+    self: a
+  version: '>= 2.0.0'
+- name: "^ documents projection joins types"
+  query: '*[_id == "id"][0]{_id, "self": *[v_null == ^.v_null] | order(_id)[0]._id}'
+  result:
+    _id: id
+  version: "1.0.0"
+- name: "^ documents projection joins types"
+  query: '*[_id == "id"][0]{_id, "self": *[v_null == ^.v_null] | order(_id)[0]._id}'
+  result:
+    _id: id
+    self: a
+  version: '>= 2.0.0'
+- name: "^ documents projection joins types"
+  query: '*[_id == "id"]{_id, "self": *[v_string == ^.v_string][0]._id}'
+  result:
+  - _id: id
+    self: id
+- name: "^ documents projection joins types"
+  query: '*[_id == "id"][0]{_id, "self": *[v_string == ^.v_string][0]._id}'
+  result:
+    _id: id
+    self: id
+- name: "^ documents projection joins types"
+  query: '*[_id == "id"]{_id, "self": *[v_true == ^.v_true][0]._id}'
+  result:
+  - _id: id
+    self: id
+- name: "^ documents projection joins types"
+  query: '*[_id == "id"][0]{_id, "self": *[v_true == ^.v_true][0]._id}'
+  result:
+    _id: id
+    self: id
+- name: "^ literals projection"
+  query: '*[_id == "b"]{"others": arrayWithRefs[]{"name": other->name}}'
+  result:
+  - others:
+    - name: E
+    - name: C

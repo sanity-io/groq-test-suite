@@ -1,0 +1,753 @@
+name: "[] operator"
+documents:
+- _id: arrays
+  _type: test
+  arrays:
+  - - 11
+    - 12
+  - - 21
+    - 22
+- _id: arrays-unbalanced
+  _type: test
+  arrays:
+  - - 11
+    - 12
+  - - - 211
+      - 212
+    - 22
+  - 3
+- _id: arrays-arrays
+  _type: test
+  arrays:
+  - - - 11
+      - 12
+    - - 21
+      - 22
+  - - - 31
+      - 32
+    - - 41
+      - 42
+- _id: integers
+  _type: test
+  integers:
+  - 1
+  - 2
+  - 3
+- _id: objects
+  _type: test
+  objects:
+  - value: 1
+  - value: 2
+  - value: 3
+- _id: objects-array
+  _type: test
+  objects:
+  - array:
+    - 11
+    - 12
+  - array:
+    - 21
+    - 22
+- _id: objects-arrays
+  _type: test
+  objects:
+  - arrays:
+    - - 11
+      - 12
+    - - 21
+      - 22
+  - arrays:
+    - - 31
+      - 32
+    - - 41
+      - 42
+- _id: objects-objects
+  _type: test
+  objects:
+  - objects:
+    - value: 11
+    - value: 12
+  - objects:
+    - value: 21
+    - value: 22
+- _id: objects-object-objects
+  _type: test
+  objects:
+  - object:
+      objects:
+      - value: 11
+      - value: 12
+  - object:
+      objects:
+      - value: 21
+      - value: 22
+- _id: objects-object-arrays-object
+  _type: test
+  objects:
+  - object:
+      arrays:
+      - - value: 11
+        - value: 12
+      - - value: 21
+        - value: 22
+  - object:
+      arrays:
+      - - value: 31
+        - value: 32
+      - - value: 41
+        - value: 42
+- _id: refs
+  _type: test
+  refs:
+  - _ref: arrays
+  - _ref: integers
+  - _ref: objects
+- _id: objects-ref
+  _type: test
+  objects:
+  - ref:
+      _ref: arrays
+  - ref:
+      _ref: integers
+  - ref:
+      _ref: objects
+  - ref:
+      _ref: refs
+tests:
+- name: arrays
+  query: '*[_id=="arrays"][0].arrays'
+  result:
+  - - 11
+    - 12
+  - - 21
+    - 22
+- name: arrays
+  query: '*[_id=="arrays"][0].arrays'
+  result:
+  - - 11
+    - 12
+  - - 21
+    - 22
+- name: arrays
+  query: '*[_id=="arrays"].arrays'
+  result:
+  - - - 11
+      - 12
+    - - 21
+      - 22
+  version: "1.0.0"
+- name: "{...}._id"
+  query: '*[_id=="arrays"]{...}._id'
+  result:
+  - arrays
+  version: "1.0.0"
+- name: arrays
+  query: '*[_id=="arrays"][].arrays'
+  result:
+  - - - 11
+      - 12
+    - - 21
+      - 22
+- name: arrays[]
+  query: '*[_id=="arrays"][0].arrays[]'
+  result:
+  - - 11
+    - 12
+  - - 21
+    - 22
+- name: arrays[][]
+  query: '*[_id=="arrays"][0].arrays[][]'
+  result:
+  - - 11
+    - 12
+  - - 21
+    - 22
+  version: "1.0.0"
+- name: arrays-arrays
+  query: '*[_id=="arrays-arrays"][0].arrays'
+  result:
+  - - - 11
+      - 12
+    - - 21
+      - 22
+  - - - 31
+      - 32
+    - - 41
+      - 42
+- name: arrays-arrays[]
+  query: '*[_id=="arrays-arrays"][0].arrays[]'
+  result:
+  - - - 11
+      - 12
+    - - 21
+      - 22
+  - - - 31
+      - 32
+    - - 41
+      - 42
+- name: arrays-arrays[][]
+  query: '*[_id=="arrays-arrays"][0].arrays[][]'
+  result:
+  - - - 11
+      - 12
+    - - 21
+      - 22
+  - - - 31
+      - 32
+    - - 41
+      - 42
+  version: "1.0.0"
+- name: arrays-arrays[][][] (legacy array semantics)
+  query: '*[_id=="arrays-arrays"][0].arrays[][][]'
+  result:
+  - - - 11
+      - 12
+    - - 21
+      - 22
+  - - - 31
+      - 32
+    - - 41
+      - 42
+  version: "1.0.0"
+- name: arrays-arrays[1][]
+  query: '*[_id=="arrays-arrays"][0].arrays[1][]'
+  result:
+  - - 11
+    - 12
+  - - 21
+    - 22
+  version: "1.0.0"
+- name: arrays-arrays[1][][]
+  query: '*[_id=="arrays-arrays"][0].arrays[1][][]'
+  result:
+  - - 11
+    - 12
+  - - 21
+    - 22
+  version: "1.0.0"
+- name: arrays-arrays[][1]
+  query: '*[_id=="arrays-arrays"][0].arrays[][1]'
+  result:
+  - - 11
+    - 12
+  - - 21
+    - 22
+  version: "1.0.0"
+- name: arrays-arrays[][1][]
+  query: '*[_id=="arrays-arrays"][0].arrays[][1][]'
+  result:
+  - - 11
+    - 12
+  - - 21
+    - 22
+  version: "1.0.0"
+- name: arrays-arrays[][][1]
+  query: '*[_id=="arrays-arrays"][0].arrays[][][1]'
+  result:
+  - - 11
+    - 12
+  - - 21
+    - 22
+  version: "1.0.0"
+- name: arrays-arrays[1][1][]
+  query: '*[_id=="arrays-arrays"][0].arrays[1][1][]'
+  result:
+  - 11
+  - 12
+  version: "1.0.0"
+- name: arrays-arrays[1][][1]
+  query: '*[_id=="arrays-arrays"][0].arrays[1][][1]'
+  result:
+  - 11
+  - 12
+  version: "1.0.0"
+- name: integers
+  query: '*[_id=="integers"][0].integers'
+  result:
+  - 1
+  - 2
+  - 3
+- name: integers[]
+  query: '*[_id=="integers"][0].integers[]'
+  result:
+  - 1
+  - 2
+  - 3
+- name: integers[].attr
+  query: '*[_id=="integers"][0].integers[].attr'
+  result:
+  - null
+  - null
+  - null
+- name: integers[].attr[]
+  query: '*[_id=="integers"][0].integers[].attr[]'
+  result:
+  - null
+  - null
+  - null
+- name: integers[]->
+  query: '*[_id=="integers"][0].integers[]->'
+  result:
+  - null
+  - null
+  - null
+- name: integers[]->[]
+  query: '*[_id=="integers"][0].integers[]->[]'
+  result:
+  - null
+  - null
+  - null
+- name: objects
+  query: '*[_id=="objects"][0].objects'
+  result:
+  - value: 1
+  - value: 2
+  - value: 3
+- name: objects[]
+  query: '*[_id=="objects"][0].objects[]'
+  result:
+  - value: 1
+  - value: 2
+  - value: 3
+- name: objects[value==2]
+  query: '*[_id=="objects"][0].objects[value==2]'
+  result: null
+  version: "1.0.0"
+- name: objects[value==2].value
+  query: '*[_id=="objects"][0].objects[value==2].value'
+  result: null
+  version: "1.0.0"
+- name: objects[value==2][].value
+  query: '*[_id=="objects"][0].objects[value==2][].value'
+  result: null
+  version: "1.0.0"
+- name: objects[].value
+  query: '*[_id=="objects"][0].objects[].value'
+  result:
+  - 1
+  - 2
+  - 3
+- name: objects[].array
+  query: '*[_id=="objects-array"][0].objects[].array'
+  result:
+  - - 11
+    - 12
+  - - 21
+    - 22
+- name: objects[].array[]
+  query: '*[_id=="objects-array"][0].objects[].array[]'
+  result:
+  - - 11
+    - 12
+  - - 21
+    - 22
+  version: "1.0.0"
+- name: objects[].arrays
+  query: '*[_id=="objects-arrays"][0].objects[].arrays'
+  result:
+  - - - 11
+      - 12
+    - - 21
+      - 22
+  - - - 31
+      - 32
+    - - 41
+      - 42
+- name: objects[].arrays[]
+  query: '*[_id=="objects-arrays"][0].objects[].arrays[]'
+  result:
+  - - - 11
+      - 12
+    - - 21
+      - 22
+  - - - 31
+      - 32
+    - - 41
+      - 42
+  version: "1.0.0"
+- name: objects[].arrays[][]
+  query: '*[_id=="objects-arrays"][0].objects[].arrays[][]'
+  result:
+  - - - 11
+      - 12
+    - - 21
+      - 22
+  - - - 31
+      - 32
+    - - 41
+      - 42
+  version: "1.0.0"
+- name: objects[].arrays[][1]
+  query: '*[_id=="objects-arrays"][0].objects[].arrays[][1]'
+  result:
+  - - 11
+    - 12
+  - - 21
+    - 22
+  version: "1.0.0"
+- name: objects[].objects
+  query: '*[_id=="objects-objects"][0].objects[].objects'
+  result:
+  - - value: 11
+    - value: 12
+  - - value: 21
+    - value: 22
+- name: objects[].objects[]
+  query: '*[_id=="objects-objects"][0].objects[].objects[]'
+  result:
+  - - value: 11
+    - value: 12
+  - - value: 21
+    - value: 22
+  version: "1.0.0"
+- name: objects[].objects[].value
+  query: '*[_id=="objects-objects"][0].objects[].objects[].value'
+  result:
+  - null
+  - null
+  version: "1.0.0"
+- name: objects[].objects[ value >= 20 ]
+  query: '*[_id=="objects-objects"][0].objects[].objects[ value >= 20 ]'
+  result: null
+  version: "1.0.0"
+- name: objects[].objects[ value >= 20 ][]
+  query: '*[_id=="objects-objects"][0].objects[].objects[ value >= 20 ][]'
+  result: null
+  version: "1.0.0"
+- name: objects[].objects[][ value >= 20 ]
+  query: '*[_id=="objects-objects"][0].objects[].objects[][ value >= 20 ]'
+  result: null
+  version: "1.0.0"
+- name: "(objects[].objects[])[ value >= 20 ]"
+  query: (*[_id=="objects-objects"][0].objects[].objects[])[ value >= 20 ]
+  result: null
+  version: "1.0.0"
+- name: objects[21 in objects[].value][].objects[].value
+  query: '*[_id=="objects-objects"][0].objects[21 in objects[].value][].objects[].value'
+  result: null
+  version: "1.0.0"
+- name: objects[].objects[1].value
+  query: '*[_id=="objects-objects"][0].objects[].objects[1].value'
+  result: null
+  version: "1.0.0"
+- name: objects[].object.arrays
+  query: '*[_id=="objects-object-arrays-object"][0].objects[].object.arrays'
+  result:
+  - - - value: 11
+      - value: 12
+    - - value: 21
+      - value: 22
+  - - - value: 31
+      - value: 32
+    - - value: 41
+      - value: 42
+- name: objects[].object.arrays[]
+  query: '*[_id=="objects-object-arrays-object"][0].objects[].object.arrays[]'
+  result:
+  - - - value: 11
+      - value: 12
+    - - value: 21
+      - value: 22
+  - - - value: 31
+      - value: 32
+    - - value: 41
+      - value: 42
+  version: "1.0.0"
+- name: objects[].object.arrays[][]
+  query: '*[_id=="objects-object-arrays-object"][0].objects[].object.arrays[][]'
+  result:
+  - - - value: 11
+      - value: 12
+    - - value: 21
+      - value: 22
+  - - - value: 31
+      - value: 32
+    - - value: 41
+      - value: 42
+  version: "1.0.0"
+- name: objects[].object.arrays[][].value
+  query: '*[_id=="objects-object-arrays-object"][0].objects[].object.arrays[][].value'
+  result:
+  - null
+  - null
+  version: "1.0.0"
+- name: objects[].object.arrays[21 in @[].value][][].value
+  query: '*[_id=="objects-object-arrays-object"][0].objects[].object.arrays[21 in
+    @[].value][][].value'
+  result: null
+  version: "1.0.0"
+- name: objects[].object.arrays[21 in @[].value][][0].value
+  query: '*[_id=="objects-object-arrays-object"][0].objects[].object.arrays[21 in
+    @[].value][][0].value'
+  result: null
+  version: "1.0.0"
+- name: objects[].object.arrays[21 in @[].value][][1].value
+  query: '*[_id=="objects-object-arrays-object"][0].objects[].object.arrays[21 in
+    @[].value][][1].value'
+  result: null
+  version: "1.0.0"
+- name: "(objects[].object.arrays[21 in @[].value])[0][0][0].value"
+  query: (*[_id=="objects-object-arrays-object"][0].objects[].object.arrays[21 in
+    @[].value])[0][0][0].value
+  result: null
+  version: "1.0.0"
+- name: "(objects[].object.arrays[21 in @[].value])[0][0][1].value"
+  query: (*[_id=="objects-object-arrays-object"][0].objects[].object.arrays[21 in
+    @[].value])[0][0][1].value
+  result: null
+  version: "1.0.0"
+- name: objects[].object.objects
+  query: '*[_id=="objects-object-objects"][0].objects[].object.objects'
+  result:
+  - - value: 11
+    - value: 12
+  - - value: 21
+    - value: 22
+- name: objects[].object.objects[]
+  query: '*[_id=="objects-object-objects"][0].objects[].object.objects[]'
+  result:
+  - - value: 11
+    - value: 12
+  - - value: 21
+    - value: 22
+  version: "1.0.0"
+- name: objects[].object.objects[].value
+  query: '*[_id=="objects-object-objects"][0].objects[].object.objects[].value'
+  result:
+  - null
+  - null
+  version: "1.0.0"
+- name: objects[].object.objects[1].value
+  query: '*[_id=="objects-object-objects"][0].objects[].object.objects[1].value'
+  result: null
+  version: "1.0.0"
+- name: objects[].object.objects[value in [12, 21]][].value
+  query: '*[_id=="objects-object-objects"][0].objects[].object.objects[value in [12,
+    21]][].value'
+  result: null
+  version: "1.0.0"
+- name: objects[].ref
+  query: '*[_id=="objects-ref"][0].objects[].ref'
+  result:
+  - _ref: arrays
+  - _ref: integers
+  - _ref: objects
+  - _ref: refs
+- name: objects[].ref->{_id, _type}
+  query: '*[_id=="objects-ref"][0].objects[].ref->{_id, _type}'
+  result:
+  - {}
+  - {}
+  - {}
+  - {}
+  version: "1.0.0"
+- name: objects[].ref->arrays
+  query: '*[_id=="objects-ref"][0].objects[].ref->arrays'
+  result:
+  - null
+  - null
+  - null
+  - null
+  version: "1.0.0"
+- name: objects[].ref->arrays[]
+  query: '*[_id=="objects-ref"][0].objects[].ref->arrays[]'
+  result:
+  - null
+  - null
+  - null
+  - null
+  version: "1.0.0"
+- name: objects[].ref->arrays[][]
+  query: '*[_id=="objects-ref"][0].objects[].ref->arrays[][]'
+  result:
+  - null
+  - null
+  - null
+  - null
+  version: "1.0.0"
+- name: objects[].ref->refs[]->objects[].value
+  query: '*[_id=="objects-ref"][0].objects[].ref->refs[]->objects[].value'
+  result:
+  - null
+  - null
+  - null
+  - null
+  version: "1.0.0"
+- name: objects[].ref->refs[]->objects[value==2][].value
+  query: '*[_id=="objects-ref"][0].objects[].ref->refs[]->objects[value==2][].value'
+  result: []
+  version: "1.0.0"
+- name: objects[].ref->refs[_ref=="objects"][]->objects[].value
+  query: '*[_id=="objects-ref"][0].objects[].ref->refs[_ref=="objects"][]->objects[].value'
+  result: []
+  version: "1.0.0"
+- name: objects[][ref._ref=="refs"][].ref->refs[_ref=="objects"][]->objects[value
+    in [1,3]][].value
+  query: (*[_id=="objects-ref"][].objects)[][ref._ref=="refs"][].ref->refs[_ref=="objects"][]->objects[value
+    in [1,3]][].value
+  result: []
+  version: "1.0.0"
+- name: "(objects[])[3].ref->refs[2]->objects[value in [1,3]][].value"
+  query: (*[_id=="objects-ref"][].objects[])[3].ref->refs[2]->objects[value in [1,3]][].value
+  result: null
+  version: "1.0.0"
+- name: objects[2].ref->refs[2]->objects[value in [1,3]][].value
+  query: '*[_id=="objects-ref"][].objects[2].ref->refs[2]->objects[value in [1,3]][].value'
+  result: null
+  version: "1.0.0"
+- name: objects[3].ref->refs[3]->objects[value in [1,3]].value
+  query: (*[_id=="objects-ref"][].objects[])[3].ref->refs[3]->objects[value in [1,3]][].value
+  result: null
+  version: "1.0.0"
+- name: objects[3].ref->refs[2]->objects[value==4][].value
+  query: '*[_id=="objects-ref"][].objects[3].ref->refs[2]->objects[value==4][].value'
+  result: null
+  version: "1.0.0"
+- name: objects[ref._ref=="refs"][].ref->refs[]->objects[value in [1,3]][1].value
+  query: '*[_id=="objects-ref"][0].objects[ref._ref=="refs"][].ref->refs[]->objects[value
+    in [1,3]][1].value'
+  result: null
+  version: "1.0.0"
+- name: objects[ref._ref=="refs"][].ref->refs[]->objects[value == 2][].value
+  query: '*[_id=="objects-ref"][0].objects[ref._ref=="refs"][].ref->refs[]->objects[value
+    == 2][].value'
+  result: null
+  version: "1.0.0"
+- name: objects[ref._ref=="arrays"][0].ref->refs[_ref=="objects"][0]->objects[value==2][0].value
+  query: '*[_id=="objects-ref"][0].objects[ref._ref=="arrays"][0].ref->refs[_ref=="objects"][0]->objects[value==2][0].value'
+  result: null
+- name: refs
+  query: '*[_id=="refs"][0].refs'
+  result:
+  - _ref: arrays
+  - _ref: integers
+  - _ref: objects
+- name: refs[]->{_id, _type}
+  query: '*[_id=="refs"][0].refs[]->{_id, _type}'
+  result:
+  - {}
+  - {}
+  - {}
+  version: "1.0.0"
+- name: refs[]->_id
+  query: '*[_id=="refs"][0].refs[]->_id'
+  result:
+  - null
+  - null
+  - null
+  version: "1.0.0"
+- name: refs[]->arrays
+  query: '*[_id=="refs"][0].refs[]->arrays'
+  result:
+  - null
+  - null
+  - null
+  version: "1.0.0"
+- name: refs[]->arrays[]
+  query: '*[_id=="refs"][0].refs[]->arrays[]'
+  result:
+  - null
+  - null
+  - null
+  version: "1.0.0"
+- name: refs[]->arrays[][]
+  query: '*[_id=="refs"][0].refs[]->arrays[][]'
+  result:
+  - null
+  - null
+  - null
+  version: "1.0.0"
+- name: refs[]->arrays[1][]
+  query: '*[_id=="refs"][0].refs[]->arrays[1][]'
+  result: null
+  version: "1.0.0"
+- name: refs[]->arrays[][1]
+  query: '*[_id=="refs"][0].refs[]->arrays[][1]'
+  result: null
+  version: "1.0.0"
+- name: refs[]->arrays[1][1]
+  query: '*[_id=="refs"][0].refs[]->arrays[1][1]'
+  result: null
+  version: "1.0.0"
+- name: refs[]->objects
+  query: '*[_id=="refs"][0].refs[]->objects'
+  result:
+  - null
+  - null
+  - null
+  version: "1.0.0"
+- name: refs[]->objects[]
+  query: '*[_id=="refs"][0].refs[]->objects[]'
+  result:
+  - null
+  - null
+  - null
+  version: "1.0.0"
+- name: refs[]->objects[].value
+  query: '*[_id=="refs"][0].refs[]->objects[].value'
+  result:
+  - null
+  - null
+  - null
+  version: "1.0.0"
+- name: refs[]->objects[1].value
+  query: '*[_id=="refs"][0].refs[]->objects[1].value'
+  result: null
+  version: "1.0.0"
+- name: refs[2]->objects[1].value
+  query: '*[_id=="refs"][0].refs[2]->objects[1].value'
+  result: null
+  version: "1.0.0"
+- name: "*[0..1]._id"
+  query: "*[0..1]._id"
+  result:
+  - arrays
+  - arrays-arrays
+  version: "1.0.0"
+- name: "*[0..-1]._id"
+  query: "*[0..-1]._id"
+  result: []
+  version: "1.0.0"
+- name: Subscript range 0..2
+  query: '*[_type == "test"][0..2][]._id'
+  result:
+  - arrays
+  - arrays-arrays
+  - arrays-unbalanced
+- name: Subscript range 1..2
+  query: '*[_type == "test"][1..2][]._id'
+  result:
+  - arrays-arrays
+  - arrays-unbalanced
+- name: Subscript range 1..-1
+  query: '*[_type == "test"][1..-1][]._id'
+  result:
+  - arrays-arrays
+  - arrays-unbalanced
+  - integers
+  - objects
+  - objects-array
+  - objects-arrays
+  - objects-object-arrays-object
+  - objects-object-objects
+  - objects-objects
+  - objects-ref
+  - refs
+- name: Subscript range 1..-2
+  query: '*[_type == "test"][1..-2][]._id'
+  result: []
+  version: "1.0.0"
+- name: Subscript range 1..-2
+  query: '*[_type == "test"][1..-2][]._id'
+  result:
+  - arrays-arrays
+  - arrays-unbalanced
+  - integers
+  - objects
+  - objects-array
+  - objects-arrays
+  - objects-object-arrays-object
+  - objects-object-objects
+  - objects-objects
+  - objects-ref
+  version: '>= 2.0.0'

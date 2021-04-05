@@ -1,4 +1,5 @@
 name: "dateTime() function"
+version: '>= 2.0.0'
 
 tests:
 - name: "With namespace"

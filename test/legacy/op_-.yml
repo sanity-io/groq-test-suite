@@ -1,0 +1,134 @@
+name: "- operator"
+documents:
+- _id: id
+  _type: test
+  v_array:
+  - 1
+  - string
+  - true
+  - null
+  - - 1
+    - 2
+    - 3
+  - key: value
+  v_decimal: 3.14
+  v_false: false
+  v_integer: 1
+  v_null: null
+  v_object:
+    v_array:
+    - a
+    - b
+    - c
+    v_boolean: true
+    v_decimal: 2.718
+    v_integer: 2
+    v_null: null
+    v_object:
+      k: v
+    v_string: abc
+  v_string: string
+  v_true: true
+tests:
+- name: "- attributes"
+  query: |-
+    [
+      *[_id=='id'][0].v_integer - *[_id=='id'][0].v_integer,
+      *[_id=='id'][0].v_integer - *[_id=='id'][0].v_decimal,
+      *[_id=='id'][0].v_integer - *[_id=='id'][0].v_null,
+      *[_id=='id'][0].v_decimal - *[_id=='id'][0].v_integer,
+      *[_id=='id'][0].v_decimal - *[_id=='id'][0].v_decimal,
+      *[_id=='id'][0].v_decimal - *[_id=='id'][0].v_null,
+      *[_id=='id'][0].v_null - *[_id=='id'][0].v_integer,
+      *[_id=='id'][0].v_null - *[_id=='id'][0].v_decimal,
+      *[_id=='id'][0].v_null - *[_id=='id'][0].v_null,
+    ]
+  result:
+  - 0
+  - -2.14
+  - null
+  - 2.14
+  - 0
+  - null
+  - null
+  - null
+  - null
+- name: "- attributes invalid types"
+  query: |-
+    [
+      *[_id=='id'][0].v_string - *[_id=='id'][0].v_object.v_integer,
+    ]
+  result:
+  - null
+- name: "- attributes prefix"
+  query: |-
+    [
+      - *[_id=='id'][0].v_integer,
+      - *[_id=='id'][0].v_decimal,
+      - *[_id=='id'][0].v_null,
+    ]
+  result:
+  - -1
+  - -3.14
+  - null
+- name: "- literals"
+  query: |-
+    [
+      2 - 1,
+      1 - 2 - 3 - 4 - 5 - 6 - 7 - 8 - 9 - 10,
+      1 - 3.14,
+      3.14 - 1,
+      3.14 - 2.718,
+      1 - null,
+      null - 1,
+      null - null,
+      9223372036854775808 - 1,
+      -9223372036854775807 - 1,
+      9007199254740994 - 1,
+      -9007199254740992 - 1,
+      3.14e100 - 2.718e100,
+    ]
+  result:
+  - 1
+  - -53
+  - -2.14
+  - 2.14
+  - 0.42200000000000015
+  - null
+  - null
+  - null
+  - 9223372036854776000
+  - -9223372036854775807
+  - 9007199254740992
+  - -9007199254740992
+  - 4.2199999999999996e+99
+- name: "- literals invalid types"
+  query: |-
+    [
+      1 - "abc",
+    ]
+  result:
+  - null
+- name: "- literals prefix"
+  query: |-
+    [
+      -1,
+      --1,
+      ---1,
+      -0,
+      -1 - -1,
+      -1 -1,
+      -3.14,
+      -3.14 - -3.14,
+      -3.14 -3.14,
+    ]
+  result:
+  - -1
+  - 1
+  - -1
+  - 0
+  - 0
+  - -2
+  - -3.14
+  - 0
+  - -6.28

@@ -1,4 +1,6 @@
 name: "Comparison operators"
+version: '>= 2.0.0'
+
 variables:
   # True when LHS is strictly smaller than RHS.
   lt:

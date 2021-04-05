@@ -1,5 +1,6 @@
-# Tests for booleans.
 name: "Boolean"
+version: '>= 2.0.0'
+
 documents:
 - _id: "booleans"
   _type: "test"

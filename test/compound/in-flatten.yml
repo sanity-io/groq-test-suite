@@ -1,4 +1,5 @@
 name: "In flatten"
+version: '>= 2.0.0'
 
 documents:
 - _id: "a"

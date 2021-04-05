@@ -1,0 +1,162 @@
+name: parameters
+documents:
+- _id: a
+  _type: test
+  name: A
+- _id: c
+  _type: test
+  name: C
+- _id: b
+  _type: test
+  name: B
+- _id: quoted
+  _type: quoted
+  single: This has 'single quotes'
+  double: This has "double quotes"
+tests:
+- name: Default $identity param
+  query: "$identity"
+  result: someuser
+  version: "1.0.0"
+- name: Default $identity param overridden
+  query: '"override"'
+  result: override
+- name: literal array
+  query: |-
+    [
+      [[1,2,3],true,3.14,1,{"key":"value"},"string",null],
+      [[1,2,3],true,3.14,1,{"key":"value"},"string",null][1],
+      [[1,2,3],true,3.14,1,{"key":"value"},"string",null][0][1],
+      [[1,2,3],true,3.14,1,{"key":"value"},"string",null][4].key,
+      [[1,2,3],true,3.14,1,{"key":"value"},"string",null][6],
+    ]
+  result:
+  - - - 1
+      - 2
+      - 3
+    - true
+    - 3.14
+    - 1
+    - key: value
+    - string
+    - null
+  - true
+  - 2
+  - value
+  - null
+- name: literal array filter
+  query: '*[_id in ["a","b"]]|order(_id)[]._id'
+  result:
+  - a
+  - b
+- name: literal boolean
+  query: "[true, false]"
+  result:
+  - true
+  - false
+- name: literal float
+  query: '3.14'
+  result: 3.14
+- name: literal integer
+  query: '12'
+  result: 12
+- name: literal null
+  query: 'null'
+  result: null
+- name: literal object
+  query: |-
+    [
+      {"array":[1,2,3],"boolean":true,"decimal":3.14,"integer":1,"object":{"key":"value"},"string":"string"},
+      {"array":[1,2,3],"boolean":true,"decimal":3.14,"integer":1,"object":{"key":"value"},"string":"string"}.string,
+      {"array":[1,2,3],"boolean":true,"decimal":3.14,"integer":1,"object":{"key":"value"},"string":"string"}.array[1],
+      {"array":[1,2,3],"boolean":true,"decimal":3.14,"integer":1,"object":{"key":"value"},"string":"string"}.object.key,
+      {"array":[1,2,3],"boolean":true,"decimal":3.14,"integer":1,"object":{"key":"value"},"string":"string"}['null'],
+    ]
+  result:
+  - array:
+    - 1
+    - 2
+    - 3
+    boolean: true
+    decimal: 3.14
+    integer: 1
+    object:
+      key: value
+    string: string
+  - string
+  - 2
+  - value
+  - null
+  version: "1.0.0"
+- name: literal object
+  query: |-
+    [
+      {"array":[1,2,3],"boolean":true,"decimal":3.14,"integer":1,"null":null,"object":{"key":"value"},"string":"string"},
+      {"array":[1,2,3],"boolean":true,"decimal":3.14,"integer":1,"null":null,"object":{"key":"value"},"string":"string"}.string,
+      {"array":[1,2,3],"boolean":true,"decimal":3.14,"integer":1,"null":null,"object":{"key":"value"},"string":"string"}.array[1],
+      {"array":[1,2,3],"boolean":true,"decimal":3.14,"integer":1,"null":null,"object":{"key":"value"},"string":"string"}.object.key,
+      {"array":[1,2,3],"boolean":true,"decimal":3.14,"integer":1,"null":null,"object":{"key":"value"},"string":"string"}['null'],
+    ]
+  result:
+  - array:
+    - 1
+    - 2
+    - 3
+    boolean: true
+    decimal: 3.14
+    integer: 1
+    'null': null
+    object:
+      key: value
+    string: string
+  - string
+  - 2
+  - value
+  - null
+  version: '>= 2.0.0'
+- name: literal string
+  query: '"hello"'
+  result: hello
+- name: literal escaped double quotes
+  query: '"This has ''single quotes''"'
+  result: This has 'single quotes'
+- name: literal escaped single quotes
+  query: '"This has \"double quotes\""'
+  result: This has "double quotes"
+- name: query filter
+  query: '*[ _type == "test" && _id == "a" ][0].name'
+  result: A
+- name: query projection
+  query: '*[ _id == "a" ]{..., "extra": "test"}[0].extra'
+  result: test
+- name: query range
+  query: '*[_type=="test"] | order(_id asc)[0..1][]._id'
+  result:
+  - a
+  - b
+- name: 'query order (should not work: string, not attribute)'
+  query: '*[_type=="test"] | order("name" desc, _id asc)[]._id'
+  result:
+  - a
+  - b
+  - c
+- name: query single quotes
+  query: '*[single == "This has ''single quotes''"][]._id'
+  result:
+  - quoted
+- name: query double quotes
+  query: '*[double == "This has \"double quotes\""][]._id'
+  result:
+  - quoted
+- name: query injection attempt boolean
+  query: '*[ _id == "false || true" ][]._id'
+  result: []
+- name: query injection attempt integer
+  query: '*[ _id == "1 || true" ][]._id'
+  result: []
+- name: query injection attempt single quote
+  query: '*[ _id == "Unterminated string'' || true" ][]._id'
+  result: []
+- name: query injection attempt double quote
+  query: '*[ _id == "Unterminated string\" || true" ][]._id'
+  result: []

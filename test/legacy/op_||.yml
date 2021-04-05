@@ -1,0 +1,102 @@
+name: "|| operator"
+documents:
+- _id: id
+  _type: test
+  v_true: true
+  v_false: false
+  v_null: null
+  v_string: string
+  v_integer: 1
+tests:
+- name: "|| attributes booleans"
+  query: |-
+    [
+      *[_id=='id'][0].v_true || *[_id=='id'][0].v_true,
+      *[_id=='id'][0].v_true || *[_id=='id'][0].v_false,
+      *[_id=='id'][0].v_false || *[_id=='id'][0].v_true,
+      *[_id=='id'][0].v_false || *[_id=='id'][0].v_false,
+    ]
+  result:
+  - true
+  - true
+  - true
+  - false
+- name: "|| attributes nulls"
+  query: |-
+    [
+      *[_id=='id'][0].v_true || *[_id=='id'][0].v_null,
+      *[_id=='id'][0].v_null || *[_id=='id'][0].v_true,
+      *[_id=='id'][0].v_false || *[_id=='id'][0].v_null,
+      *[_id=='id'][0].v_null || *[_id=='id'][0].v_false,
+      *[_id=='id'][0].v_null || *[_id=='id'][0].v_null,
+    ]
+  result:
+  - true
+  - true
+  - null
+  - null
+  - null
+- name: "|| attributes incompatible"
+  query: |-
+    [
+      *[_id=='id'][0].v_true || *[_id=='id'][0].v_integer,
+      *[_id=='id'][0].v_integer || *[_id=='id'][0].v_false,
+      *[_id=='id'][0].v_string || *[_id=='id'][0].v_integer,
+    ]
+  result:
+  - true
+  - null
+  - null
+- name: "|| literals booleans"
+  query: |-
+    [
+      true || true,
+      true || false,
+      false || true,
+      false || false,
+    ]
+  result:
+  - true
+  - true
+  - true
+  - false
+- name: "|| literals nulls"
+  query: |-
+    [
+      true || null,
+      null || true,
+      false || null,
+      null || false,
+      null || null,
+    ]
+  result:
+  - true
+  - true
+  - null
+  - null
+  - null
+- name: "|| literals incompatible"
+  query: |-
+    [
+      true || 1,
+      1 || false,
+      "string" || 1,
+    ]
+  result:
+  - true
+  - 1
+  - null
+  version: "1.0.0"
+- name: "|| literals incompatible"
+  query: |-
+    [
+      true || 1,
+      1 || false,
+      "string" || 1,
+    ]
+  result:
+  - true
+  - null
+  - null
+  only: true
+  version: '>= 2.0.0'
