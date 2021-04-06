@@ -8,7 +8,7 @@ const crypto = require('crypto')
 const {doc} = require('prettier')
 const parseArgs = require('minimist')
 
-const OUTFILE = "suite.ndjson"
+const OUTFILE = 'suite.ndjson'
 const BASEDIR = path.resolve(__dirname + '/../test')
 const PATTERN = path.join(BASEDIR, '**/*.yml')
 const DATASETS = {
@@ -233,6 +233,11 @@ class Builder {
     let valid = test.valid != null ? test.valid : true
     let features = test.features || []
 
+    const params = test.params || null
+    if (params != null && !(typeof params === 'object')) {
+      throw new Error('Invalid parameters: ' + JSON.stringify(params))
+    }
+
     let entry = {
       _id,
       _type: 'test',
@@ -242,6 +247,7 @@ class Builder {
       result: valid ? test.result : null,
       valid,
       features,
+      params,
       ...extra,
     }
 
