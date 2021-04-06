@@ -42,15 +42,16 @@ variables:
 
 tests:
 - name: "Invalid"
-  result: []
+  result: null
   variables:
     op: ['<', '<=', '>', '>=']
     expr:
     - 'a[].b'
     - 'a[].b[]'
+    num: 42
   tests:
-  - query: '*[42 ~op~ ~expr~]'
-  - query: '*[~expr~ ~op~ 42]'
+  - query: '~num~ ~op~ ~expr~'
+  - query: '~expr~ ~op~ ~num~'
 
 - name: "Numbers"
   result: true
