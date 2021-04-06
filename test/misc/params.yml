@@ -1,0 +1,20 @@
+name: Parameters
+
+tests:
+- name: Valid
+  query: $p == ~val~
+  params:
+    p: 42
+  tests:
+  - {variables: {val: '42'}, result: true}
+  - {variables: {val: '[42]'}, result: false}
+  - {variables: {val: '"42"'}, result: false}
+  - {variables: {val: '"null"'}, result: false}
+  - {variables: {val: 'true'}, result: false}
+
+- name: Undefined
+  valid: false
+  tests:
+  - query: $p == 42
+  - query: $p == null
+  - query: $p
