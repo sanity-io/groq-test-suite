@@ -11,7 +11,7 @@ tests:
 - name: "No args"
   query: |
     coalesce()
-  features: [groqV2]
+  version: '>= 2.0.0'
   result: null
 
 - query: |

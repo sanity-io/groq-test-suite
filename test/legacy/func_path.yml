@@ -58,10 +58,8 @@ tests:
 - name: invalid path
   query: '*[_id in path("5-**")]'
   error: true
-  features:
-  - groqV1
+  version: "1.0.0"
 - name: invalid path
   query: '*[_id in path("5-**")]'
   result: []
-  features:
-  - groqV2
+  version: '>= 2.0.0'

@@ -238,8 +238,7 @@ tests:
   - true
   - false
   - null
-  features:
-  - groqV1
+  version: "1.0.0"
 - name: documents types
   query: '*[_type in ["order-boolean", "order-decimal", "order-integer", "order-null",
     "order-string"]]|order(value desc)[].value'
@@ -262,8 +261,7 @@ tests:
   - 0.8
   - -3.1
   - -4
-  features:
-  - groqV2
+  version: '>= 2.0.0'
 - name: document types datetime as string asc
   query: '*[_type == "order-datetime-string"]|order(value asc)[].value'
   result:
@@ -375,13 +373,11 @@ tests:
 - name: literals
   query: '{"v": 1}|order(v)'
   result: []
-  features:
-  - groqV1
+  version: "1.0.0"
 - name: literals
   query: '{"v": 1}|order(v)'
   result: null
-  features:
-  - groqV2
+  version: '>= 2.0.0'
 - name: null input
   query: null | order(x)
   result: null
@@ -394,8 +390,7 @@ tests:
     }
   result:
   - {}
-  features:
-  - groqV1
+  version: "1.0.0"
 - name: null input
   query: |-
     [
@@ -405,8 +400,7 @@ tests:
     }
   result:
   - a: null
-  features:
-  - groqV2
+  version: '>= 2.0.0'
 - name: Legacy object sorting
   query: |-
     *[_id == "aA"][0] | order(_id) {
@@ -414,16 +408,14 @@ tests:
     }
   result:
     _id: aA
-  features:
-  - groqV1
+  version: "1.0.0"
 - name: Legacy object sorting
   query: |-
     *[_id == "aA"][0] | order(_id) {
       _id
     }
   result: null
-  features:
-  - groqV2
+  version: '>= 2.0.0'
 - name: Order on lower()
   query: '*[_type == "order-string2"] | order(lower(value))[].value'
   result:

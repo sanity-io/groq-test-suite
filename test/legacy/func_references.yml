@@ -1,5 +1,5 @@
 name: references() function
-features: [groqV1]
+version: "1.0.0"
 
 documents:
 - _id: r1
@@ -127,8 +127,7 @@ tests:
   - arrayOfRefs
   - immediate
   - nested
-  features:
-  - groqV1
+  version: "1.0.0"
 - name: references(r4)
   query: (*[references("r4")] | order(_id asc))[]._id
   result: []
@@ -147,8 +146,7 @@ tests:
   - aliens
   - gorillas-in-the-mist
   - sigourney-weaver
-  features:
-  - groqV1
+  version: "1.0.0"
 - name: hardcore explicit rejoin 1
   query: |-
     *[_type == "moviedb.movie" && title == "Aliens"]{
@@ -177,8 +175,7 @@ tests:
     }
   result:
   - actors: {}
-  features:
-  - groqV1
+  version: "1.0.0"
 - name: hardcore explicit rejoin 2
   query: |-
     *[_type == "moviedb.movie" && title == "Aliens"]{
@@ -196,8 +193,7 @@ tests:
     - actor:
         prop:
           name: Sigourney Weaver
-  features:
-  - groqV2
+  version: '>= 2.0.0'
 - name: People with movies
   query: |-
     *[_type == "moviedb.person"] | order(name) | {

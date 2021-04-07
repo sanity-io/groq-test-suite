@@ -190,8 +190,7 @@ tests:
     - other: e
     - {}
     - {}
-  features:
-  - groqV1
+  version: "1.0.0"
 - name: documents conditionals
   query: |-
     *[_type in ["number", "string"]]|order(_id){
@@ -230,8 +229,7 @@ tests:
   result:
     _id: a
     others: {}
-  features:
-  - groqV1
+  version: "1.0.0"
 - name: documents nested
   query: '*[_id=="a"][0]{_id, others[]{_ref}}'
   result:
@@ -241,8 +239,7 @@ tests:
     - _ref: c
     - _ref: b
     - _ref: d
-  features:
-  - groqV2
+  version: '>= 2.0.0'
 - name: documents nested 2
   query: '*[_id=="a"][0]{_id, others[]{_ref}}'
   result:
@@ -252,8 +249,7 @@ tests:
     - _ref: c
     - _ref: b
     - _ref: d
-  features:
-  - groqV1
+  version: "1.0.0"
 - name: documents nested 2
   query: '*[_id=="a"][0]{_id, others[]{_ref}}'
   result:
@@ -263,8 +259,7 @@ tests:
     - _ref: c
     - _ref: b
     - _ref: d
-  features:
-  - groqV2
+  version: '>= 2.0.0'
 - name: documents multiple
   query: |-
     [
@@ -297,8 +292,7 @@ tests:
       label: B
     - id: c
       label: C
-  features:
-  - groqV1
+  version: "1.0.0"
 - name: documents multiple
   query: |-
     [
@@ -333,8 +327,7 @@ tests:
       label: B
     - id: c
       label: C
-  features:
-  - groqV2
+  version: '>= 2.0.0'
 - name: documents evaluate
   query: '*[_id == "id"][0].v_object{v_boolean}'
   result:
@@ -385,8 +378,7 @@ tests:
       v_string: abc
     literal_string: string
     literal_true: true
-  features:
-  - groqV1
+  version: "1.0.0"
 - name: documents literals
   query: |-
     *[_id=="id"]{
@@ -435,8 +427,7 @@ tests:
       v_string: abc
     literal_string: string
     literal_true: true
-  features:
-  - groqV2
+  version: '>= 2.0.0'
 - name: documents literals
   query: '*[_type=="test"]|order(_id){"literal_string": "string", "literal_integer":
     1}'
@@ -510,8 +501,7 @@ tests:
     literal_string: string
   - _id: newid
     literal_string: string
-  features:
-  - groqV1
+  version: "1.0.0"
 - name: documents literals
   query: '*[_type=="test"]|order(_id)[0..2]{"_id": "newid", "literal_string": "string",
     ...}{_id, literal_string}'
@@ -522,21 +512,18 @@ tests:
     literal_string: string
   - _id: c
     literal_string: string
-  features:
-  - groqV2
+  version: '>= 2.0.0'
 - name: documents literals
   query: '*[_type=="test"]|order(_id)[0]{"literal": "string", "duplicate": literal}'
   result:
     literal: string
-  features:
-  - groqV1
+  version: "1.0.0"
 - name: documents literals
   query: '*[_type=="test"]|order(_id)[0]{"literal": "string", "duplicate": literal}'
   result:
     duplicate: null
     literal: string
-  features:
-  - groqV2
+  version: '>= 2.0.0'
 - name: literals
   query: |-
     [
@@ -566,8 +553,7 @@ tests:
   - v: 1
     string: abc
     again: 1
-  features:
-  - groqV1
+  version: "1.0.0"
 - name: literals
   query: |-
     [
@@ -601,8 +587,7 @@ tests:
     string: abc
     again: 1
     missing: null
-  features:
-  - groqV2
+  version: '>= 2.0.0'
 - name: literals multiple
   query: |-
     [
@@ -636,8 +621,7 @@ tests:
       "dogs": dogs[]->{cat}
     }
   result: {}
-  features:
-  - groqV1
+  version: "1.0.0"
 - name: missing document
   query: |-
     *[doesNotExist == true][0]{
@@ -647,5 +631,4 @@ tests:
       "dogs": dogs[]->{cat}
     }
   result: null
-  features:
-  - groqV2
+  version: '>= 2.0.0'

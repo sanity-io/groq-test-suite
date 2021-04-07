@@ -80,46 +80,38 @@ tests:
   query: '*[_id == "a"][].other->_id'
   result:
   - null
-  features:
-  - groqV1
+  version: "1.0.0"
 - name: "-> documents 1"
   query: '*[_id == "a"][].other->_id'
   result:
   - b
-  features:
-  - groqV2
+  version: '>= 2.0.0'
 - name: "-> documents 2"
   query: '*[_id == "a"][0].other->_id'
   result: null
-  features:
-  - groqV1
+  version: "1.0.0"
 - name: "-> documents 2"
   query: '*[_id == "a"][0].other->_id'
   result: b
-  features:
-  - groqV2
+  version: '>= 2.0.0'
 - name: "-> documents 3"
   query: '*[_id == "a"][].other->name'
   result:
   - null
-  features:
-  - groqV1
+  version: "1.0.0"
 - name: "-> documents 3"
   query: '*[_id == "a"][].other->name'
   result:
   - B
-  features:
-  - groqV2
+  version: '>= 2.0.0'
 - name: "-> documents 4"
   query: '*[_id == "a"][0].other->name'
   result: null
-  features:
-  - groqV1
+  version: "1.0.0"
 - name: "-> documents 4"
   query: '*[_id == "a"][0].other->name'
   result: B
-  features:
-  - groqV2
+  version: '>= 2.0.0'
 - name: "-> documents 5"
   query: '*[_id == "a"][].other->missing'
   result:
@@ -138,46 +130,38 @@ tests:
   query: '*[_id == "a"][].weakother->_id'
   result:
   - null
-  features:
-  - groqV1
+  version: "1.0.0"
 - name: "-> documents weak 1"
   query: '*[_id == "a"][].weakother->_id'
   result:
   - b
-  features:
-  - groqV2
+  version: '>= 2.0.0'
 - name: "-> documents weak 2"
   query: '*[_id == "a"][0].weakother->_id'
   result: null
-  features:
-  - groqV1
+  version: "1.0.0"
 - name: "-> documents weak 2"
   query: '*[_id == "a"][0].weakother->_id'
   result: b
-  features:
-  - groqV2
+  version: '>= 2.0.0'
 - name: "-> documents weak 3"
   query: '*[_id == "a"][].weakother->name'
   result:
   - null
-  features:
-  - groqV1
+  version: "1.0.0"
 - name: "-> documents weak 3"
   query: '*[_id == "a"][].weakother->name'
   result:
   - B
-  features:
-  - groqV2
+  version: '>= 2.0.0'
 - name: "-> documents weak 4"
   query: '*[_id == "a"][0].weakother->name'
   result: null
-  features:
-  - groqV1
+  version: "1.0.0"
 - name: "-> documents weak 4"
   query: '*[_id == "a"][0].weakother->name'
   result: B
-  features:
-  - groqV2
+  version: '>= 2.0.0'
 - name: "-> documents weak 5"
   query: '*[_id == "a"][].weakother->missing'
   result:
@@ -202,8 +186,7 @@ tests:
   - {}
   - - {}
   - {}
-  features:
-  - groqV1
+  version: "1.0.0"
 - name: "-> documents projection"
   query: |-
     [
@@ -221,8 +204,7 @@ tests:
   - other: null
   - - other: null
   - other: null
-  features:
-  - groqV2
+  version: '>= 2.0.0'
 - name: "-> documents projection array"
   query: |-
     [
@@ -256,8 +238,7 @@ tests:
     - null
     - null
     - null
-  features:
-  - groqV1
+  version: "1.0.0"
 - name: "-> documents projection array"
   query: |-
     [
@@ -291,8 +272,7 @@ tests:
     - null
     - null
     - null
-  features:
-  - groqV2
+  version: '>= 2.0.0'
 - name: "-> documents projection array deep"
   query: |-
     [
@@ -335,8 +315,7 @@ tests:
   - another: C
   - - {}
   - {}
-  features:
-  - groqV1
+  version: "1.0.0"
 - name: "-> documents projection deep"
   query: |-
     [
@@ -350,8 +329,7 @@ tests:
   - another: C
   - - another: null
   - another: null
-  features:
-  - groqV2
+  version: '>= 2.0.0'
 - name: "-> documents projection this"
   query: '*[_id == "a"][0]{_id, others[]{_ref, "ref": ^->{_id}}}'
   result:
@@ -369,8 +347,7 @@ tests:
     - _ref: d
       ref:
         _id: d
-  features:
-  - groqV1
+  version: "1.0.0"
 - name: "-> documents projection this"
   query: '*[_id == "a"][0]{_id, others[]{_ref, "ref": ^->{_id}}}'
   result:
@@ -384,8 +361,7 @@ tests:
       ref: null
     - _ref: d
       ref: null
-  features:
-  - groqV2
+  version: '>= 2.0.0'
 - name: "-> documents projection weak"
   query: |-
     [
@@ -399,8 +375,7 @@ tests:
   - other: B
   - - {}
   - {}
-  features:
-  - groqV1
+  version: "1.0.0"
 - name: "-> documents projection weak"
   query: |-
     [
@@ -414,8 +389,7 @@ tests:
   - other: B
   - - other: null
   - other: null
-  features:
-  - groqV2
+  version: '>= 2.0.0'
 - name: "-> literals invalid"
   query: |-
     [
@@ -447,16 +421,14 @@ tests:
   - others:
     - {}
     - {}
-  features:
-  - groqV1
+  version: "1.0.0"
 - name: "-> documents projection array deep nested, missing"
   query: '*[_id == "b"]{"others": arrayWithRefs[]{"name": other->missing}}'
   result:
   - others:
     - name: null
     - name: null
-  features:
-  - groqV2
+  version: '>= 2.0.0'
 - name: "-> documents projection array subscript deep nested"
   query: '*[_id == "b"]{"other": arrayWithRefs[0]{"name": other->name}}'
   result:
@@ -466,27 +438,23 @@ tests:
   query: '*[_id == "b"]{"others": arrayWithRefs[0]{"name": other->missing}}'
   result:
   - others: {}
-  features:
-  - groqV1
+  version: "1.0.0"
 - name: "-> documents projection array subscript deep nested, missing"
   query: '*[_id == "b"]{"others": arrayWithRefs[0]{"name": other->missing}}'
   result:
   - others:
       name: null
-  features:
-  - groqV2
+  version: '>= 2.0.0'
 - name: "-> documents projection missing array deep nested"
   query: '*[_id == "b"]{"others": missing[0]{"name": other->name}}'
   result:
   - {}
-  features:
-  - groqV1
+  version: "1.0.0"
 - name: "-> documents projection missing array deep nested"
   query: '*[_id == "b"]{"others": missing[0]{"name": other->name}}'
   result:
   - others: null
-  features:
-  - groqV2
+  version: '>= 2.0.0'
 - name: "-> documents projection, array deep nested, with root-level join"
   query: |-
     *[_id == "b"] {

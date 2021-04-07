@@ -1,5 +1,5 @@
 name: defined() function
-features: [groqV1]
+version: "1.0.0"
 
 documents:
 - _id: target
@@ -77,8 +77,7 @@ tests:
   - true
   - true
   - false
-  features:
-  - groqV1
+  version: "1.0.0"
 - name: attributes
   query: |-
     [
@@ -108,8 +107,7 @@ tests:
   - true
   - true
   - false
-  features:
-  - groqV2
+  version: '>= 2.0.0'
 - name: attributes filter
   query: |-
     [
@@ -139,8 +137,7 @@ tests:
   - - id
   - - id
   - []
-  features:
-  - groqV1
+  version: "1.0.0"
 - name: attributes projection
   query: |-
     *[_id=="id"][0]{
@@ -174,8 +171,7 @@ tests:
     v_string: true
     v_true: true
     v_missing: false
-  features:
-  - groqV1
+  version: "1.0.0"
 - name: literals
   query: |-
     [
@@ -205,6 +201,5 @@ tests:
   - true
   - true
   - false
-  features:
-  - groqV1
+  version: "1.0.0"
 

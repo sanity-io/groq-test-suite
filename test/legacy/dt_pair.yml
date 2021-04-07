@@ -36,5 +36,4 @@ tests:
       b: 2
     - c: 3
       d: 4
-  features:
-  - groqV1
+  version: "1.0.0"

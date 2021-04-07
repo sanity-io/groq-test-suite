@@ -24,8 +24,7 @@ tests:
   - a.b.c.def.g
   - a.b.c.def.g
   - a.b.c.def.g
-  features:
-  - groqV1
+  version: "1.0.0"
 - name: literals
   query: |-
     [
@@ -41,5 +40,4 @@ tests:
   - a.b.c.def.g
   - a.b.c.def.g
   - a.**.def.*
-  features:
-  - groqV1
+  version: "1.0.0"

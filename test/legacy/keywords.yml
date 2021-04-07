@@ -17,16 +17,14 @@ tests:
   result:
   - 'false': false
     'true': true
-  features:
-  - groqV1
+  version: "1.0.0"
 - name: Keywords projection
   query: '*[_id=="keywords"]{"false": false, "true": true, "null": null}'
   result:
   - 'false': false
     'true': true
     'null': null
-  features:
-  - groqV2
+  version: '>= 2.0.0'
 - name: Keywords filters
   query: |-
     [

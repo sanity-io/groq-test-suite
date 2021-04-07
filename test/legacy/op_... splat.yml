@@ -116,8 +116,7 @@ tests:
     }[0]{a}
   result:
     a: 123
-  features:
-  - groqV1
+  version: "1.0.0"
 - name: old merge order
   query: |-
     *[_id == "a"] {
@@ -126,5 +125,4 @@ tests:
     }[0]{a}
   result:
     a: 123
-  features:
-  - groqV1
+  version: "1.0.0"

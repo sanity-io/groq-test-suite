@@ -17,8 +17,7 @@ tests:
 - name: Default $identity param
   query: "$identity"
   result: someuser
-  features:
-  - groqV1
+  version: "1.0.0"
 - name: Default $identity param overridden
   query: '"override"'
   result: override
@@ -88,8 +87,7 @@ tests:
   - 2
   - value
   - null
-  features:
-  - groqV1
+  version: "1.0.0"
 - name: literal object
   query: |-
     [
@@ -115,8 +113,7 @@ tests:
   - 2
   - value
   - null
-  features:
-  - groqV2
+  version: '>= 2.0.0'
 - name: literal string
   query: '"hello"'
   result: hello

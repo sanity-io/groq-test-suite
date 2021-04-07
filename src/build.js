@@ -8,7 +8,7 @@ const crypto = require('crypto')
 const {doc} = require('prettier')
 const parseArgs = require('minimist')
 
-const OUTFILE = "suite.ndjson"
+const OUTFILE = 'suite.ndjson'
 const BASEDIR = path.resolve(__dirname + '/../test')
 const PATTERN = path.join(BASEDIR, '**/*.yml')
 const DATASETS = {
@@ -233,6 +233,12 @@ class Builder {
     let valid = test.valid != null ? test.valid : true
     let features = test.features || []
 
+    // TODO: Do semver range format validation here
+    let version = test.version
+    if (version != null && typeof version !== 'string') {
+      throw new Error(`[${_id}] invalid version: ${JSON.stringify(version)}`)
+    }
+
     let entry = {
       _id,
       _type: 'test',
@@ -241,6 +247,7 @@ class Builder {
       query: test.query,
       result: valid ? test.result : null,
       valid,
+      version,
       features,
       ...extra,
     }

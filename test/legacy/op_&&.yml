@@ -36,8 +36,7 @@ tests:
   - null
   - null
   - null
-  features:
-  - groqV1
+  version: "1.0.0"
 - name: "&& attributes nulls"
   query: |-
     [
@@ -53,8 +52,7 @@ tests:
   - false
   - false
   - null
-  features:
-  - groqV2
+  version: '>= 2.0.0'
 - name: "&& attributes incompatible"
   query: |-
     [
@@ -66,8 +64,7 @@ tests:
   - null
   - null
   - null
-  features:
-  - groqV1
+  version: "1.0.0"
 - name: "&& attributes incompatible"
   query: |-
     [
@@ -79,8 +76,7 @@ tests:
   - null
   - false
   - null
-  features:
-  - groqV2
+  version: '>= 2.0.0'
 - name: "&& literals booleans"
   query: |-
     [
@@ -120,8 +116,7 @@ tests:
   - 1
   - false
   - null
-  features:
-  - groqV1
+  version: "1.0.0"
 - name: "&& literals incompatible"
   query: |-
     [
@@ -133,5 +128,4 @@ tests:
   - null
   - false
   - null
-  features:
-  - groqV2
+  version: '>= 2.0.0'

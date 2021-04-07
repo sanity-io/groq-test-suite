@@ -7,10 +7,8 @@ tests:
 - name: Function call with space
   query: length ("abc")
   result: 3
-  features:
-  - groqV1
+  version: "1.0.0"
 - name: Function call without parens
   query: length "abc"
   result: 3
-  features:
-  - groqV1
+  version: "1.0.0"

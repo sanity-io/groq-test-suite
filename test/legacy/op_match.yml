@@ -82,23 +82,19 @@ tests:
 - name: null on right side
   query: '"text" match null'
   result: null
-  features:
-  - groqV1
+  version: "1.0.0"
 - name: null on right side
   query: '"text" match null'
   result: false
-  features:
-  - groqV2
+  version: '>= 2.0.0'
 - name: null on left side
   query: null match "test"
   result: null
-  features:
-  - groqV1
+  version: "1.0.0"
 - name: null on left side
   query: null match "test"
   result: false
-  features:
-  - groqV2
+  version: '>= 2.0.0'
 - name: array on left side
   tests:
   - result: true
@@ -208,12 +204,10 @@ tests:
   - result: true
     query: '["test", null] match "te*"'
   - result: null
-    features:
-    - groqV1
+    version: '1.0.0'
     query: '["test", null] match "foo"'
   - result: false
-    features:
-    - groqV2
+    version: '>= 2.0.0'
     query: '["test", null] match "foo"'
 - name: array on right side with null
   tests:
@@ -221,26 +215,22 @@ tests:
     query: '"text" match ["text", null]'
   - result: null
     query: '"foo" match ["text", null]'
-  features:
-  - groqV1
+  version: "1.0.0"
 - name: array on right side with null
   tests:
   - result: false
     query: '"text" match ["text", null]'
   - result: false
     query: '"foo" match ["text", null]'
-  features:
-  - groqV2
+  version: '>= 2.0.0'
 - name: array on right side with null
   query: null match ["text", null]
   result: null
-  features:
-  - groqV1
+  version: "1.0.0"
 - name: array on right side with null
   query: null match ["text", null]
   result: false
-  features:
-  - groqV2
+  version: '>= 2.0.0'
 - name: array on right side
   tests:
   - result: true
@@ -310,8 +300,7 @@ tests:
   - result:
     - k3
     query: '*[_type == "koan" && [_id, text] match "reduced"][]._id'
-  features:
-  - groqV1
+  version: "1.0.0"
 - name: filter wildcards
   tests:
   - result:
@@ -389,8 +378,7 @@ tests:
       *[_type == "koan-list"]{
         "koans": koans[text match ["foo","bar"]] | order(_key)[]._key
       }[0].koans
-  features:
-  - groqV1
+  version: "1.0.0"
 - name: projection embedded filter multiple fields
   tests:
   - result:
@@ -426,8 +414,7 @@ tests:
       *[_type == "koan-list"]{
         "koans": koans[[_key, text] match "reduced"] | order(_key)[]._key
       }[0].koans
-  features:
-  - groqV1
+  version: "1.0.0"
 - name: projection embedded filter wildcard
   tests:
   - result:

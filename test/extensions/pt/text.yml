@@ -1,7 +1,8 @@
 name: "Portable text"
 
+version: '>= 2.0.0'
+
 features:
-- groqV2
 - namespaces
 - portableText
 

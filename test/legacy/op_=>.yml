@@ -9,8 +9,7 @@ tests:
   result:
   - 1
   - 2
-  features:
-  - groqV1
+  version: "1.0.0"
 - name: inside object
   query: |-
     {
@@ -19,5 +18,4 @@ tests:
     }
   result:
     b: 2
-  features:
-  - groqV1
+  version: "1.0.0"
