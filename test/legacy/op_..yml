@@ -82,8 +82,7 @@ tests:
     v_string: abc
   - string
   - true
-  features:
-  - groqV1
+  version: "1.0.0"
 - name: ". document nested"
   query: "*[_id=='id'][0].v_object.v_object.k"
   result: v

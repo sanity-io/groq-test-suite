@@ -1,5 +1,5 @@
 name: identity() function
-features: [groqV1]
+version: "1.0.0"
 documents: []
 tests:
 - name: identity()

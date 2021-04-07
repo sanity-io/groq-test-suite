@@ -14,8 +14,7 @@ tests:
   result:
     x:
       fortytwo: 42
-  features:
-  - groqV1
+  version: "1.0.0"
 - name: object with attribute
   query: |-
     *[_id == "a"][0]{
@@ -23,8 +22,7 @@ tests:
     }
   result:
     x: 42
-  features:
-  - groqV1
+  version: "1.0.0"
 - name: parent scope
   query: |-
     *[_id == "a"][0]{
@@ -32,5 +30,4 @@ tests:
     }
   result:
     x: 42
-  features:
-  - groqV1
+  version: "1.0.0"

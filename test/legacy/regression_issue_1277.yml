@@ -7,13 +7,11 @@ tests:
       _id
     }
   result: []
-  features:
-  - groqV1
+  version: "1.0.0"
 - name: Issue 1277
   query: |-
     *[_type == "team" && @[""] == "bar"] {
       _id
     }
   error: true
-  features:
-  - groqV2
+  version: '>= 2.0.0'

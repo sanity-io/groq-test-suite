@@ -19,12 +19,10 @@ tests:
     | order(version desc) { content } [0]'
   result:
     content: ToS
-  features:
-  - groqV1
+  version: "1.0.0"
 - name: Issue 758
   query: '*[_type == "tos" && !("notAccepted" in *[_type == "streamer" && references(^._id)][].identity)]
     | order(version desc) { content } [0]'
   result:
     content: ToS
-  features:
-  - groqV2
+  version: '>= 2.0.0'

@@ -194,13 +194,11 @@ tests:
 - name: literals, false constraint
   query: '[{"v":1},{"v":2},{"v":3}][false][].v'
   result: []
-  features:
-  - groqV2
+  version: '>= 2.0.0'
 - name: literals, false constraint
   query: '[{"v":1},{"v":2},{"v":3}][false][].v'
   result: null
-  features:
-  - groqV1
+  version: "1.0.0"
 - name: literals, null constraint
   query: '[{"v":1},{"v":2},{"v":3}][null][].v'
   result: []
@@ -225,23 +223,19 @@ tests:
 - name: Literals multiple 2
   query: '[{"v":1},{"v":2},{"v":3}][true][true][true][true][false][true][true][true][true][true][].v'
   result: null
-  features:
-  - groqV1
+  version: "1.0.0"
 - name: Literals multiple 2
   query: '[{"v":1},{"v":2},{"v":3}][true][true][true][true][false][true][true][true][true][true][].v'
   result: []
-  features:
-  - groqV2
+  version: '>= 2.0.0'
 - name: Literals multiple 3
   query: '[{"v":1},{"v":2},{"v":3}][true][true][true][true][true][true][true][true][true][false][].v'
   result: null
-  features:
-  - groqV1
+  version: "1.0.0"
 - name: Literals multiple 3
   query: '[{"v":1},{"v":2},{"v":3}][true][true][true][true][true][true][true][true][true][false][].v'
   result: []
-  features:
-  - groqV2
+  version: '>= 2.0.0'
 - name: Literals multiple 4
   query: '[{"v":1},{"v":2},{"v":3}][v >= 2][v < 4][v == 3][].v'
   result:

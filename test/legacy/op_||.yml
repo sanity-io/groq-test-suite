@@ -86,8 +86,7 @@ tests:
   - true
   - 1
   - null
-  features:
-  - groqV1
+  version: "1.0.0"
 - name: "|| literals incompatible"
   query: |-
     [
@@ -100,5 +99,4 @@ tests:
   - null
   - null
   only: true
-  features:
-  - groqV2
+  version: '>= 2.0.0'

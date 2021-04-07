@@ -96,8 +96,7 @@ tests:
   - string
   - true
   - null
-  features:
-  - groqV1
+  version: "1.0.0"
 - name: attributes types multiple
   query: |-
     [
@@ -152,8 +151,7 @@ tests:
   - string
   - true
   - other
-  features:
-  - groqV1
+  version: "1.0.0"
 - name: literals types
   query: |-
     [

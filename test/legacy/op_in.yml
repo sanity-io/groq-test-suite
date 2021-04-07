@@ -330,8 +330,7 @@ tests:
   - false
   - false
   - false
-  features:
-  - groqV1
+  version: "1.0.0"
 - name: in attributes array null
   query: |-
     [
@@ -345,8 +344,7 @@ tests:
   - true
   - false
   - true
-  features:
-  - groqV2
+  version: '>= 2.0.0'
 - name: in attributes array ref
   query: |-
     [
@@ -529,8 +527,7 @@ tests:
   result:
   - false
   - false
-  features:
-  - groqV1
+  version: "1.0.0"
 - name: in literals array null
   query: |-
     [
@@ -540,8 +537,7 @@ tests:
   result:
   - false
   - true
-  features:
-  - groqV2
+  version: '>= 2.0.0'
 - name: in literals array string
   query: |-
     [

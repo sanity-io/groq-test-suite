@@ -65,8 +65,7 @@ tests:
   - false
   - false
   - false
-  features:
-  - groqV1
+  version: "1.0.0"
 - name: "> attributes boolean"
   query: |-
     [
@@ -106,8 +105,7 @@ tests:
   - false
   - false
   - false
-  features:
-  - groqV1
+  version: "1.0.0"
 - name: "> attributes boolean"
   query: |-
     [
@@ -147,8 +145,7 @@ tests:
   - null
   - null
   - null
-  features:
-  - groqV2
+  version: '>= 2.0.0'
 - name: "> attributes decimal"
   query: |-
     [
@@ -184,8 +181,7 @@ tests:
   - false
   - false
   - false
-  features:
-  - groqV1
+  version: "1.0.0"
 - name: "> attributes decimal"
   query: |-
     [
@@ -221,8 +217,7 @@ tests:
   - null
   - null
   - null
-  features:
-  - groqV2
+  version: '>= 2.0.0'
 - name: "> attributes integer"
   query: |-
     [
@@ -258,8 +253,7 @@ tests:
   - false
   - false
   - false
-  features:
-  - groqV1
+  version: "1.0.0"
 - name: "> attributes integer"
   query: |-
     [
@@ -295,8 +289,7 @@ tests:
   - null
   - null
   - null
-  features:
-  - groqV2
+  version: '>= 2.0.0'
 - name: "> attributes object"
   query: |-
     [
@@ -344,8 +337,7 @@ tests:
   - false
   - false
   - false
-  features:
-  - groqV1
+  version: "1.0.0"
 - name: "> attributes string"
   query: |-
     [
@@ -381,8 +373,7 @@ tests:
   - false
   - false
   - false
-  features:
-  - groqV1
+  version: "1.0.0"
 - name: "> attributes string"
   query: |-
     [
@@ -418,8 +409,7 @@ tests:
   - null
   - null
   - null
-  features:
-  - groqV2
+  version: '>= 2.0.0'
 - name: "> filter array"
   query: |-
     [
@@ -455,8 +445,7 @@ tests:
   - false
   - false
   - false
-  features:
-  - groqV1
+  version: "1.0.0"
 - name: "> filter boolean"
   query: |-
     [
@@ -615,8 +604,7 @@ tests:
   - false
   - false
   - false
-  features:
-  - groqV1
+  version: "1.0.0"
 - name: "> filter string"
   query: |-
     [
@@ -675,8 +663,7 @@ tests:
   - false
   - false
   - false
-  features:
-  - groqV1
+  version: "1.0.0"
 - name: "> literals boolean"
   query: |-
     [
@@ -698,8 +685,7 @@ tests:
   - false
   - false
   - false
-  features:
-  - groqV1
+  version: "1.0.0"
 - name: "> literals boolean"
   query: |-
     [
@@ -721,8 +707,7 @@ tests:
   - null
   - null
   - null
-  features:
-  - groqV2
+  version: '>= 2.0.0'
 - name: "> literals decimal"
   query: |-
     [
@@ -746,8 +731,7 @@ tests:
   - false
   - false
   - false
-  features:
-  - groqV1
+  version: "1.0.0"
 - name: "> literals decimal"
   query: |-
     [
@@ -771,8 +755,7 @@ tests:
   - null
   - null
   - null
-  features:
-  - groqV2
+  version: '>= 2.0.0'
 - name: "> literals integer"
   query: |-
     [
@@ -792,8 +775,7 @@ tests:
   - false
   - false
   - false
-  features:
-  - groqV1
+  version: "1.0.0"
 - name: "> literals integer"
   query: |-
     [
@@ -813,8 +795,7 @@ tests:
   - null
   - null
   - null
-  features:
-  - groqV2
+  version: '>= 2.0.0'
 - name: "> literals object"
   query: |-
     [
@@ -838,8 +819,7 @@ tests:
   - false
   - false
   - false
-  features:
-  - groqV1
+  version: "1.0.0"
 - name: "> literals string"
   query: |-
     [
@@ -863,8 +843,7 @@ tests:
   - false
   - false
   - false
-  features:
-  - groqV1
+  version: "1.0.0"
 - name: "> literals string"
   query: |-
     [
@@ -888,5 +867,4 @@ tests:
   - null
   - null
   - null
-  features:
-  - groqV2
+  version: '>= 2.0.0'

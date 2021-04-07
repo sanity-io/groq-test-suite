@@ -96,8 +96,7 @@ tests:
     v_string: abc
   - string
   - true
-  features:
-  - groqV1
+  version: "1.0.0"
 - name: literals
   query: |-
     [
@@ -135,8 +134,7 @@ tests:
   - 2
   - null
   - null
-  features:
-  - groqV1
+  version: "1.0.0"
 - name: literals
   query: |-
     [
@@ -174,8 +172,7 @@ tests:
   - 2
   - null
   - null
-  features:
-  - groqV2
+  version: '>= 2.0.0'
 - name: literals datatypes
   query: |-
     [

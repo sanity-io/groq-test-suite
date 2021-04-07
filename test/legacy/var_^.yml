@@ -141,8 +141,7 @@ tests:
         parent: b
       - _id: d
         parent: d
-  features:
-  - groqV1
+  version: "1.0.0"
 - name: "^ documents attributes"
   query: |-
     [
@@ -196,8 +195,7 @@ tests:
         parent: a
       - _id: d
         parent: a
-  features:
-  - groqV2
+  version: '>= 2.0.0'
 - name: "^ documents projection joins"
   query: |-
     [
@@ -265,8 +263,7 @@ tests:
     reverse:
     - _id: b
       grandparent: b
-  features:
-  - groqV1
+  version: "1.0.0"
 - name: "^ documents projection joins deep 1"
   query: |-
     *[_id == "a"]{
@@ -281,8 +278,7 @@ tests:
     reverse:
     - _id: b
       grandparent: a
-  features:
-  - groqV2
+  version: '>= 2.0.0'
 - name: "^ documents projection joins deep 2"
   query: |-
     *[_id == "a"]{
@@ -303,8 +299,7 @@ tests:
       source: A
     - _ref: d
       source: A
-  features:
-  - groqV2
+  version: '>= 2.0.0'
 - name: "^ documents projection joins deep 3"
   query: |-
     *[_id == "a"]{
@@ -325,8 +320,7 @@ tests:
       source: a
     - _ref: d
       source: a
-  features:
-  - groqV2
+  version: '>= 2.0.0'
 - name: "^ documents projection joins deep (^.^.^.)"
   query: |-
     *[_id == "a"]{
@@ -346,8 +340,7 @@ tests:
       grandparent:
         _id: b
         grandgrandparent: b
-  features:
-  - groqV1
+  version: "1.0.0"
 - name: "^ documents projection joins deep (^.^.^.)"
   query: |-
     *[_id == "a"]{
@@ -367,8 +360,7 @@ tests:
       grandparent:
         _id: a
         grandgrandparent: a
-  features:
-  - groqV2
+  version: '>= 2.0.0'
 - name: "^ documents projection joins types"
   query: '*[_id == "id"]{_id, "self": *[v_decimal == ^.v_decimal][0]._id}'
   result:
@@ -403,28 +395,24 @@ tests:
   query: '*[_id == "id"]{_id, "self": *[v_null == ^.v_null] | order(_id)[0]._id}'
   result:
   - _id: id
-  features:
-  - groqV1
+  version: "1.0.0"
 - name: "^ documents projection joins types"
   query: '*[_id == "id"]{_id, "self": *[v_null == ^.v_null] | order(_id)[0]._id}'
   result:
   - _id: id
     self: a
-  features:
-  - groqV2
+  version: '>= 2.0.0'
 - name: "^ documents projection joins types"
   query: '*[_id == "id"][0]{_id, "self": *[v_null == ^.v_null] | order(_id)[0]._id}'
   result:
     _id: id
-  features:
-  - groqV1
+  version: "1.0.0"
 - name: "^ documents projection joins types"
   query: '*[_id == "id"][0]{_id, "self": *[v_null == ^.v_null] | order(_id)[0]._id}'
   result:
     _id: id
     self: a
-  features:
-  - groqV2
+  version: '>= 2.0.0'
 - name: "^ documents projection joins types"
   query: '*[_id == "id"]{_id, "self": *[v_string == ^.v_string][0]._id}'
   result:

@@ -1,5 +1,5 @@
 name: "Dereference operator"
-features: [groqV2]
+version: '>= 2.0.0'
 
 documents:
 - _id: "b"

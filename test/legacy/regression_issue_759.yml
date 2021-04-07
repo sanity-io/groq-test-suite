@@ -64,5 +64,4 @@ tests:
   - content-04
   - content-05
   - content-03
-  features:
-  - groqV1
+  version: "1.0.0"

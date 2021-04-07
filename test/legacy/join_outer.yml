@@ -336,8 +336,7 @@ tests:
   - _id: eve
     department: engineering
   - _id: xander
-  features:
-  - groqV1
+  version: "1.0.0"
 - name: "->"
   query: |-
     *[_type == "employee"]{
@@ -353,8 +352,7 @@ tests:
     department: engineering
   - _id: xander
     department: null
-  features:
-  - groqV2
+  version: '>= 2.0.0'
 - name: literal with negation
   query: |-
     {

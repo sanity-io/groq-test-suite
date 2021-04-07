@@ -32,8 +32,7 @@ tests:
   query: '*[ _type == "employee" && !defined(department->) ]._id'
   result:
   - xander
-  features:
-  - groqV1
+  version: "1.0.0"
 - name: "-> defined"
   query: '*[ _type == "employee" && !defined(department->) ][]._id'
   result:
@@ -43,8 +42,7 @@ tests:
   result:
   - alice
   - xander
-  features:
-  - groqV1
+  version: "1.0.0"
 - name: "-> equality"
   query: '*[ _type == "employee" && department->_id != "engineering" ][]._id'
   result:
@@ -54,8 +52,7 @@ tests:
   query: '*[ _type == "department" && count(*[references(^._id)]) == 0 ]._id'
   result:
   - legal
-  features:
-  - groqV1
+  version: "1.0.0"
 - name: Count references
   query: '*[ _type == "department" && count(*[references(^._id)]) == 0 ][]._id'
   result:
@@ -65,8 +62,7 @@ tests:
     ]._id'
   result:
   - legal
-  features:
-  - groqV1
+  version: "1.0.0"
 - name: In subquery
   query: '*[ _type == "department" && !(_id in *[ _type == "employee" ][].department._ref)
     ][]._id'
@@ -77,8 +73,7 @@ tests:
   result:
   - alice
   - xander
-  features:
-  - groqV1
+  version: "1.0.0"
 - name: References
   query: '*[ _type == "employee" && !references("engineering") ][]._id'
   result:

@@ -93,8 +93,7 @@ tests:
       k: v
     v_string: abc
     k: v
-  features:
-  - groqV1
+  version: "1.0.0"
 - name: "+ attributes concatenation reference"
   query: |-
     *[_id=="source"][0]{
@@ -155,8 +154,7 @@ tests:
   - 9007199254740992
   - -9007199254740992
   - 5.858e100
-  features:
-  - groqV1
+  version: "1.0.0"
 - name: "+ literals"
   query: |-
     [
@@ -188,8 +186,7 @@ tests:
   - 9007199254740993
   - -9007199254740992
   - 5.858e100
-  features:
-  - groqV2
+  version: '>= 2.0.0'
 - name: "+ literals concatenation"
   query: |-
     [

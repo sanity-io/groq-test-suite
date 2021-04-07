@@ -267,8 +267,7 @@ tests:
   - false
   - false
   - false
-  features:
-  - groqV1
+  version: "1.0.0"
 - name: "== filter boolean"
   query: count(*[_id=='id' && v_true == v_true]) > 0
   result: true
@@ -440,8 +439,7 @@ tests:
   - false
   - false
   - false
-  features:
-  - groqV1
+  version: "1.0.0"
 - name: "== filter string"
   query: |-
     [
@@ -500,8 +498,7 @@ tests:
   - false
   - false
   - false
-  features:
-  - groqV1
+  version: "1.0.0"
 - name: "== literals boolean"
   query: |-
     [
@@ -586,8 +583,7 @@ tests:
   - false
   - false
   - false
-  features:
-  - groqV1
+  version: "1.0.0"
 - name: "== literals string"
   query: |-
     [

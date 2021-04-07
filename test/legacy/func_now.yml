@@ -1,5 +1,5 @@
 name: now() function
-features: [groqV1]
+version: "1.0.0"
 documents: []
 tests:
 - name: now() between 2019-01-01 and 2030-01-01

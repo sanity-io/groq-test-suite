@@ -195,8 +195,7 @@ tests:
               current: feminism
             title: Feminism
           lead: Third lead
-  features:
-  - groqV1
+  version: "1.0.0"
 - name: Issue 692
   query: |-
     {
@@ -267,5 +266,4 @@ tests:
             title: Feminism
           lead: Third lead
         image: null
-  features:
-  - groqV2
+  version: '>= 2.0.0'
