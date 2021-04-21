@@ -396,6 +396,47 @@ documents:
         ],
         "markDefs": [ ]
       }
+  - _id: "pt-nestedarray-object"
+    _type: "pt"
+    array:
+    - body:
+        {
+          "_type": "customBlock",
+          "style": "normal",
+          "children": [
+            {
+              "_type": "span",
+              "text": "This is a child."
+            },
+            {
+              "_type": "span",
+              "text": "This is another child."
+            }
+          ],
+          "markDefs": [ ]
+        }
+  - _id: "pt-nestedarray-array"
+    _type: "pt"
+    array:
+    - body:
+        [
+          {
+            "_type": "customBlock",
+            "style": "normal",
+            "children": [
+              {
+                "_type": "span",
+                "text": "This is a child."
+              },
+              {
+                "_type": "span",
+                "text": "This is another child."
+              }
+            ],
+            "markDefs": [ ]
+          }
+        ]
+
 tests:
   - name: "parsing"
     query: |
@@ -414,6 +455,7 @@ tests:
     - "body":
     - "body": "This is a child."
     - "body": "This is a child.This is another child."
+
   - name: "text match"
     query: |
       *[_type == "pt" && pt::text(body) match "This is*"]{"body": pt::text(body)}
@@ -427,8 +469,27 @@ tests:
       - "body": "This is a child."
       - "body": "This is a child.This is another child."
 
+  - name: "text match on flattened"
+    result:
+    - pt-array-block-multiple-children
+    - pt-object-block-one-child
+    - pt-object-block-with-children
+    - pt-object-custom-block-one-child
+    - pt-object-custom-block-with-children
+    tests:
+    - query: '*[_type == "pt" && pt::text(body) match "child"]._id'
+    - query: '*[_type == "pt" && pt::text(body[]) match "child"]._id'
+
+  - name: "text match on flattened"
+    result:
+    - pt-nestedarray-array
+    - pt-nestedarray-object
+    tests:
+    - query: '*[_type == "pt" && pt::text(array[].body) match "child"]._id'
+    - query: '*[_type == "pt" && pt::text(array[].body[]) match "child"]._id'
+
   # This test is created such that it generates automatic filter/join/projection queries.
-  - name: "generated"
+  - name: "==, generated"
     dataset: null
     variables:
       body: '[{"_type": "block", "children":[{"_type":"span","text":"Hello world"}]}]'
