@@ -299,3 +299,17 @@ tests:
     - imageUrl: https://cdn.sanity.io/image-sprint-3.jpg
       name: Sprint 3
       phasesWithTypo: null
+
+- name: With ordering
+  query: |
+    *[_type == "sprint"]{
+      name,
+      "phaseNames": phases|order(_ref desc)[]->name
+    }
+  result:
+   - name: "Sprint 1"
+     phaseNames: ["Phase 3", "Phase 1"]
+   - name: "Sprint 2"
+     phaseNames: ["Phase 3", "Phase 2"]
+   - name: "Sprint 3"
+     phaseNames: ["Phase 3", "Phase 2", "Phase 1"]
