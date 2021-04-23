@@ -480,13 +480,16 @@ tests:
     - query: '*[_type == "pt" && pt::text(body) match "child"]._id'
     - query: '*[_type == "pt" && pt::text(body[]) match "child"]._id'
 
-  - name: "text match on flattened"
+  - name: "text match on mapped"
+    query: '*[_type == "pt" && pt::text(array[].body) match "child"]._id'
     result:
     - pt-nestedarray-array
     - pt-nestedarray-object
-    tests:
-    - query: '*[_type == "pt" && pt::text(array[].body) match "child"]._id'
-    - query: '*[_type == "pt" && pt::text(array[].body[]) match "child"]._id'
+
+  - name: "text match on flattened"
+    query: '*[_type == "pt" && pt::text(array[].body[]) match "child"]._id'
+    result:
+    - pt-nestedarray-array
 
   # This test is created such that it generates automatic filter/join/projection queries.
   - name: "==, generated"
