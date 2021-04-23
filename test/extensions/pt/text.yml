@@ -440,7 +440,7 @@ documents:
 tests:
   - name: "parsing"
     query: |
-      *[_type == "pt"]{"body": pt::text(body)}
+      *[_type == "pt"][defined(body)]{"body": pt::text(body)}
     result:
     - "body": "This is child in a block.\n\nThis is child in another block.This is another child in another block."
     - "body":
