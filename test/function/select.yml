@@ -17,8 +17,8 @@ tests:
   features:
   - namespaces
   query: |
-    global::select("a", "b")
-  result: null
+    global::select("a")
+  result: "a"
 
 - name: "From documents"
   query: |
@@ -55,7 +55,7 @@ tests:
     - category: "teen"
 
 - name: "Invalid arguments"
-  result: null
+  valid: false
   tests:
   - query: 'select("a", 2 > 1 => "b")'
   - query: 'select("a", "b")'
