@@ -470,23 +470,16 @@ tests:
       - "body": "This is a child.This is another child."
 
   - name: "text match on flattened"
+    query: '*[_type == "pt" && pt::text(body[]) match "child"]._id'
     result:
     - pt-array-block-multiple-children
-    - pt-object-block-one-child
-    - pt-object-block-with-children
-    - pt-object-custom-block-one-child
-    - pt-object-custom-block-with-children
-    tests:
-    - query: '*[_type == "pt" && pt::text(body) match "child"]._id'
-    - query: '*[_type == "pt" && pt::text(body[]) match "child"]._id'
 
   - name: "text match on mapped"
     query: '*[_type == "pt" && pt::text(array[].body) match "child"]._id'
     result:
-    - pt-nestedarray-array
     - pt-nestedarray-object
 
-  - name: "text match on flattened"
+  - name: "text match on nested flattened"
     query: '*[_type == "pt" && pt::text(array[].body[]) match "child"]._id'
     result:
     - pt-nestedarray-array
