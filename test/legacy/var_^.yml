@@ -157,7 +157,7 @@ tests:
         },
       }},
       *[_id == "a"]{_id, other->{_id, "parent": ^._id}},
-      *[_id == "a"]{_id, others[]->{_id, "parent": ^.^._id}},
+      *[_id == "a"]{_id, others[]->{_id, "parent": ^._id}},
     ]
   result:
   - - _id: root
