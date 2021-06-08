@@ -1,0 +1,44 @@
+name: "Traversal"
+version: '>= 2.0.0'
+
+documents:
+- _id: "a"
+  _type: "test"
+  title: "Hello"
+  others:
+  - _ref: "b"
+
+- _id: "b"
+  title: "World"
+  _type: "test"
+
+- _id: "c"
+  title: "Norway"
+  other:
+    _ref: "a"
+
+
+tests:
+- query: |
+    *[_id == "a"]{"titles": others[]->{"parentTitle": ^.title, title}}
+  result:
+  - titles:
+    - parentTitle: "Hello"
+      title: "World"
+
+- query: |
+    *[_id == "c"]{
+      other->{
+        "titles": others[]->{
+          "parentTitle": ^.title,
+          "grandParentTitle": ^.^.title,
+          title
+        }
+      }
+    }
+  result:
+  - other:
+      titles:
+      - parentTitle: "Hello"
+        grandParentTitle: "Norway"
+        title: "World"
