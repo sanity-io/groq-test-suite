@@ -477,6 +477,7 @@ tests:
   - name: "text match on mapped"
     query: '*[_type == "pt" && pt::text(array[].body) match "child"]._id'
     result:
+    - pt-nestedarray-array
     - pt-nestedarray-object
 
   - name: "text match on nested flattened"
