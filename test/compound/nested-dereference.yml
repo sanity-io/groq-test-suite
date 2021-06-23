@@ -313,3 +313,33 @@ tests:
      phaseNames: ["Phase 3", "Phase 2"]
    - name: "Sprint 3"
      phaseNames: ["Phase 3", "Phase 2", "Phase 1"]
+
+- name: With slicing
+  query: |
+    *[_type == "sprint"]{
+      name,
+      "phaseName0": phases[0...1]->{name, other->},
+      "phaseName1": phases[1...2]->{name, other->}
+    }
+  result:
+   - name: "Sprint 1"
+     phaseName0:
+     - name: "Phase 1"
+       other: null
+     phaseName1:
+     - name: "Phase 3"
+       other: null
+   - name: "Sprint 2"
+     phaseName0:
+     - name: "Phase 2"
+       other: null
+     phaseName1:
+     - name: "Phase 3"
+       other: null
+   - name: "Sprint 3"
+     phaseName0:
+     - name: "Phase 1"
+       other: null
+     phaseName1:
+     - name: "Phase 2"
+       other: null
