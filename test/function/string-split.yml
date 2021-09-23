@@ -1,0 +1,51 @@
+name: "string::split() function"
+
+features:
+- namespaces
+- experimentalFunctions
+
+tests:
+- name: Basic
+  query: |
+    string::split(~str~, ~sep~)
+  tests:
+  # Basic
+  - variables:
+      str: '"a,b,c"'
+      sep: '","'
+    result: [a, b, c]
+  # Separator at ends
+  - variables:
+      str: '",a,b,c,"'
+      sep: '","'
+    result: ["", a, b, c, ""]
+  # empty string
+  - variables:
+      str: '""'
+      sep: '","'
+    result: []
+  # Just separator
+  - variables:
+      str: '","'
+      sep: '","'
+    result: ["", ""]
+  # Empty separator
+  - variables:
+      str: '"møøse"'
+      sep: '""'
+    result: ["m", "ø", "ø", "s", "e"]
+
+- name: Invalid
+  query: |
+    string::split(~str~, ~sep~)
+  variables:
+  - str: '["a", "b", "c"]'
+  - str: 'null'
+  - str: '"x"'
+  - str: '42'
+  result: null
+  tests:
+  - variables: {sep: '"x"'}
+  - variables: {sep: 'null'}
+  - variables: {sep: '42'}
+  - variables: {sep: '[]'}

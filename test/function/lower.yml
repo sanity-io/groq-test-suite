@@ -98,6 +98,7 @@ tests:
     - "Movie-100"
     - "Movie-10000"
 
+# FIXME: Move to extensions/pt folder
 - name: "Match PT Text"
   query: |
     *[lower(pt::text(body)) match "This is a*"][]._id

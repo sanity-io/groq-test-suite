@@ -1,0 +1,39 @@
+name: "array::join() function"
+
+features:
+- namespaces
+
+tests:
+- name: Basic
+  query: |
+    array::join(~arr~, ~sep~)
+  tests:
+  # Basic
+  - variables:
+      arr: '["a", "b", "c"]'
+      sep: '"-"'
+    result: "a-b-c"
+  # Empty separator
+  - variables:
+      arr: '["a", "b", "c"]'
+      sep: '""'
+    result: "abc"
+  # Empty array
+  - variables:
+      arr: '[]'
+      sep: '"-"'
+    result: ""
+
+- name: Invalid
+  query: |
+    array::join(~arr~, ~sep~)
+  variables:
+  - arr: '["a", "b", "c"]'
+  - arr: 'null'
+  - arr: '"x"'
+  - arr: '42'
+  result: null
+  tests:
+  - variables: {sep: 'null'}
+  - variables: {sep: '42'}
+  - variables: {sep: '[]'}
