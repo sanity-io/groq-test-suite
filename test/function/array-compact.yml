@@ -1,0 +1,43 @@
+name: "array::compact() function"
+
+features:
+- namespaces
+- experimentalFunctions
+
+tests:
+- name: Basic
+  query: |
+    array::compact(~arr~)
+  tests:
+  # Mix of types
+  - variables: {arr: '["a", 23, true]'}
+    result: [a, 23, true]
+  # Mix of types with null last
+  - variables: {arr: '["a", 23, true, null]'}
+    result: [a, 23, true]
+  # Mix of types with null first
+  - variables: {arr: '[null, "a", 23, true]'}
+    result: [a, 23, true]
+  # Mix of types with null in middle
+  - variables: {arr: '["a", null, 23, true]'}
+    result: [a, 23, true]
+  # Empty
+  - variables: {arr: '[]'}
+    result: []
+  # Just null
+  - variables: {arr: '[null]'}
+    result: []
+  # Many nulls
+  - variables: {arr: '[null, null, null, null]'}
+    result: []
+
+- name: Invalid
+  query: |
+    array::compact(~arr~)
+  variables:
+  - arr: '{}'
+  - arr: 'null  '
+  - arr: '"x"'
+  - arr: '42'
+  - arr: 'true'
+  result: null
