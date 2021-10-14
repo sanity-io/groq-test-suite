@@ -19,7 +19,7 @@ tests:
       str: '",a,b,c,"'
       sep: '","'
     result: ["", a, b, c, ""]
-  # empty string
+  # Empty string
   - variables:
       str: '""'
       sep: '","'
@@ -34,6 +34,11 @@ tests:
       str: '"møøse"'
       sep: '""'
     result: ["m", "ø", "ø", "s", "e"]
+  # Unicode
+  - variables:
+      str: '"🍕👽💦"'
+      sep: '""'
+    result: ["🍕", "👽", "💦"]
 
 - name: Invalid
   query: |
