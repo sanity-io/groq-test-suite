@@ -23,6 +23,11 @@ tests:
       arr: '[]'
       sep: '"-"'
     result: ""
+  # Non-string types
+  - variables:
+      arr: '[3, "x", 4.1, true, {"x": 42}, [64]]'
+      sep: '","'
+    result: '3,x,4.1,true,<INVALID>,<INVALID>'
 
 - name: Invalid
   query: |
