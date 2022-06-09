@@ -1,0 +1,48 @@
+name: "string::startsWith() function"
+version: '>= 2.0.0'
+
+features:
+- namespaces
+- experimentalFunctions
+
+tests:
+- name: Basic
+  query: |
+    string::startsWith(~str~, ~prefix~)
+  tests:
+  - variables:
+      str: "'a'"
+      prefix: "''"
+    result: true
+  - variables:
+      str: "'abc'"
+      prefix: "'a'"
+    result: true
+  - variables:
+      str: "'abc'"
+      prefix: "'abx'"
+    result: false
+
+- name: "Non-string types"
+  query: |
+    string::startsWith(~str~, "abc")
+  variables:
+    str:
+    - 'null'
+    - '{"key": "value"}'
+    - '[1, 2]'
+    - 'true'
+    - '3.14'
+  result: null
+
+- name: "Non-string prefix"
+  query: |
+    string::startsWith("abc", ~prefix~)
+  variables:
+    prefix:
+    - 'null'
+    - '{"key": "value"}'
+    - '[1, 2]'
+    - 'true'
+    - '3.14'
+  result: null
