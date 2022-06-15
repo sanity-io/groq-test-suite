@@ -1,0 +1,55 @@
+name: "math::min() function"
+features:
+- experimentalFunctions
+
+documents:
+- _id: "a"
+  _type: "doc"
+  value: 1
+  values: [1, 2, 3]
+- _id: "b"
+  _type: "doc"
+  value: 22
+  values: [4, 5, 6]
+- _id: "c"
+  _type: "doc"
+  value: 99
+  values: [7, 8, 9]
+- _id: "d"
+  _type: "doc"
+  value: -3
+  values: []
+
+tests:
+- query: |
+    math::min([1, 2, 3])
+  result: 1
+
+- query: |
+    math::min([1, 2, 3, 4, null])
+  result: 1
+
+- name: Empty
+  query: |
+    math::min([])
+  result: null
+
+- name: Non-numbers
+  query: |
+    math::min(~val~)
+  variables:
+    val:
+    - '[1, 2, 3, 4, null, "hello", true]'
+    - "[null]"
+    - "[\"hello\"]"
+    - "[true]"
+    - "[[2]]"
+  result: null
+
+- query: |
+    math::min(*[_type == "doc"].value)
+  result: -3
+
+- query: |
+    math::min(*[_type == "doc"].values[])
+  result: 1
