@@ -27,9 +27,9 @@ tests:
   - variables:
       arr: '[3, "x", 4.1, true, {"x": 42}, [64]]'
       sep: '","'
-    result: '3,x,4.1,true,<INVALID>,<INVALID>'
+    result: null
 
-- name: Invalid
+- name: Invalid arg types
   query: |
     array::join(~arr~, ~sep~)
   variables:
