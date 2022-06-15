@@ -1,4 +1,4 @@
-name: "distinct() function"
+name: "array::unique() function"
 features:
 - experimentalFunctions
 
@@ -57,64 +57,73 @@ documents:
     mixeds: [false, 32, "c"]
 
 tests:
-- name: "With namespace"
-  query: |
-    global::distinct([])
-  result: []
-
 - query: |
-    distinct([1, 2, 3, 3, 3, 3, 4, 2, 9, 3]) | order(@)
+    array::unique([1, 2, 3, 3, 3, 3, 4, 2, 9, 3]) | order(@)
   result: [1, 2, 3, 4, 9]
 
 - query: |
-    distinct([1, 2, null, "hello", true, true, 3, 3, 3, 3, 4, 2, 9, 3, "world", "hello", null, true, false]) | order(@)
+    array::unique([1, 2, null, "hello", true, true, 3, 3, 3, 3, 4, 2, 9, 3, "world", "hello", null, true, false]) | order(@)
   result: [1, 2, 3, 4, 9, "hello", "world", false, true, null]
 
 - query: |
-    distinct([])
+    array::unique([])
   result: []
 
 - query: |
-    distinct(*[].nonExistent)
+    array::unique(*[].nonExistent)
   result: [null]
 
 - query: |
-    distinct(*[_type == "doc"].value) | order(@)
+    array::unique(*[_type == "doc"].value) | order(@)
   result: [1, 22, 99]
 
 - query: |
-    distinct(*[_type == "doc"].values[])
+    array::unique(*[_type == "doc"].values[])
   result: [1, 2, 3, 4, 5]
 
 - query: |
-    distinct(*[_type == "doc"].str) | order(@)
+    array::unique(*[_type == "doc"].str) | order(@)
   result: ["bar", "baz", "foo"]
 
 - query: |
-    distinct(*[_type == "doc"].strs[]) | order(@)
+    array::unique(*[_type == "doc"].strs[]) | order(@)
   result: ["a", "b", "d"]
 
 - query: |
-    distinct(*[_type == "doc"].mixeds[]) | order(@)
+    array::unique(*[_type == "doc"].mixeds[]) | order(@)
   result: [2, 32, 99, "a", "b", "c", false, true, null]
 
 # Nested
 - query: |
-    distinct(*[_type == "doc"].nested.value) | order(@)
+    array::unique(*[_type == "doc"].nested.value) | order(@)
   result: [1, 22, 99]
 
 - query: |
-    distinct(*[_type == "doc"].nested.values[])
+    array::unique(*[_type == "doc"].nested.values[])
   result: [1, 2, 3, 4, 5]
 
 - query: |
-    distinct(*[_type == "doc"].nested.str) | order(@)
+    array::unique(*[_type == "doc"].nested.str) | order(@)
   result: ["bar", "baz", "foo"]
 
 - query: |
-    distinct(*[_type == "doc"].nested.strs[]) | order(@)
+    array::unique(*[_type == "doc"].nested.strs[]) | order(@)
   result: ["a", "b", "d"]
 
 - query: |
-    distinct(*[_type == "doc"].nested.mixeds[]) | order(@)
+    array::unique(*[_type == "doc"].nested.mixeds[]) | order(@)
   result: [2, 32, 99, "a", "b", "c", false, true, null]
+
+- name: Objects
+  query: |
+    array::unique([{"a": 42}, {"a": 42}])
+  result:
+  - {"a": 42}
+  - {"a": 42}
+
+- name: Arrays
+  query: |
+    array::unique([[42], [42]])
+  result:
+  - [42]
+  - [42]
