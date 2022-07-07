@@ -1,0 +1,64 @@
+name: "diff:changedOnly() function"
+version: '>=2.0.0'
+
+features
+- namespaces
+- diff
+
+documents:
+- _id: "original"
+  _type: "document"
+  a: 1
+  b: 2
+  this:
+    foo: "3"
+    bar: "4"
+  that:
+    foo: "5"
+    bar: "6"
+
+- _id: "changed_1"
+  _type: "document"
+  a: 1
+  b: 2
+  this:
+    foo: "300"
+    bar: "4"
+  that:
+    foo: "5"
+    bar: "6"
+
+- _id: "changed_2"
+  _type: "document"
+  a: 1
+  b: 2
+  this:
+    foo: "300"
+    bar: "4"
+  that:
+    foo: "500"
+    bar: "6"
+
+tests:
+- name: "When only the selected attributes change"
+  query: |
+    diff:changedAny(*[_id == 'original'][0], *[_id == 'changed_1'][0], this.foo)
+  variables:
+    selector:
+      - 'a'
+      - '(a, b)'
+      - 'this.(foo, bar)'
+      - '(this, that).foo'
+  result: true
+
+tests:
+- name: "When no attributes have changed"
+  query: |
+    diff:changedAny(*[_id == 'original'][0], *[_id == 'original'][0], this.foo)
+  result: false
+
+tests:
+- name: "When both selected and non-selected attributes change"
+  query: |
+    diff:changedAny(*[_id == 'original'][0], *[_id == 'changed_2'][0], this.foo)
+  result: false

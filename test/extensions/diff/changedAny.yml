@@ -1,0 +1,48 @@
+name: "diff:changedAny() function"
+version: '>=2.0.0'
+
+features
+- namespaces
+- diff
+
+documents:
+- _id: "original"
+  _type: "document"
+  a: 1
+  b: 2
+  this:
+    foo: "3"
+    bar: "4"
+  that:
+    foo: "5"
+    bar: "6"
+
+- _id: "changed"
+  _type: "document"
+  a: 100
+  b: 2
+  this:
+    foo: "300"
+    bar: "4"
+  that:
+    foo: "500"
+    bar: "6"
+
+tests:
+- name: "When any selected attributes have changed"
+  query: |
+    diff:changedAny(*[_id == 'original'][0], *[_id == 'changed'][0], ~selector~)
+  variables:
+    selector:
+      - 'a'
+      - '(a, b)'
+      - 'this.foo'
+      - 'this.(foo, bar)'
+      - '(this, that).foo'
+  result: true
+
+tests:
+- name: "When no selected attributes have changed"
+  query: |
+    diff:changedAny(*[_id == 'original'][0], *[_id == 'original'][0], (a, b))
+  result: false
