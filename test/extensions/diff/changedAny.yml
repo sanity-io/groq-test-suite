@@ -10,10 +10,10 @@ documents:
   _type: "document"
   a: 1
   b: 2
-  this:
+  alpha:
     foo: "3"
     bar: "4"
-  that:
+  beta:
     foo: "5"
     bar: "6"
 
@@ -21,10 +21,10 @@ documents:
   _type: "document"
   a: 100
   b: 2
-  this:
+  alpha:
     foo: "300"
     bar: "4"
-  that:
+  beta:
     foo: "500"
     bar: "6"
 
@@ -36,9 +36,9 @@ tests:
     selector:
       - 'a'
       - '(a, b)'
-      - 'this.foo'
-      - 'this.(foo, bar)'
-      - '(this, that).foo'
+      - 'alpha.foo'
+      - 'alpha.(foo, bar)'
+      - '(alpha, beta).foo'
   result: true
 
 tests:

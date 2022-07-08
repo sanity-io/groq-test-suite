@@ -10,10 +10,10 @@ documents:
   _type: "document"
   a: 1
   b: 2
-  this:
+  alpha:
     foo: "3"
     bar: "4"
-  that:
+  beta:
     foo: "5"
     bar: "6"
 
@@ -21,10 +21,10 @@ documents:
   _type: "document"
   a: 1
   b: 2
-  this:
+  alpha:
     foo: "300"
     bar: "4"
-  that:
+  beta:
     foo: "5"
     bar: "6"
 
@@ -32,33 +32,34 @@ documents:
   _type: "document"
   a: 1
   b: 2
-  this:
+  alpha:
     foo: "300"
     bar: "4"
-  that:
+  beta:
     foo: "500"
     bar: "6"
 
 tests:
 - name: "When only the selected attributes change"
   query: |
-    diff:changedAny(*[_id == 'original'][0], *[_id == 'changed_1'][0], this.foo)
+    diff:changedAny(*[_id == 'original'][0], *[_id == 'changed_1'][0], ~selector~)
   variables:
     selector:
       - 'a'
       - '(a, b)'
-      - 'this.(foo, bar)'
-      - '(this, that).foo'
+      - 'alpha.foo'
+      - 'alpha.(foo, bar)'
+      - '(alpha, beta).foo'
   result: true
 
 tests:
 - name: "When no attributes have changed"
   query: |
-    diff:changedAny(*[_id == 'original'][0], *[_id == 'original'][0], this.foo)
+    diff:changedAny(*[_id == 'original'][0], *[_id == 'original'][0], alpha.foo)
   result: false
 
 tests:
 - name: "When both selected and non-selected attributes change"
   query: |
-    diff:changedAny(*[_id == 'original'][0], *[_id == 'changed_2'][0], this.foo)
+    diff:changedAny(*[_id == 'original'][0], *[_id == 'changed_2'][0], alpha.foo)
   result: false
