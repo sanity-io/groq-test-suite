@@ -1,0 +1,53 @@
+name: "diff functions"
+
+features:
+- selector
+
+tests:
+- name: "Selector syntax"
+  variables:
+    base:
+    - "attr"
+    - "(attr_in_group)"
+    - "(tuple1, tuple2)"
+    - "anywhere(_type == 'foo')"
+    component:
+    - ".dot_attr"
+    - ".(attr_in_dot_group)"
+    - ".(dot_tuple1, dot_tuple2)"
+    - "[]"
+    - "[expr == 1]"
+
+  # The array traversal "[]" looks like JSON so this triggers the auto-generate functionality which we don't want.
+  genFilter: false
+  genFetch: false
+  genJoin: false
+
+  result: false
+
+  tests:
+
+  # First test that we can compose the basic components:
+  - name: "One component"
+    query: |
+      diff::changedAny({}, {}, ~base~)
+  - name: "Two components"
+    query: |
+      diff::changedAny({}, {}, ~base~~component~)
+
+  # Next test the concrete examples which can be nested:
+  - name: "Group"
+    query: |
+      diff::changedAny({}, {}, (~base~~component~))
+
+  - name: "Tuple"
+    query: |
+      diff::changedAny({}, {}, (~base~, ~base~~component~))
+
+  - name: "Group after dot"
+    query: |
+      diff::changedAny({}, {}, ~base~.(~base~~component~))
+
+  - name: "Tuple after dot"
+    query: |
+      diff::changedAny({}, {}, ~base~.(~base~, ~base~~component~))
