@@ -51,3 +51,18 @@ tests:
   - name: "Tuple after dot"
     query: |
       diff::changedAny({}, {}, ~base~.(~base~, ~base~~component~))
+
+- name: "Invalid selectors"
+  valid: false
+  query: |
+    diff::changedAny({}, {}, ~selector~)
+  variables:
+    selector:
+    - "foo + 1"
+    - "foo{bar}"
+    - "(foo + 1)"
+    - "(foo, foo + 1)"
+    - "foo.(foo + 1)"
+    - "foo.(foo, foo + 1)"
+    - "foo[0]"
+    - "[foo + 1]"
