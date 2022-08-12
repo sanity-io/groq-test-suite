@@ -54,6 +54,12 @@ tests:
   valid: false
   query: |
     diff::changedAny({}, {}, ~selector~)
+
+  # Since we test for literal numbers in the variables we need to disable automatic test generation.
+  genFilter: false
+  genFetch: false
+  genJoin: false
+
   variables:
     selector:
     - "foo + 1"
