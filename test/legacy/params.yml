@@ -16,11 +16,11 @@ documents:
 
 tests:
 - name: 'Default $identity param'
-  version: '1.0.0'
+  version: '0.1'
   query: '$identity'
   result: 'someuser'
 - name: 'Default $identity overridden'
-  version: '1.0.0'
+  version: '0.1'
   query: '$identity'
   result: override
   params:
@@ -70,7 +70,7 @@ tests:
     'null': null
   result: null
 - name: "literal object"
-  version: '1.0.0'
+  version: '0.1'
   query: |
     [
       $o,

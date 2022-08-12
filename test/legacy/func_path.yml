@@ -45,19 +45,19 @@ documents:
 tests:
 - name: literal
   query: path("a.b.c") in path("a.**")
-  version: '= 1.0.0'
+  version: '0.1'
   result: true
 - name: literal
   query: path("a.b.c") in path("b.**")
-  version: '= 1.0.0'
+  version: "0.1"
   result: false
 - name: literal
   query: path("string") == path("string")
-  version: '= 1.0.0'
+  version: "0.1"
   result: true
 - name: literal
   query: path("string") == path("abc")
-  version: '= 1.0.0'
+  version: "0.1"
   result: false
 - name: invalid path
   query: '*[_id in path("5-**")]'
