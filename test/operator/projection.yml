@@ -1,5 +1,5 @@
 name: "Projection operator"
-version: '>= 2.0.0'
+version: ">= 1.0"
 
 documents:
 - _id: arrays

@@ -330,7 +330,7 @@ tests:
   - false
   - false
   - false
-  version: "1.0.0"
+  version: "0.1"
 - name: in attributes array null
   query: |-
     [
@@ -344,7 +344,7 @@ tests:
   - true
   - false
   - true
-  version: '>= 2.0.0'
+  version: ">= 1.0"
 - name: in attributes array ref
   query: |-
     [
@@ -527,7 +527,7 @@ tests:
   result:
   - false
   - false
-  version: "1.0.0"
+  version: "0.1"
 - name: in literals array null
   query: |-
     [
@@ -537,7 +537,7 @@ tests:
   result:
   - false
   - true
-  version: '>= 2.0.0'
+  version: ">= 1.0"
 - name: in literals array string
   query: |-
     [

@@ -2,8 +2,7 @@
 
 name: "score() function"
 
-features:
-- scoring
+version: ">= 1.0"
 
 documents:
 - _id: "a"
@@ -38,8 +37,6 @@ tests:
     - "score(a == 1)"
 
 - name: Equality
-  features:
-  - scoring
   query: |
     ~expr~ | score(value == 1) {_id, _score}
   variables:
@@ -58,8 +55,6 @@ tests:
     _pos: 2
 
 - name: Inequality
-  features:
-  - scoring
   query: |
     ~expr~ | score(value != 1) {_id, _score}
   variables:
@@ -78,8 +73,6 @@ tests:
     _pos: 2
 
 - name: Comparisons
-  features:
-  - scoring
   query: |
     ~expr~ | score(~score~) {_id, _score}
   variables:
@@ -134,8 +127,6 @@ tests:
       _pos: 2
 
 - name: Text match
-  features:
-  - scoring
   query: |
     ~expr~ | score(text match "fish") {_id, _score}
   variables:
@@ -154,8 +145,6 @@ tests:
     _pos: 3
 
 - name: Negated text match
-  features:
-  - scoring
   query: |
     ~expr~ | score(!(text match "fish")) {_id, _score}
   variables:
@@ -174,8 +163,6 @@ tests:
     _pos: 2
 
 - name: Explicit sort
-  features:
-  - scoring
   query: |
     ~expr~ | score(value == 1) | order(_score desc, _id) {_id, _score}
   variables:
@@ -194,8 +181,6 @@ tests:
     _pos: 2
 
 - name: Override sort
-  features:
-  - scoring
   query: |
     ~expr~ | score(text match "fish") | order(_id) {_id, _score}
   variables:
@@ -214,8 +199,6 @@ tests:
     _pos: 1
 
 - name: Add to sort
-  features:
-  - scoring
   query: |
     ~expr~ | order(_id) | score(text match "fish") {_id, _score}
   variables:
@@ -234,8 +217,6 @@ tests:
     _pos: 3
 
 - name: Conjunction
-  features:
-  - scoring
   query: |
     ~expr~ | score(value > 1 && bool) {_id, "score": _score}
   variables:
@@ -250,8 +231,6 @@ tests:
   - {_id: d, score: 0}
 
 - name: Conjunction with true
-  features:
-  - scoring
   query: |
     ~expr~ | score(value > 1 && true) {_id, "score": _score}
   variables:
@@ -266,8 +245,6 @@ tests:
   - {_id: a, score: 0}
 
 - name: Conjunction with false
-  features:
-  - scoring
   query: |
     ~expr~ | score(value > 1 && false) {_id, "score": _score}
   variables:
@@ -282,8 +259,6 @@ tests:
   - {_id: d, score: 0}
 
 - name: Disjunction
-  features:
-  - scoring
   query: |
     ~expr~ | score(value > 1 || bool) {_id, "score": _score}
   variables:
@@ -298,8 +273,6 @@ tests:
   - {_id: d, score: 1}
 
 - name: Disjunction with true
-  features:
-  - scoring
   query: |
     ~expr~ | score(value > 1 || true) {_id, "score": _score}
   variables:
@@ -314,8 +287,6 @@ tests:
   - {_id: a, score: 1}
 
 - name: Disjunction with false
-  features:
-  - scoring
   query: |
     ~expr~ | score(value > 1 || false) {_id, "score": _score}
   variables:

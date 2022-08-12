@@ -14,7 +14,7 @@ tests:
   result:
     x:
       fortytwo: 42
-  version: "1.0.0"
+  version: "0.1"
 - name: object with attribute
   query: |-
     *[_id == "a"][0]{
@@ -22,7 +22,7 @@ tests:
     }
   result:
     x: 42
-  version: "1.0.0"
+  version: "0.1"
 - name: parent scope
   query: |-
     *[_id == "a"][0]{
@@ -30,4 +30,4 @@ tests:
     }
   result:
     x: 42
-  version: "1.0.0"
+  version: "0.1"

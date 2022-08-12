@@ -1,5 +1,5 @@
 name: defined() function
-version: "1.0.0"
+version: "0.1"
 
 documents:
 - _id: target
@@ -77,7 +77,7 @@ tests:
   - true
   - true
   - false
-  version: "1.0.0"
+  version: "0.1"
 - name: attributes
   query: |-
     [
@@ -107,7 +107,7 @@ tests:
   - true
   - true
   - false
-  version: '>= 2.0.0'
+  version: ">= 1.0"
 - name: attributes filter
   query: |-
     [
@@ -137,7 +137,7 @@ tests:
   - - id
   - - id
   - []
-  version: "1.0.0"
+  version: "0.1"
 - name: attributes projection
   query: |-
     *[_id=="id"][0]{
@@ -171,7 +171,7 @@ tests:
     v_string: true
     v_true: true
     v_missing: false
-  version: "1.0.0"
+  version: "0.1"
 - name: literals
   query: |-
     [
@@ -201,5 +201,5 @@ tests:
   - true
   - true
   - false
-  version: "1.0.0"
+  version: "0.1"
 

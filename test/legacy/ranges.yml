@@ -42,19 +42,19 @@ tests:
 - name: documents single
   query: "*|order(ord asc)[-2].ord"
   result: 3
-  version: "1.0.0"
+  version: "0.1"
 - name: documents single
   query: "*|order(ord asc)[-2].ord"
   result: 4
-  version: '>= 2.0.0'
+  version: ">= 1.0"
 - name: documents single
   query: "*|order(ord asc)[-1].ord"
   result: 2
-  version: "1.0.0"
+  version: "0.1"
 - name: documents single
   query: "*|order(ord asc)[-1].ord"
   result: 5
-  version: '>= 2.0.0'
+  version: ">= 1.0"
 - name: documents single
   query: "*|order(ord asc)[3*(2+45%2)/3].ord"
   result: 4
@@ -90,14 +90,14 @@ tests:
 - name: documents .. 7
   query: "*|order(ord asc)[-3..-1][].ord"
   result: []
-  version: "1.0.0"
+  version: "0.1"
 - name: documents .. 7
   query: "*|order(ord asc)[-3..-1][].ord"
   result:
   - 3
   - 4
   - 5
-  version: '>= 2.0.0'
+  version: ">= 1.0"
 - name: documents .. 8
   query: "*|order(ord asc)[-1..-3][].ord"
   result: []
@@ -106,11 +106,11 @@ tests:
   result:
   - 4
   - 5
-  version: "1.0.0"
+  version: "0.1"
 - name: documents .. 9
   query: "*|order(ord asc)[3..1][].ord"
   result: []
-  version: '>= 2.0.0'
+  version: ">= 1.0"
 - name: documents .. 10
   query: "*|order(ord asc)[1.0..3.0][].ord"
   result:
@@ -148,13 +148,13 @@ tests:
 - name: documents ... 6
   query: "*|order(ord asc)[-3...-1][].ord"
   result: []
-  version: "1.0.0"
+  version: "0.1"
 - name: documents ... 6
   query: "*|order(ord asc)[-3...-1][].ord"
   result:
   - 3
   - 4
-  version: '>= 2.0.0'
+  version: ">= 1.0"
 - name: documents ... 7
   query: "*|order(ord asc)[-1...-3][].ord"
   result: []

@@ -8,21 +8,21 @@ tests:
 - name: Null attributes
   query: '*[ _id == "null" ][0]{value}'
   result: {}
-  version: "1.0.0"
+  version: "0.1"
 - name: Null attributes
   query: '*[ _id == "null" ][0]{value}'
   result:
     value: null
-  version: '>= 2.0.0'
+  version: ">= 1.0"
 - name: Null attribute name 1
   query: '*[_id == ''null''][0]{"value": null}'
   result: {}
-  version: "1.0.0"
+  version: "0.1"
 - name: Null attribute name 1
   query: '*[_id == ''null''][0]{"value": null}'
   result:
     value: null
-  version: '>= 2.0.0'
+  version: ">= 1.0"
 - name: Null attribute name 2
   query: '*[_id == ''null''][0]{"value": @[''null'']}'
   result:

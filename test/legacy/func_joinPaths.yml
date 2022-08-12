@@ -24,7 +24,7 @@ tests:
   - a.b.c.def.g
   - a.b.c.def.g
   - a.b.c.def.g
-  version: "1.0.0"
+  version: "0.1"
 - name: literals
   query: |-
     [
@@ -40,4 +40,4 @@ tests:
   - a.b.c.def.g
   - a.b.c.def.g
   - a.**.def.*
-  version: "1.0.0"
+  version: "0.1"

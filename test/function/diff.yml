@@ -1,7 +1,5 @@
 name: "diff functions"
-
-features:
-- selector
+version: ">= 1.0"
 
 tests:
 - name: "Selector syntax"

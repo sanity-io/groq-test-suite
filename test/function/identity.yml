@@ -4,8 +4,7 @@ result: true
 
 tests:
 - name: "With namespace"
-  features:
-  - namespaces
+  version: ">= 1.0"
   query: |
     defined(global::identity())
 

@@ -1,5 +1,5 @@
 name: references() function
-version: "1.0.0"
+version: "0.1"
 
 documents:
 - _id: r1
@@ -127,7 +127,7 @@ tests:
   - arrayOfRefs
   - immediate
   - nested
-  version: "1.0.0"
+  version: "0.1"
 - name: references(r4)
   query: (*[references("r4")] | order(_id asc))[]._id
   result: []
@@ -146,7 +146,7 @@ tests:
   - aliens
   - gorillas-in-the-mist
   - sigourney-weaver
-  version: "1.0.0"
+  version: "0.1"
 - name: hardcore explicit rejoin 1
   query: |-
     *[_type == "moviedb.movie" && title == "Aliens"]{
@@ -175,7 +175,7 @@ tests:
     }
   result:
   - actors: {}
-  version: "1.0.0"
+  version: "0.1"
 - name: hardcore explicit rejoin 2
   query: |-
     *[_type == "moviedb.movie" && title == "Aliens"]{
@@ -193,7 +193,7 @@ tests:
     - actor:
         prop:
           name: Sigourney Weaver
-  version: '>= 2.0.0'
+  version: ">= 1.0"
 - name: People with movies
   query: |-
     *[_type == "moviedb.person"] | order(name) | {

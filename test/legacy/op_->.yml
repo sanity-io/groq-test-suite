@@ -80,38 +80,38 @@ tests:
   query: '*[_id == "a"][].other->_id'
   result:
   - null
-  version: "1.0.0"
+  version: "0.1"
 - name: "-> documents 1"
   query: '*[_id == "a"][].other->_id'
   result:
   - b
-  version: '>= 2.0.0'
+  version: ">= 1.0"
 - name: "-> documents 2"
   query: '*[_id == "a"][0].other->_id'
   result: null
-  version: "1.0.0"
+  version: "0.1"
 - name: "-> documents 2"
   query: '*[_id == "a"][0].other->_id'
   result: b
-  version: '>= 2.0.0'
+  version: ">= 1.0"
 - name: "-> documents 3"
   query: '*[_id == "a"][].other->name'
   result:
   - null
-  version: "1.0.0"
+  version: "0.1"
 - name: "-> documents 3"
   query: '*[_id == "a"][].other->name'
   result:
   - B
-  version: '>= 2.0.0'
+  version: ">= 1.0"
 - name: "-> documents 4"
   query: '*[_id == "a"][0].other->name'
   result: null
-  version: "1.0.0"
+  version: "0.1"
 - name: "-> documents 4"
   query: '*[_id == "a"][0].other->name'
   result: B
-  version: '>= 2.0.0'
+  version: ">= 1.0"
 - name: "-> documents 5"
   query: '*[_id == "a"][].other->missing'
   result:
@@ -130,38 +130,38 @@ tests:
   query: '*[_id == "a"][].weakother->_id'
   result:
   - null
-  version: "1.0.0"
+  version: "0.1"
 - name: "-> documents weak 1"
   query: '*[_id == "a"][].weakother->_id'
   result:
   - b
-  version: '>= 2.0.0'
+  version: ">= 1.0"
 - name: "-> documents weak 2"
   query: '*[_id == "a"][0].weakother->_id'
   result: null
-  version: "1.0.0"
+  version: "0.1"
 - name: "-> documents weak 2"
   query: '*[_id == "a"][0].weakother->_id'
   result: b
-  version: '>= 2.0.0'
+  version: ">= 1.0"
 - name: "-> documents weak 3"
   query: '*[_id == "a"][].weakother->name'
   result:
   - null
-  version: "1.0.0"
+  version: "0.1"
 - name: "-> documents weak 3"
   query: '*[_id == "a"][].weakother->name'
   result:
   - B
-  version: '>= 2.0.0'
+  version: ">= 1.0"
 - name: "-> documents weak 4"
   query: '*[_id == "a"][0].weakother->name'
   result: null
-  version: "1.0.0"
+  version: "0.1"
 - name: "-> documents weak 4"
   query: '*[_id == "a"][0].weakother->name'
   result: B
-  version: '>= 2.0.0'
+  version: ">= 1.0"
 - name: "-> documents weak 5"
   query: '*[_id == "a"][].weakother->missing'
   result:
@@ -186,7 +186,7 @@ tests:
   - {}
   - - {}
   - {}
-  version: "1.0.0"
+  version: "0.1"
 - name: "-> documents projection"
   query: |-
     [
@@ -204,7 +204,7 @@ tests:
   - other: null
   - - other: null
   - other: null
-  version: '>= 2.0.0'
+  version: ">= 1.0"
 - name: "-> documents projection array"
   query: |-
     [
@@ -238,7 +238,7 @@ tests:
     - null
     - null
     - null
-  version: "1.0.0"
+  version: "0.1"
 - name: "-> documents projection array"
   query: |-
     [
@@ -272,7 +272,7 @@ tests:
     - null
     - null
     - null
-  version: '>= 2.0.0'
+  version: ">= 1.0"
 - name: "-> documents projection array deep"
   query: |-
     [
@@ -315,7 +315,7 @@ tests:
   - another: C
   - - {}
   - {}
-  version: "1.0.0"
+  version: "0.1"
 - name: "-> documents projection deep"
   query: |-
     [
@@ -329,7 +329,13 @@ tests:
   - another: C
   - - another: null
   - another: null
-  version: '>= 2.0.0'
+  version: ">= 1.0"
+- name: "holmtest"
+  query: |-
+    *[_id == "a"]{"another": other->other->name}
+  result:
+  - another: C
+  version: ">= 1.0"
 - name: "-> documents projection this"
   query: '*[_id == "a"][0]{_id, others[]{_ref, "ref": ^->{_id}}}'
   result:
@@ -347,7 +353,7 @@ tests:
     - _ref: d
       ref:
         _id: d
-  version: "1.0.0"
+  version: "0.1"
 - name: "-> documents projection this"
   query: '*[_id == "a"][0]{_id, others[]{_ref, "ref": ^->{_id}}}'
   result:
@@ -361,7 +367,7 @@ tests:
       ref: null
     - _ref: d
       ref: null
-  version: '>= 2.0.0'
+  version: ">= 1.0"
 - name: "-> documents projection weak"
   query: |-
     [
@@ -375,7 +381,7 @@ tests:
   - other: B
   - - {}
   - {}
-  version: "1.0.0"
+  version: "0.1"
 - name: "-> documents projection weak"
   query: |-
     [
@@ -389,7 +395,7 @@ tests:
   - other: B
   - - other: null
   - other: null
-  version: '>= 2.0.0'
+  version: ">= 1.0"
 - name: "-> literals invalid"
   query: |-
     [
@@ -421,14 +427,14 @@ tests:
   - others:
     - {}
     - {}
-  version: "1.0.0"
+  version: "0.1"
 - name: "-> documents projection array deep nested, missing"
   query: '*[_id == "b"]{"others": arrayWithRefs[]{"name": other->missing}}'
   result:
   - others:
     - name: null
     - name: null
-  version: '>= 2.0.0'
+  version: ">= 1.0"
 - name: "-> documents projection array subscript deep nested"
   query: '*[_id == "b"]{"other": arrayWithRefs[0]{"name": other->name}}'
   result:
@@ -438,23 +444,23 @@ tests:
   query: '*[_id == "b"]{"others": arrayWithRefs[0]{"name": other->missing}}'
   result:
   - others: {}
-  version: "1.0.0"
+  version: "0.1"
 - name: "-> documents projection array subscript deep nested, missing"
   query: '*[_id == "b"]{"others": arrayWithRefs[0]{"name": other->missing}}'
   result:
   - others:
       name: null
-  version: '>= 2.0.0'
+  version: ">= 1.0"
 - name: "-> documents projection missing array deep nested"
   query: '*[_id == "b"]{"others": missing[0]{"name": other->name}}'
   result:
   - {}
-  version: "1.0.0"
+  version: "0.1"
 - name: "-> documents projection missing array deep nested"
   query: '*[_id == "b"]{"others": missing[0]{"name": other->name}}'
   result:
   - others: null
-  version: '>= 2.0.0'
+  version: ">= 1.0"
 - name: "-> documents projection, array deep nested, with root-level join"
   query: |-
     *[_id == "b"] {

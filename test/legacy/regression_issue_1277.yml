@@ -7,11 +7,11 @@ tests:
       _id
     }
   result: []
-  version: "1.0.0"
+  version: "0.1"
 - name: Issue 1277
   query: |-
     *[_type == "team" && @[""] == "bar"] {
       _id
     }
   error: true
-  version: '>= 2.0.0'
+  version: ">= 1.0"

@@ -64,4 +64,4 @@ tests:
   - content-04
   - content-05
   - content-03
-  version: "1.0.0"
+  version: "0.1"

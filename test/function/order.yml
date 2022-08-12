@@ -102,8 +102,7 @@ documents:
 
 tests:
 - name: "With namespace"
-  features:
-  - namespaces
+  version: ">= 1.0"
   query: |
     *[_type=="order-boolean"]|global::order(value asc)[].value
   result: [false, true]
@@ -132,7 +131,7 @@ tests:
       result: ["aa", "aA", "A😀", "Aå", "Aa"]
 
 - name: "Document mixed values"
-  version: '>= 2.0.0'
+  version: ">= 1.0"
   query: |
     *[_type in ["order-boolean", "order-decimal", "order-integer", "order-null", "order-string"]]|order(value ~dir~)[].value
   tests:

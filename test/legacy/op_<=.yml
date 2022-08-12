@@ -65,7 +65,7 @@ tests:
   - false
   - false
   - false
-  version: "1.0.0"
+  version: "0.1"
 - name: "<= attributes boolean"
   query: |-
     [
@@ -105,7 +105,7 @@ tests:
   - false
   - false
   - false
-  version: "1.0.0"
+  version: "0.1"
 - name: "<= attributes boolean"
   query: |-
     [
@@ -145,7 +145,7 @@ tests:
   - null
   - null
   - null
-  version: '>= 2.0.0'
+  version: ">= 1.0"
 - name: "<= attributes decimal"
   query: |-
     [
@@ -181,7 +181,7 @@ tests:
   - false
   - false
   - false
-  version: "1.0.0"
+  version: "0.1"
 - name: "<= attributes decimal"
   query: |-
     [
@@ -217,7 +217,7 @@ tests:
   - null
   - null
   - null
-  version: '>= 2.0.0'
+  version: ">= 1.0"
 - name: "<= attributes integer"
   query: |-
     [
@@ -253,7 +253,7 @@ tests:
   - false
   - false
   - false
-  version: "1.0.0"
+  version: "0.1"
 - name: "<= attributes integer"
   query: |-
     [
@@ -289,7 +289,7 @@ tests:
   - null
   - null
   - null
-  version: '>= 2.0.0'
+  version: ">= 1.0"
 - name: "<= attributes object"
   query: |-
     [
@@ -337,7 +337,7 @@ tests:
   - false
   - false
   - false
-  version: "1.0.0"
+  version: "0.1"
 - name: "<= attributes string"
   query: |-
     [
@@ -373,7 +373,7 @@ tests:
   - false
   - false
   - false
-  version: "1.0.0"
+  version: "0.1"
 - name: "<= attributes string"
   query: |-
     [
@@ -409,7 +409,7 @@ tests:
   - null
   - null
   - null
-  version: '>= 2.0.0'
+  version: ">= 1.0"
 - name: "<= filter array"
   query: |-
     [
@@ -445,7 +445,7 @@ tests:
   - false
   - false
   - false
-  version: "1.0.0"
+  version: "0.1"
 - name: "<= filter boolean"
   query: |-
     [
@@ -662,7 +662,7 @@ tests:
   - false
   - false
   - false
-  version: "1.0.0"
+  version: "0.1"
 - name: "<= literals boolean"
   query: |-
     [
@@ -684,7 +684,7 @@ tests:
   - false
   - false
   - false
-  version: "1.0.0"
+  version: "0.1"
 - name: "<= literals boolean"
   query: |-
     [
@@ -706,7 +706,7 @@ tests:
   - null
   - null
   - null
-  version: '>= 2.0.0'
+  version: ">= 1.0"
 - name: "<= literals decimal"
   query: |-
     [
@@ -730,7 +730,7 @@ tests:
   - false
   - false
   - false
-  version: "1.0.0"
+  version: "0.1"
 - name: "<= literals decimal"
   query: |-
     [
@@ -754,7 +754,7 @@ tests:
   - null
   - null
   - null
-  version: '>= 2.0.0'
+  version: ">= 1.0"
 - name: "<= literals integer"
   query: |-
     [
@@ -774,7 +774,7 @@ tests:
   - false
   - false
   - false
-  version: "1.0.0"
+  version: "0.1"
 - name: "<= literals integer"
   query: |-
     [
@@ -794,7 +794,7 @@ tests:
   - null
   - null
   - null
-  version: '>= 2.0.0'
+  version: ">= 1.0"
 - name: "<= literals object"
   query: |-
     [
@@ -818,7 +818,7 @@ tests:
   - false
   - false
   - false
-  version: "1.0.0"
+  version: "0.1"
 - name: "<= literals string"
   query: |-
     [
@@ -842,7 +842,7 @@ tests:
   - false
   - false
   - false
-  version: "1.0.0"
+  version: "0.1"
 - name: "<= literals string"
   query: |-
     [
@@ -866,4 +866,4 @@ tests:
   - null
   - null
   - null
-  version: '>= 2.0.0'
+  version: ">= 1.0"

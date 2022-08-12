@@ -36,4 +36,4 @@ tests:
       b: 2
     - c: 3
       d: 4
-  version: "1.0.0"
+  version: "0.1"

@@ -116,7 +116,7 @@ tests:
     }[0]{a}
   result:
     a: 123
-  version: "1.0.0"
+  version: "0.1"
 - name: old merge order
   query: |-
     *[_id == "a"] {
@@ -125,4 +125,4 @@ tests:
     }[0]{a}
   result:
     a: 123
-  version: "1.0.0"
+  version: "0.1"

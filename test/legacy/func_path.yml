@@ -62,8 +62,8 @@ tests:
 - name: invalid path
   query: '*[_id in path("5-**")]'
   error: true
-  version: "1.0.0"
+  version: "0.1"
 - name: invalid path
   query: '*[_id in path("5-**")]'
   result: []
-  version: '>= 2.0.0'
+  version: ">= 1.0"

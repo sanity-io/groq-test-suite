@@ -36,7 +36,7 @@ tests:
   - null
   - null
   - null
-  version: "1.0.0"
+  version: "0.1"
 - name: "&& attributes nulls"
   query: |-
     [
@@ -52,7 +52,7 @@ tests:
   - false
   - false
   - null
-  version: '>= 2.0.0'
+  version: ">= 1.0"
 - name: "&& attributes incompatible"
   query: |-
     [
@@ -64,7 +64,7 @@ tests:
   - null
   - null
   - null
-  version: "1.0.0"
+  version: "0.1"
 - name: "&& attributes incompatible"
   query: |-
     [
@@ -76,7 +76,7 @@ tests:
   - null
   - false
   - null
-  version: '>= 2.0.0'
+  version: ">= 1.0"
 - name: "&& literals booleans"
   query: |-
     [
@@ -116,7 +116,7 @@ tests:
   - 1
   - false
   - null
-  version: "1.0.0"
+  version: "0.1"
 - name: "&& literals incompatible"
   query: |-
     [
@@ -128,4 +128,4 @@ tests:
   - null
   - false
   - null
-  version: '>= 2.0.0'
+  version: ">= 1.0"

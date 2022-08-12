@@ -84,14 +84,14 @@ tests:
     - 2
     - 3
   - key: value
-  version: "1.0.0"
+  version: "0.1"
 - name: ".. attributes array slice"
   query: "*[_id=='id'][0].v_array[0..2]"
   result:
   - 1
   - string
   - true
-  version: '>= 2.0.0'
+  version: ">= 1.0"
 - name: ".. literals array slice"
   query: |-
     [

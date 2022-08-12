@@ -96,7 +96,7 @@ tests:
   - string
   - true
   - null
-  version: "1.0.0"
+  version: "0.1"
 - name: attributes types multiple
   query: |-
     [
@@ -151,7 +151,7 @@ tests:
   - string
   - true
   - other
-  version: "1.0.0"
+  version: "0.1"
 - name: literals types
   query: |-
     [

@@ -2,8 +2,7 @@ name: "coalesce() function"
 
 tests:
 - name: "With namespace"
-  features:
-  - namespaces
+  version: ">= 1.0"
   query: |
     global::coalesce()
   result: null
@@ -11,7 +10,7 @@ tests:
 - name: "No args"
   query: |
     coalesce()
-  version: '>= 2.0.0'
+  version: ">= 1.0"
   result: null
 
 - query: |
