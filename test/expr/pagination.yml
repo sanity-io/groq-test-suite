@@ -1,5 +1,5 @@
 name: Pagination
-version: '>= 1.0.0'
+version: '>= 1.0'
 documents:
 - _id: ordinal-0
   _type: ordinal

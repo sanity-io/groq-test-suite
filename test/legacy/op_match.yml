@@ -204,7 +204,7 @@ tests:
   - result: true
     query: '["test", null] match "te*"'
   - result: null
-    version: '1.0.0'
+    version: '0.1'
     query: '["test", null] match "foo"'
   - result: false
     version: ">= 1.0"

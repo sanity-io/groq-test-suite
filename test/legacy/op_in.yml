@@ -559,7 +559,7 @@ tests:
       "other" in path("another.**"),
       path("other") in path("another.**"),
     ]
-  version: '= 1.0.0'
+  version: '0.1'
   result:
   - true
   - true
