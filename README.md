@@ -130,6 +130,29 @@ tests:
     result: 3
 ```
 
+### Versioning
+
+Each test can be tagged with a `version` field which should contain a version selector.
+The version is on the form `X.Y` and specifies that it targets GROQ-X.revisionY.
+
+```yaml
+# This test file:
+documents:
+  - _id: "a"
+  - _id: "b"
+
+version: ">= 1.0"
+
+tests:
+  name: "Counting"
+  query: |
+    count(*)
+  result: 2
+```
+
+
+The version `0.1` is used for the original implementation of GROQ before there was a finalized specification and is maintained here for historical reasons.
+
 ### Variables
 
 Queries can use the syntax `~name~` for referring to variables.
@@ -186,9 +209,9 @@ The rules of how the tests are generated are as follows:
 
 A test can specify a list of named features that it requires, which a test runner can use to skip tests or enable specific modes. Currently defined features:
 
-- `experimentalFunctions`: Experimental functions that are not part of the GROQ spec.
-- `namespaces`: Namespace support for functions.
-- `scoring`: Support for scoring with `score()` and `boost()`.
+- `portableText`: Functionality provided by the `pt` extensions.
+- `geo`: Functionality provided by the `geo` extension.
+- `wildcardMatchSegmentation`: Specifies a more sensible semantics for handling wildcards in the `match` operator. 
 
 ### Scores
 

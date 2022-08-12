@@ -65,7 +65,7 @@ tests:
   - false
   - false
   - false
-  version: "1.0.0"
+  version: "0.1"
 - name: "< attributes boolean"
   query: |-
     [
@@ -105,7 +105,7 @@ tests:
   - false
   - false
   - false
-  version: "1.0.0"
+  version: "0.1"
 - name: "< attributes boolean"
   query: |-
     [
@@ -145,7 +145,7 @@ tests:
   - null
   - null
   - null
-  version: '>= 2.0.0'
+  version: ">= 1.0"
 - name: "< attributes decimal"
   query: |-
     [
@@ -181,7 +181,7 @@ tests:
   - false
   - false
   - false
-  version: "1.0.0"
+  version: "0.1"
 - name: "< attributes decimal"
   query: |-
     [
@@ -217,7 +217,7 @@ tests:
   - null
   - null
   - null
-  version: '>= 2.0.0'
+  version: ">= 1.0"
 - name: "< attributes integer"
   query: |-
     [
@@ -253,7 +253,7 @@ tests:
   - false
   - false
   - false
-  version: "1.0.0"
+  version: "0.1"
 - name: "< attributes integer"
   query: |-
     [
@@ -289,7 +289,7 @@ tests:
   - null
   - null
   - null
-  version: '>= 2.0.0'
+  version: ">= 1.0"
 - name: "< attributes object"
   query: |-
     [
@@ -337,7 +337,7 @@ tests:
   - false
   - false
   - false
-  version: "1.0.0"
+  version: "0.1"
 - name: "< attributes string"
   query: |-
     [
@@ -373,7 +373,7 @@ tests:
   - false
   - false
   - false
-  version: "1.0.0"
+  version: "0.1"
 - name: "< attributes string"
   query: |-
     [
@@ -409,7 +409,7 @@ tests:
   - null
   - null
   - null
-  version: '>= 2.0.0'
+  version: ">= 1.0"
 - name: "< filter array"
   query: |-
     [
@@ -661,7 +661,7 @@ tests:
   - false
   - false
   - false
-  version: "1.0.0"
+  version: "0.1"
 - name: "< literals boolean"
   query: |-
     [
@@ -683,7 +683,7 @@ tests:
   - false
   - false
   - false
-  version: "1.0.0"
+  version: "0.1"
 - name: "< literals boolean"
   query: |-
     [
@@ -705,7 +705,7 @@ tests:
   - null
   - null
   - null
-  version: '>= 2.0.0'
+  version: ">= 1.0"
 - name: "< literals decimal"
   query: |-
     [
@@ -729,7 +729,7 @@ tests:
   - false
   - false
   - false
-  version: "1.0.0"
+  version: "0.1"
 - name: "< literals decimal"
   query: |-
     [
@@ -753,7 +753,7 @@ tests:
   - null
   - null
   - null
-  version: '>= 2.0.0'
+  version: ">= 1.0"
 - name: "< literals integer"
   query: |-
     [
@@ -773,7 +773,7 @@ tests:
   - false
   - false
   - false
-  version: "1.0.0"
+  version: "0.1"
 - name: "< literals integer"
   query: |-
     [
@@ -793,7 +793,7 @@ tests:
   - null
   - null
   - null
-  version: '>= 2.0.0'
+  version: ">= 1.0"
 - name: "< literals object"
   query: |-
     [
@@ -817,7 +817,7 @@ tests:
   - false
   - false
   - false
-  version: "1.0.0"
+  version: "0.1"
 - name: "< literals string 1"
   query: '"string" < "string"'
   result: false
@@ -830,48 +830,48 @@ tests:
 - name: "< literals string 4"
   query: '"A" < "a"'
   result: false
-  version: "1.0.0"
+  version: "0.1"
 - name: "< literals string 4"
   query: '"A" < "a"'
   result: true
-  version: '>= 2.0.0'
+  version: ">= 1.0"
 - name: "< literals string 5"
   query: '"a" < "A"'
   result: true
-  version: "1.0.0"
+  version: "0.1"
 - name: "< literals string 5"
   query: '"a" < "A"'
   result: false
-  version: '>= 2.0.0'
+  version: ">= 1.0"
 - name: "< literals string 6"
   query: '"string" < 1'
   result: false
-  version: "1.0.0"
+  version: "0.1"
 - name: "< literals string 6"
   query: '"string" < 1'
   result: null
-  version: '>= 2.0.0'
+  version: ">= 1.0"
 - name: "< literals string 7"
   query: 1 < "string"
   result: false
-  version: "1.0.0"
+  version: "0.1"
 - name: "< literals string 7"
   query: 1 < "string"
   result: null
-  version: '>= 2.0.0'
+  version: ">= 1.0"
 - name: "< literals string 8"
   query: '"string" < null'
   result: false
-  version: "1.0.0"
+  version: "0.1"
 - name: "< literals string 8"
   query: '"string" < null'
   result: null
-  version: '>= 2.0.0'
+  version: ">= 1.0"
 - name: "< literals string 9"
   query: null < "string"
   result: false
-  version: "1.0.0"
+  version: "0.1"
 - name: "< literals string 9"
   query: null < "string"
   result: null
-  version: '>= 2.0.0'
+  version: ">= 1.0"

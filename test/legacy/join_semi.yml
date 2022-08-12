@@ -43,7 +43,7 @@ tests:
   - alice
   - bob
   - eve
-  version: "1.0.0"
+  version: "0.1"
 - name: "-> defined"
   query: '*[ _type == "employee" && defined(department->) ][]._id'
   result:
@@ -55,7 +55,7 @@ tests:
   result:
   - bob
   - eve
-  version: "1.0.0"
+  version: "0.1"
 - name: "-> equality"
   query: '*[ _type == "employee" && department->_id == "engineering" ][]._id'
   result:
@@ -67,7 +67,7 @@ tests:
   - alice
   - bob
   - eve
-  version: "1.0.0"
+  version: "0.1"
 - name: "-> -> equality"
   query: '*[ _type == "employee" && department->manager->_id == "xander" ][]._id'
   result:
@@ -80,7 +80,7 @@ tests:
   result:
   - bob
   - eve
-  version: "1.0.0"
+  version: "0.1"
 - name: "-> -> multiple equality"
   query: '*[ _type == "employee" && department->_id == "engineering" && department->manager->_id
     == "xander" ][]._id'
@@ -106,7 +106,7 @@ tests:
     coworkers:
     - _id: bob
       name: Bob Baker
-  version: "1.0.0"
+  version: "0.1"
 - name: "-> -> multiple equality with projection and subquery"
   query: |-
     *[_type == "employee" && department->_id == "engineering" && department->manager->_id == "xander"]{
@@ -128,11 +128,11 @@ tests:
     - _id: bob
       name: Bob Baker
     manager: null
-  version: '>= 2.0.0'
+  version: ">= 1.0"
 - name: "-> -> no matches (legacy array syntax)"
   query: '*[ _type == "employee" && department->manager->_id == "ziggy" ]._id'
   result: []
-  version: "1.0.0"
+  version: "0.1"
 - name: "-> -> no matches"
   query: '*[ _type == "employee" && department->manager->_id == "ziggy" ][]._id'
   result: []
@@ -141,7 +141,7 @@ tests:
   result:
   - accounting
   - engineering
-  version: "1.0.0"
+  version: "0.1"
 - name: Count references
   query: '*[ _type == "department" && count(*[references(^._id)]) > 0 ][]._id'
   result:
@@ -153,7 +153,7 @@ tests:
   result:
   - accounting
   - engineering
-  version: "1.0.0"
+  version: "0.1"
 - name: In subquery
   query: '*[ _type == "department" && _id in *[ _type == "employee" ][].department._ref
     ][]._id'
@@ -165,7 +165,7 @@ tests:
   result:
   - bob
   - eve
-  version: "1.0.0"
+  version: "0.1"
 - name: References
   query: '*[ _type == "employee" && references("engineering") ][]._id'
   result:
@@ -199,7 +199,7 @@ tests:
     name: Bob Baker
     ref:
     - Bob Baker
-  version: "1.0.0"
+  version: "0.1"
 - name: Literal ref array, inside query
   query: |-
     *[_id=="bob"][0]{
@@ -218,7 +218,7 @@ tests:
   result:
     ref:
     - null
-  version: "1.0.0"
+  version: "0.1"
 - name: Literal ref array, inside object literal
   query: |-
     {
@@ -227,7 +227,7 @@ tests:
   result:
     ref:
     - Bob Baker
-  version: '>= 2.0.0'
+  version: ">= 1.0"
 - name: Literal ref, non-existent
   query: '{"_ref": "notfound"}->name'
   result: null
@@ -237,7 +237,7 @@ tests:
       "ref": {"_ref": "notfound"}->name
     }
   result: {}
-  version: "1.0.0"
+  version: "0.1"
 - name: Literal ref, non-existent, inside object literal
   query: |-
     {
@@ -245,7 +245,7 @@ tests:
     }
   result:
     ref: null
-  version: '>= 2.0.0'
+  version: ">= 1.0"
 - name: Literal ref array, non-existent, inside object literal
   query: |-
     {
@@ -257,4 +257,4 @@ tests:
 - name: Join in order()
   query: "*[false] | order(a->b)"
   result: []
-  version: "1.0.0"
+  version: "0.1"

@@ -1,6 +1,6 @@
 name: "array::unique() function"
-features:
-- experimentalFunctions
+
+version: ">= 1.1"
 
 documents:
 - _id: "a"

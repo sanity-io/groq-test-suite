@@ -1,9 +1,6 @@
 name: "string::startsWith() function"
-version: '>= 2.0.0'
 
-features:
-- namespaces
-- experimentalFunctions
+version: '>= 1.1'
 
 tests:
 - name: Basic

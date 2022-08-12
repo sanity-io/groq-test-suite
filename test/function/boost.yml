@@ -2,8 +2,7 @@
 
 name: "boost() function"
 
-features:
-- scoring
+version: ">= 1.0"
 
 documents:
 - _id: "a"
@@ -35,8 +34,6 @@ tests:
     - "{'a': boost({'a': 42}, 3)}"
 
 - name: Equality
-  features:
-  - scoring
   query: |
     ~expr~
       | score(boost(value == 3, 2), value == 4)
@@ -58,8 +55,6 @@ tests:
     _pos: 3
 
 - name: Text match
-  features:
-  - scoring
   query: |
     ~expr~
       | score(boost(text match "world", 10), text match "fish")

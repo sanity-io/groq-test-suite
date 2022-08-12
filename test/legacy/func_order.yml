@@ -238,7 +238,7 @@ tests:
   - true
   - false
   - null
-  version: "1.0.0"
+  version: "0.1"
 - name: documents types
   query: '*[_type in ["order-boolean", "order-decimal", "order-integer", "order-null",
     "order-string"]]|order(value desc)[].value'
@@ -261,7 +261,7 @@ tests:
   - 0.8
   - -3.1
   - -4
-  version: '>= 2.0.0'
+  version: ">= 1.0"
 - name: document types datetime as string asc
   query: '*[_type == "order-datetime-string"]|order(value asc)[].value'
   result:
@@ -373,11 +373,11 @@ tests:
 - name: literals
   query: '{"v": 1}|order(v)'
   result: []
-  version: "1.0.0"
+  version: "0.1"
 - name: literals
   query: '{"v": 1}|order(v)'
   result: null
-  version: '>= 2.0.0'
+  version: ">= 1.0"
 - name: null input
   query: null | order(x)
   result: null
@@ -390,7 +390,7 @@ tests:
     }
   result:
   - {}
-  version: "1.0.0"
+  version: "0.1"
 - name: null input
   query: |-
     [
@@ -400,7 +400,7 @@ tests:
     }
   result:
   - a: null
-  version: '>= 2.0.0'
+  version: ">= 1.0"
 - name: Legacy object sorting
   query: |-
     *[_id == "aA"][0] | order(_id) {
@@ -408,14 +408,14 @@ tests:
     }
   result:
     _id: aA
-  version: "1.0.0"
+  version: "0.1"
 - name: Legacy object sorting
   query: |-
     *[_id == "aA"][0] | order(_id) {
       _id
     }
   result: null
-  version: '>= 2.0.0'
+  version: ">= 1.0"
 - name: Order on lower()
   query: '*[_type == "order-string2"] | order(lower(value))[].value'
   result:

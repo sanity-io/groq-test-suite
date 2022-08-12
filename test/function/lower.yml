@@ -1,7 +1,5 @@
 name: "lower() function"
-
-features:
-- namespaces
+version: ">= 1.0"
 
 documents:
 - _id: "Movie-100"
@@ -41,8 +39,6 @@ documents:
 
 tests:
 - name: "With namespace"
-  features:
-  - namespaces
   query: |
     * | {"id": string::lower(_id)}
   result:

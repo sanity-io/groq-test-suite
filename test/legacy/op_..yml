@@ -82,7 +82,7 @@ tests:
     v_string: abc
   - string
   - true
-  version: "1.0.0"
+  version: "0.1"
 - name: ". document nested"
   query: "*[_id=='id'][0].v_object.v_object.k"
   result: v

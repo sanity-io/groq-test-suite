@@ -195,7 +195,7 @@ tests:
               current: feminism
             title: Feminism
           lead: Third lead
-  version: "1.0.0"
+  version: "0.1"
 - name: Issue 692
   query: |-
     {
@@ -266,4 +266,4 @@ tests:
             title: Feminism
           lead: Third lead
         image: null
-  version: '>= 2.0.0'
+  version: ">= 1.0"

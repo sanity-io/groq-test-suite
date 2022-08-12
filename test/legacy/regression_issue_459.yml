@@ -35,4 +35,4 @@ tests:
   - _id: article-2
     drafts:
     - drafts.article-2
-  version: "1.0.0"
+  version: "0.1"

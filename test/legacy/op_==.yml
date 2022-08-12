@@ -267,7 +267,7 @@ tests:
   - false
   - false
   - false
-  version: "1.0.0"
+  version: "0.1"
 - name: "== filter boolean"
   query: count(*[_id=='id' && v_true == v_true]) > 0
   result: true
@@ -439,7 +439,7 @@ tests:
   - false
   - false
   - false
-  version: "1.0.0"
+  version: "0.1"
 - name: "== filter string"
   query: |-
     [
@@ -498,7 +498,7 @@ tests:
   - false
   - false
   - false
-  version: "1.0.0"
+  version: "0.1"
 - name: "== literals boolean"
   query: |-
     [
@@ -583,7 +583,7 @@ tests:
   - false
   - false
   - false
-  version: "1.0.0"
+  version: "0.1"
 - name: "== literals string"
   query: |-
     [

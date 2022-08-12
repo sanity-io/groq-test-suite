@@ -1,7 +1,6 @@
 name: "array::join() function"
 
-features:
-- namespaces
+version: ">= 1.1"
 
 tests:
 - name: Basic

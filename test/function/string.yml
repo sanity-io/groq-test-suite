@@ -1,5 +1,5 @@
 name: "string() function"
-version: '>= 2.0.0'
+version: ">= 1.0"
 
 documents:
 - _id: "id"
@@ -21,8 +21,7 @@ documents:
 
 tests:
 - name: "With namespace"
-  features:
-  - namespaces
+  version: ">= 1.0"
   query: |
     global::string(true)
   result: "true"

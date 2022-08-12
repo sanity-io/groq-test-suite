@@ -9,7 +9,7 @@ tests:
   result:
   - 1
   - 2
-  version: "1.0.0"
+  version: "0.1"
 - name: inside object
   query: |-
     {
@@ -18,4 +18,4 @@ tests:
     }
   result:
     b: 2
-  version: "1.0.0"
+  version: "0.1"

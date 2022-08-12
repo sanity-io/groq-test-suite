@@ -96,7 +96,7 @@ tests:
     v_string: abc
   - string
   - true
-  version: "1.0.0"
+  version: "0.1"
 - name: literals
   query: |-
     [
@@ -134,7 +134,7 @@ tests:
   - 2
   - null
   - null
-  version: "1.0.0"
+  version: "0.1"
 - name: literals
   query: |-
     [
@@ -160,7 +160,7 @@ tests:
   - 1
   - null
   - 2
-  version: '>= 2.0.0'
+  version: ">= 1.0"
 - name: literals datatypes
   query: |-
     [
