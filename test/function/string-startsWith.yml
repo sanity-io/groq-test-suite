@@ -7,15 +7,18 @@ tests:
   query: |
     string::startsWith(~str~, ~prefix~)
   tests:
-  - variables:
+  - name: Empty prefix
+    variables:
       str: "'a'"
       prefix: "''"
     result: true
-  - variables:
+  - name: Single character prefix
+    variables:
       str: "'abc'"
       prefix: "'a'"
     result: true
-  - variables:
+  - name: Common prefix, but not fully
+    variables:
       str: "'abc'"
       prefix: "'abx'"
     result: false

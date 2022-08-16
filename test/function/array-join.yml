@@ -7,37 +7,49 @@ tests:
   query: |
     array::join(~arr~, ~sep~)
   tests:
-  # Basic
-  - variables:
+  - name: Strings
+    variables:
       arr: '["a", "b", "c"]'
       sep: '"-"'
     result: "a-b-c"
-  # Empty separator
-  - variables:
+  - name: Empty seperator
+    variables:
       arr: '["a", "b", "c"]'
       sep: '""'
     result: "abc"
-  # Empty array
-  - variables:
+  - name: Booleans and numbers
+    variables:
+      arr: '["a", 1, true]'
+      sep: '","'
+    result: "a,1,true"
+  - name: Empty array
+    variables:
       arr: '[]'
       sep: '"-"'
     result: ""
-  # Non-string types
-  - variables:
+  - name: Non-string elements
+    variables:
       arr: '[3, "x", 4.1, true, {"x": 42}, [64]]'
       sep: '","'
     result: null
 
-- name: Invalid arg types
+- name: Invalid array types
   query: |
-    array::join(~arr~, ~sep~)
+    array::join(~arr~, "")
   variables:
-  - arr: '["a", "b", "c"]'
-  - arr: 'null'
-  - arr: '"x"'
-  - arr: '42'
+    arr:
+    - 'null'
+    - '"x"'
+    - '42'
+  result: null
+
+- name: Invalid seprator types
+  query: |
+    array::join(["a", "b"], ~sep~)
+  variables:
+    sep:
+    - 'null'
+    - '42'
+    - '[]'
   result: null
   tests:
-  - variables: {sep: 'null'}
-  - variables: {sep: '42'}
-  - variables: {sep: '[]'}

@@ -21,11 +21,13 @@ documents:
   values: []
 
 tests:
-- query: |
+- name: All numbers
+  query: |
     math::min([1, 2, 3])
   result: 1
 
-- query: |
+- name: Null among numbers
+  query: |
     math::min([1, 2, 3, 4, null])
   result: 1
 

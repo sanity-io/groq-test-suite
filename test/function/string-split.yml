@@ -7,48 +7,44 @@ tests:
   query: |
     string::split(~str~, ~sep~)
   tests:
-  # Basic
-  - variables:
+  - name: Strings
+    variables:
       str: '"a,b,c"'
       sep: '","'
     result: [a, b, c]
-  # Separator at ends
-  - variables:
+  - name: Separator at ends
+    variables:
       str: '",a,b,c,"'
       sep: '","'
     result: ["", a, b, c, ""]
-  # Empty string
-  - variables:
+  - name: Empty string
+    variables:
       str: '""'
       sep: '","'
     result: []
-  # Just separator
-  - variables:
+  - name: Single separator
+    variables:
       str: '","'
       sep: '","'
     result: ["", ""]
-  # Empty separator
-  - variables:
+  - name: Empty separator
+    variables:
       str: '"møøse"'
       sep: '""'
     result: ["m", "ø", "ø", "s", "e"]
-  # Unicode
-  - variables:
+  - name: Empty separator with Unicode
+    variables:
       str: '"🍕👽💦"'
       sep: '""'
     result: ["🍕", "👽", "💦"]
 
-- name: Invalid
+- name: Invalid types
   query: |
-    string::split(~str~, ~sep~)
+    string::split(~val~, ~val~)
   variables:
-  - str: '["a", "b", "c"]'
-  - str: 'null'
-  - str: '"x"'
-  - str: '42'
+    val:
+    - '["a", "b", "c"]'
+    - '{}'
+    - 'null'
+    - '42'
   result: null
-  tests:
-  - variables: {sep: '"x"'}
-  - variables: {sep: 'null'}
-  - variables: {sep: '42'}
-  - variables: {sep: '[]'}
