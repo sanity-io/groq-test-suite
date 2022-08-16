@@ -33,9 +33,10 @@ tests:
   query: |
     array::compact(~arr~)
   variables:
-  - arr: '{}'
-  - arr: 'null  '
-  - arr: '"x"'
-  - arr: '42'
-  - arr: 'true'
+    arr:
+    - '{}'
+    - 'null'
+    - '"x"'
+    - '42'
+    - 'true'
   result: null
