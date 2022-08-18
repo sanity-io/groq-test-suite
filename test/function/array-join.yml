@@ -12,7 +12,7 @@ tests:
       arr: '["a", "b", "c"]'
       sep: '"-"'
     result: "a-b-c"
-  - name: Empty seperator
+  - name: Empty separator
     variables:
       arr: '["a", "b", "c"]'
       sep: '""'
@@ -43,7 +43,7 @@ tests:
     - '42'
   result: null
 
-- name: Invalid seprator types
+- name: Invalid separator types
   query: |
     array::join(["a", "b"], ~sep~)
   variables:
