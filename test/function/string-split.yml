@@ -39,12 +39,15 @@ tests:
     result: ["🍕", "👽", "💦"]
 
 - name: Invalid types
-  query: |
-    string::split(~val~, ~val~)
   variables:
-    val:
+    nonstring:
     - '["a", "b", "c"]'
     - '{}'
     - 'null'
     - '42'
   result: null
+
+  tests:
+  - query: string::split("a", ~nonstring~)
+  - query: string::split(~nonstring~, "a")
+  - query: string::split(~nonstring~, ~nonstring~)
