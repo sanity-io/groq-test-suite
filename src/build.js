@@ -370,13 +370,29 @@ class Builder {
           let genAlt = alt.slice()
           genAlt[i] = genDoc.fieldId
           let filter = replaceVariables(query, genAlt)
-          let fullQuery = `${fetchDocQuery}[${filter}][]._id`
-          let expected = result === true ? [genDoc.docId] : []
 
-          yield {
-            query: fullQuery,
-            result: expected,
-            dataset: this.generatedDataset.ref(),
+          {
+            // Regular query
+            let fullQuery = `${fetchDocQuery}[${filter}][]._id`
+            let expected = result === true ? [genDoc.docId] : []
+
+            yield {
+              query: fullQuery,
+              result: expected,
+              dataset: this.generatedDataset.ref(),
+            }
+          }
+
+          {
+            // Negated query
+            let fullQuery = `${fetchDocQuery}[!(${filter})][]._id`
+            let expected = result === false ? [genDoc.docId] : []
+
+            yield {
+              query: fullQuery,
+              result: expected,
+              dataset: this.generatedDataset.ref(),
+            }
           }
         }
 
