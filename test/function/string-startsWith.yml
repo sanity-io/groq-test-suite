@@ -9,18 +9,18 @@ tests:
   tests:
   - name: Empty prefix
     variables:
-      str: "'a'"
-      prefix: "''"
+      str: '"a"'
+      prefix: '""'
     result: true
   - name: Single character prefix
     variables:
-      str: "'abc'"
-      prefix: "'a'"
+      str: '"abc"'
+      prefix: '"a"'
     result: true
   - name: Common prefix, but not fully
     variables:
-      str: "'abc'"
-      prefix: "'abx'"
+      str: '"abc"'
+      prefix: '"abx"'
     result: false
 
 - name: "Non-string types"
