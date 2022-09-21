@@ -16,6 +16,21 @@ documents:
     str: "baz"
     strs: ["a", "d"]
     mixeds: ["a", 2, null]
+  objsOfNum:
+  - num: 10
+  - num: 11
+  - num: 11
+  - num: 12
+  objsOfStr:
+  - str: "f"
+  - str: "f"
+  - str: "g"
+  objsOfMixed:
+  - val: "x"
+  - val: "x"
+  - val: 14
+  - val: 14
+  - val: null
 - _id: "b"
   _type: "doc"
   num: 22
@@ -126,3 +141,19 @@ tests:
     result:
     - [42]
     - [42]
+
+- name: Projection
+  query: |
+    *[_id == "a"][0] {
+      "vals": array::unique(~expr~)
+    }.vals | order(@)
+  tests:
+  - variables:
+      expr: objsOfNum[].num
+    result: [10, 11, 12]
+  - variables:
+      expr: objsOfStr[].str
+    result: ["f", "g"]
+  - variables:
+      expr: objsOfMixed[].val
+    result: [14, "x", null]
