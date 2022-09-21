@@ -5,125 +5,124 @@ version: ">= 1.1"
 documents:
 - _id: "a"
   _type: "doc"
-  value: 1
-  values: [1, 2, 3]
+  num: 1
+  nums: [1, 2, 3]
   str: "baz"
   strs: ["a", "d"]
   mixeds: ["a", 2, null]
-  nested:
-    value: 1
-    values: [1, 2, 3]
+  obj:
+    num: 1
+    nums: [1, 2, 3]
     str: "baz"
     strs: ["a", "d"]
     mixeds: ["a", 2, null]
 - _id: "b"
   _type: "doc"
-  value: 22
-  values: [2, 3, 4]
+  num: 22
+  nums: [2, 3, 4]
   str: "foo"
   strs: []
   mixeds: []
-  nested:
-    value: 22
-    values: [2, 3, 4]
+  obj:
+    num: 22
+    nums: [2, 3, 4]
     str: "foo"
     strs: []
     mixeds: []
 - _id: "c"
   _type: "doc"
-  value: 99
-  values: [3, 4, 1, 5]
+  num: 99
+  nums: [3, 4, 1, 5]
   str: "foo"
   strs: ["a", "b", "a", "a", "b"]
   mixeds: ["b", 99, null, true]
-  nested:
-    value: 99
-    values: [3, 4, 1, 5]
+  obj:
+    num: 99
+    nums: [3, 4, 1, 5]
     str: "foo"
     strs: ["a", "b", "a", "a", "b"]
     mixeds: ["b", 99, null, true]
 - _id: "d"
   _type: "doc"
-  value: 22
-  values: []
+  num: 22
+  nums: []
   str: "bar"
   strs: ["a", "b"]
   mixeds: [false, 32, "c"]
-  nested:
-    value: 22
-    values: []
+  obj:
+    num: 22
+    nums: []
     str: "bar"
     strs: ["a", "b"]
     mixeds: [false, 32, "c"]
 
 tests:
 - query: |
-    array::unique([1, 2, 3, 3, 3, 3, 4, 2, 9, 3]) | order(@)
-  result: [1, 2, 3, 4, 9]
-
-- query: |
-    array::unique([1, 2, null, "hello", true, true, 3, 3, 3, 3, 4, 2, 9, 3, "world", "hello", null, true, false]) | order(@)
-  result: [1, 2, 3, 4, 9, "hello", "world", false, true, null]
-
-- query: |
-    array::unique([])
-  result: []
-
-- query: |
-    array::unique(*[].nonExistent)
-  result: [null]
-
-- query: |
-    array::unique(*[_type == "doc"].value) | order(@)
-  result: [1, 22, 99]
-
-- query: |
-    array::unique(*[_type == "doc"].values[])
-  result: [1, 2, 3, 4, 5]
-
-- query: |
-    array::unique(*[_type == "doc"].str) | order(@)
-  result: ["bar", "baz", "foo"]
-
-- query: |
-    array::unique(*[_type == "doc"].strs[]) | order(@)
-  result: ["a", "b", "d"]
-
-- query: |
-    array::unique(*[_type == "doc"].mixeds[]) | order(@)
-  result: [2, 32, 99, "a", "b", "c", false, true, null]
-
-# Nested
-- query: |
-    array::unique(*[_type == "doc"].nested.value) | order(@)
-  result: [1, 22, 99]
-
-- query: |
-    array::unique(*[_type == "doc"].nested.values[])
-  result: [1, 2, 3, 4, 5]
-
-- query: |
-    array::unique(*[_type == "doc"].nested.str) | order(@)
-  result: ["bar", "baz", "foo"]
-
-- query: |
-    array::unique(*[_type == "doc"].nested.strs[]) | order(@)
-  result: ["a", "b", "d"]
-
-- query: |
-    array::unique(*[_type == "doc"].nested.mixeds[]) | order(@)
-  result: [2, 32, 99, "a", "b", "c", false, true, null]
-
-- name: Objects
-  query: |
-    array::unique([{"a": 42}, {"a": 42}])
-  result:
-  - {"a": 42}
-  - {"a": 42}
-
-- name: Arrays
-  query: |
-    array::unique([[42], [42]])
-  result:
-  - [42]
-  - [42]
+    array::unique(~expr~) | order(@)
+  tests:
+  - name: Basic
+    variables:
+      expr: '[1, 2, 3, 3, 3, 3, 4, 2, 9, 3]'
+    result: [1, 2, 3, 4, 9]
+  - name: Mix of types
+    variables:
+      expr: '[1, 2, null, "hello", true, true, 3, 3, 3, 3, 4, 2, 9, 3, "world", "hello", null, true, false]'
+    result: [1, 2, 3, 4, 9, "hello", "world", false, true, null]
+  - name: Empty
+    variables:
+      expr: '[]'
+    result: []
+  - name: Non-existent attribute
+    variables:
+      expr: '*[].nonExistent'
+    result: [null]
+  - name: Number attribute
+    variables:
+      expr: '*[_type == "doc"].num'
+    result: [1, 22, 99]
+  - name: Number array attribute
+    variables:
+      expr: '*[_type == "doc"].nums[]'
+    result: [1, 2, 3, 4, 5]
+  - name: String attribute
+    variables:
+      expr: '*[_type == "doc"].str'
+    result: ["bar", "baz", "foo"]
+  - name: String array attribute
+    variables:
+      expr: '*[_type == "doc"].strs[]'
+    result: ["a", "b", "d"]
+  - name: Mixed array attribute
+    variables:
+      expr: '*[_type == "doc"].mixeds[]'
+    result: [2, 32, 99, "a", "b", "c", false, true, null]
+  - name: Nested number attribute
+    variables:
+      expr: '*[_type == "doc"].obj.num'
+    result: [1, 22, 99]
+  - name: Nested number array attribute
+    variables:
+      expr: '*[_type == "doc"].obj.nums[]'
+    result: [1, 2, 3, 4, 5]
+  - name: Nested string attribute
+    variables:
+      expr: '*[_type == "doc"].obj.str'
+    result: ["bar", "baz", "foo"]
+  - name: Nested string array attribute
+    variables:
+      expr: '*[_type == "doc"].obj.strs[]'
+    result: ["a", "b", "d"]
+  - name: Nested mixed array attribute
+    variables:
+      expr: '*[_type == "doc"].obj.mixeds[]'
+    result: [2, 32, 99, "a", "b", "c", false, true, null]
+  - name: Objects
+    variables:
+      expr: '[{"a": 42}, {"a": 42}]'
+    result: [{"a": 42}, {"a": 42}]
+  - name: Arrays
+    variables:
+      expr: '[[42], [42]]'
+    result:
+    - [42]
+    - [42]
