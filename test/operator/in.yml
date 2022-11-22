@@ -28,7 +28,7 @@ tests:
   - result: false
     tests:
       - variables: {el: '1', arr: '["1", null, true]'}
-      - variables: {el: '1', arr: '["1", 1.1, null, true]'}
+      - variables: {el: '"1"', arr: '[1, null, true]'}
       - variables: {el: 'true', arr: '["1", null, false]'}
       - variables: {el: 'false', arr: '["1", null, true]'}
       - variables: {el: '[]', arr: '[[]]'}
@@ -142,8 +142,13 @@ tests:
 - name: "Unknown types"
   result: null
   query: |
-    1 in ~arr~
+    ~el~ in ~arr~
   variables:
+    el:
+    - '1'
+    - '"1"'
+    - 'true'
+    - 'null'
     arr:
     - '{}'
     - '"1"'
