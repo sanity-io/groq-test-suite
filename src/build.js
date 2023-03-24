@@ -8,9 +8,9 @@ const crypto = require('crypto')
 const {doc} = require('prettier')
 const parseArgs = require('minimist')
 
-const OUTFILE = 'suite.ndjson'
-const BASEDIR = path.resolve(__dirname + '/../test')
-const PATTERN = path.join(BASEDIR, '**/*.yml')
+const DEFAULT_OUTFILE = 'suite.ndjson'
+const DEFAULT_BASEDIR = path.resolve(__dirname + '/../test')
+const DEFAULT_PATTERN = '**/*.yml'
 const DATASETS = {
   movies:
     'https://groq-test-suite.storage.googleapis.com/datasets/movies/movies-8807c4bb9fa31a9a6c21a4f7e41662d6.ndjson',
@@ -443,12 +443,12 @@ class Builder {
   }
 }
 
-async function build(pattern, emitter) {
+async function build(baseDir, pattern, emitter) {
   let testPaths = await glob(pattern)
   let builder = new Builder(emitter)
 
   for (let testPath of testPaths) {
-    let filename = path.relative(BASEDIR, testPath)
+    let filename = path.relative(baseDir, testPath)
     let data = fs.readFileSync(testPath)
     let test = yaml.safeLoad(data)
     let extra = {filename}
@@ -466,11 +466,14 @@ async function main() {
     serialize.pipe(process.stdout)
   }
 
-  let outFile = argv.out ? argv.out : OUTFILE
+  let outFile = argv.out ? argv.out : DEFAULT_OUTFILE
   let outStream = fs.createWriteStream(outFile)
   serialize.pipe(outStream)
 
-  await build(argv.pattern ? path.join(BASEDIR, argv.pattern) : PATTERN, (entry) => {
+  const baseDir = argv.baseDir ? argv.baseDir : DEFAULT_BASEDIR
+  const pattern = argv.pattern ? argv.pattern : DEFAULT_PATTERN
+
+  await build(baseDir, path.join(baseDir, pattern), (entry) => {
     serialize.write(entry)
   })
 
