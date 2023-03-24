@@ -55,11 +55,12 @@ Use the provided `build` script to compile the test suite:
 # Install dependencies
 $ yarn
 
-# Build the test suite 
+# Build the test suite
 $ yarn build # outputs to suite.ndjson
 $ yarn build --stdout # outputs to stdout
 $ yarn build --out=custom.ndjson # outputs to custom.ndjson
 $ yarn build --pattern='**/misc.yml' # Only build for files which matched the pattern.
+$ yarn build --baseDir=/some/dir' # Look for test  files in this base directory
 ```
 
 ## Structure
@@ -211,7 +212,7 @@ A test can specify a list of named features that it requires, which a test runne
 
 - `portableText`: Functionality provided by the `pt` extensions.
 - `geo`: Functionality provided by the `geo` extension.
-- `wildcardMatchSegmentation`: Specifies a more sensible semantics for handling wildcards in the `match` operator. 
+- `wildcardMatchSegmentation`: Specifies a more sensible semantics for handling wildcards in the `match` operator.
 
 ### Scores
 
