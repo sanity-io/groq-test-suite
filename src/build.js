@@ -128,6 +128,7 @@ class IdGenerator {
 
 class GeneratedDataset {
   constructor() {
+    this.datasetId = 'dataset-generated-' + Date.now()
     this.idGenerator = new IdGenerator()
     this.documents = []
     this.json = new Map()
@@ -162,7 +163,7 @@ class GeneratedDataset {
 
   entry() {
     return {
-      _id: 'dataset-generated',
+      _id: this.datasetId,
       _type: 'dataset',
       name: 'Generated',
       url: 'generated',
@@ -173,7 +174,7 @@ class GeneratedDataset {
   ref() {
     return {
       _type: 'reference',
-      _ref: 'dataset-generated',
+      _ref: this.datasetId,
     }
   }
 }
