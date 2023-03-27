@@ -245,6 +245,7 @@ class Builder {
     }
 
     let entry = {
+      ...test,
       _id,
       _type: 'test',
       dataset,
