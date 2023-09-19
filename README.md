@@ -181,7 +181,7 @@ tests:
 ### Automatic test generation based on variables
 
 To increase the test coverage we automatically generate extra test cases.
-The follwing test case,
+The following test case,
 
 ```yaml
 tests:
@@ -197,14 +197,15 @@ will generate the following additional test queries:
 - Plain: `"a" < "z"`
 - GenFilter: `*[_id == "foo"][bar < "z"][]._id` (and create the needed documents)
 - GenFetch: `*[_id == "foo"][0].bar < "z"` (and create the needed documents)
+- GenJoin: `*[_id == "foo]{\"children\":*[_id == \"foo\"][^.f == f][]._id}"` (and create the needed documents)
 
 The rules of how the tests are generated are as follows:
 
 - If a test case has an explicit dataset (either `documents` or `dataset`) then nothing will be generated.
 - Every variable which contains valid JSON is eligable for automatic test generation.
 - We assume that every variable is *standalone* (e.g. we can safely pull them out).
-  You can use `standloneVariables: ["var1"]` in case there are some variables which are not standalone.
-- Set `genFilter: false` or `genFetch: false` to disable the generated tests.
+  You can use `standaloneVariables: ["var1"]` in case there are some variables which are not standalone.
+- Set `genFilter: false`, `genFetch: false` and/or `genJoin: false` to disable the generated tests.
 
 ### Features
 
