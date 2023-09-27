@@ -154,6 +154,7 @@ tests:
 - name: "_id in path"
   documents:
   - _id: "a"
+    _type: "doc"
   tests:
   - query: |
       *[_id in path("*")][]._id
@@ -162,7 +163,9 @@ tests:
 - name: "_id not in path"
   documents:
     - _id: "a"
+      _type: "doc"
     - _id: "a.b"
+      _type: "doc"
   tests:
     - query: |
         *[!(_id in path("a.*"))][]._id

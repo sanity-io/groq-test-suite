@@ -140,7 +140,7 @@ class GeneratedDataset {
   addValue(v) {
     let docId = this.idGenerator.generate('d')
     let fieldId = this.idGenerator.generate('f').replace(/-/g, '_')
-    this.documents.push({_id: docId, [fieldId]: v})
+    this.documents.push({_id: docId, _type: "doc", [fieldId]: v})
     return {docId, fieldId}
   }
 
@@ -293,6 +293,13 @@ class Builder {
       documents,
       url: `file://${extra.filename}`,
     }
+
+    for (let document of documents) {
+      if (document["_type"] === undefined) {
+        throw new Error('Document missing "_type" attribute: ' + JSON.stringify(document))
+      }
+    }
+
     this.emit(entry)
     return _id
   }
