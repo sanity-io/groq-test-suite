@@ -1,0 +1,24 @@
+name: "Subqueries"
+
+documents:
+  - _id: a
+    _type: foo
+    sources:
+      - _ref: b
+
+  - _id: not-a
+    _type: foo
+    sources: []
+
+  - _id: b
+    _type: bar
+
+
+tests:
+  - name: "sunquery-union"
+    query: |
+      *[_type == 'bar'] {
+        'matched': count(*[_type == 'foo' && (^._id in sources[]._ref || ^._id in sources[]._ref)])
+      }
+    result:
+      - matched: 1
