@@ -2,16 +2,6 @@ name: "geo::distance() function"
 features:
 - geoFunctions
 
-documents:
-- {_id: oslo, _type: place, location: {lat: 59.913889, lng: 10.752222}}
-- {_id: new_york, _type: place, location: {lat: 40.6971, lng: -73.9796}}
-- {_id: stockholm, _type: place, location: {lat: 59.329444, lng: 18.068611}}
-- {_id: berlin, _type: place, location: {lat: 52.5170365, lng: 13.3888599}}
-- {_id: san_francisco, _type: place, location: {lat: 37.7852, lng: -122.7277}}
-- {_id: tokyo, _type: place, location: {lat: 28.345,lng: 145.03}}
-- {_id: paris, _type: place, location: {lat: 48.8589, lng: 2.3469}}
-- {_id: not_a_place, _type: place}
-
 tests:
 - name: Basic
   variables:
@@ -47,6 +37,28 @@ tests:
   - query: "geo::distance(geo(~a~), geo(~b~))"
   - query: "geo::distance(geo(~b~), geo(~a~))"
   result: null
+
+- name: "=="
+  variables:
+    a:
+    - '{"lat": 59.913889, "lng": 10.752222}'
+    b:
+    - '{"lat": 59.329444, "lng": 18.068611}'
+  tests:
+  - query: "geo::distance(~a~, ~b~) == geo::distance(~b~, ~a~)"
+  - query: "geo::distance(geo(~a~), geo(~b~)) == geo::distance(geo(~b~), geo(~a~))"
+  result: true
+
+- name: "!="
+  variables:
+    a:
+    - '{"lat": 59.913889, "lng": 10.752222}'
+    b:
+    - '{"lat": 59.329444, "lng": 18.068611}'
+  tests:
+  - query: "geo::distance(~a~, ~b~) != geo::distance(~b~, ~a~)"
+  - query: "geo::distance(geo(~a~), geo(~b~)) != geo::distance(geo(~b~), geo(~a~))"
+  result: false
 
 - name: "< and <="
   variables:
@@ -144,77 +156,89 @@ tests:
   - query: "!(geo::distance(geo(~b~), geo(~a~)) ~op~ 100)"
   result: false
 
-- name: Order, ascending
-  variables:
-    field:
-    - location
-    - geo(location)
-    coords:
-    - '{"lat": 59.913889, "lng": 10.752222}'
-    - '{"type": "Point", "coordinates": [10.752222, 59.913889]}'
-    - 'geo({"lat": 59.913889, "lng": 10.752222})'
-    - 'geo({"type": "Point", "coordinates": [10.752222, 59.913889]})'
-  tests:
-  - query: '*[_type == "place"] | order(geo::distance(~coords~, ~field~))[]._id'
-  - query: '*[_type == "place"] | order(geo::distance(~field~, ~coords~))[]._id'
-  result:
-  - oslo
-  - stockholm
-  - berlin
-  - paris
-  - new_york
-  - san_francisco
-  - tokyo
-  - not_a_place
+- name: Ordering
+  documents:
+  - {_id: oslo, _type: place, location: {lat: 59.913889, lng: 10.752222}}
+  - {_id: new_york, _type: place, location: {lat: 40.6971, lng: -73.9796}}
+  - {_id: stockholm, _type: place, location: {lat: 59.329444, lng: 18.068611}}
+  - {_id: berlin, _type: place, location: {lat: 52.5170365, lng: 13.3888599}}
+  - {_id: san_francisco, _type: place, location: {lat: 37.7852, lng: -122.7277}}
+  - {_id: tokyo, _type: place, location: {lat: 28.345,lng: 145.03}}
+  - {_id: paris, _type: place, location: {lat: 48.8589, lng: 2.3469}}
+  - {_id: not_a_place, _type: place}
 
-- name: Order, descending
-  variables:
-    field:
-    - location
-    - geo(location)
-    coords:
-    - '{"lat": 59.913889, "lng": 10.752222}'
-    - '{"type": "Point", "coordinates": [10.752222, 59.913889]}'
-    - 'geo({"lat": 59.913889, "lng": 10.752222})'
-    - 'geo({"type": "Point", "coordinates": [10.752222, 59.913889]})'
   tests:
-  - query: '*[_type == "place"] | order(geo::distance(~coords~, ~field~) desc)[]._id'
-  - query: '*[_type == "place"] | order(geo::distance(~field~, ~coords~) desc)[]._id'
-  result:
-  - not_a_place
-  - tokyo
-  - san_francisco
-  - new_york
-  - paris
-  - berlin
-  - stockholm
-  - oslo
+    - name: Order, ascending
+      variables:
+        field:
+        - location
+        - geo(location)
+        coords:
+        - '{"lat": 59.913889, "lng": 10.752222}'
+        - '{"type": "Point", "coordinates": [10.752222, 59.913889]}'
+        - 'geo({"lat": 59.913889, "lng": 10.752222})'
+        - 'geo({"type": "Point", "coordinates": [10.752222, 59.913889]})'
+      tests:
+      - query: '*[_type == "place"] | order(geo::distance(~coords~, ~field~))[]._id'
+      - query: '*[_type == "place"] | order(geo::distance(~field~, ~coords~))[]._id'
+      result:
+      - oslo
+      - stockholm
+      - berlin
+      - paris
+      - new_york
+      - san_francisco
+      - tokyo
+      - not_a_place
 
-- name: Order, invalid
-  variables:
-  - field:
-    - 'location'
-    - 'unknownField'
-  - coords:
-    - '{"lat": 59.913889, "lng": "10.752222"}'
-    - 'geo({"lat": 59.913889, "lng": "10.752222"})'
-    - '{"lat": 59.913889, "lng": 10.752222, "lon": 10.752222}'
-    - 'geo({"lat": 59.913889, "lng": 10.752222, "lon": 10.752222})'
-    - '{"type": "MongoPoint", "coordinates": [10.752222, 59.913889]}'
-    - 'geo({"lat": 59.913889, "lng": 10.752222})'
-    - 'geo({"type": "MongoPoint", "coordinates": [10.752222, 59.913889]})'
-    - '"bob"'
-    - 'null'
-    - 'unknownField'
-  tests:
-  - query: '*[_type == "place"] | order(geo::distance(~coords~, ~field~) desc)[]._id'
-  - query: '*[_type == "place"] | order(geo::distance(~field~, ~coords~) desc)[]._id'
-  result:
-  - berlin
-  - new_york
-  - not_a_place
-  - oslo
-  - paris
-  - san_francisco
-  - stockholm
-  - tokyo
+    - name: Order, descending
+      variables:
+        field:
+        - location
+        - geo(location)
+        coords:
+        - '{"lat": 59.913889, "lng": 10.752222}'
+        - '{"type": "Point", "coordinates": [10.752222, 59.913889]}'
+        - 'geo({"lat": 59.913889, "lng": 10.752222})'
+        - 'geo({"type": "Point", "coordinates": [10.752222, 59.913889]})'
+      tests:
+      - query: '*[_type == "place"] | order(geo::distance(~coords~, ~field~) desc)[]._id'
+      - query: '*[_type == "place"] | order(geo::distance(~field~, ~coords~) desc)[]._id'
+      result:
+      - not_a_place
+      - tokyo
+      - san_francisco
+      - new_york
+      - paris
+      - berlin
+      - stockholm
+      - oslo
+
+    - name: Order, invalid
+      variables:
+      - field:
+        - 'location'
+        - 'unknownField'
+      - coords:
+        - '{"lat": 59.913889, "lng": "10.752222"}'
+        - 'geo({"lat": 59.913889, "lng": "10.752222"})'
+        - '{"lat": 59.913889, "lng": 10.752222, "lon": 10.752222}'
+        - 'geo({"lat": 59.913889, "lng": 10.752222, "lon": 10.752222})'
+        - '{"type": "MongoPoint", "coordinates": [10.752222, 59.913889]}'
+        - 'geo({"lat": 59.913889, "lng": 10.752222})'
+        - 'geo({"type": "MongoPoint", "coordinates": [10.752222, 59.913889]})'
+        - '"bob"'
+        - 'null'
+        - 'unknownField'
+      tests:
+      - query: '*[_type == "place"] | order(geo::distance(~coords~, ~field~) desc)[]._id'
+      - query: '*[_type == "place"] | order(geo::distance(~field~, ~coords~) desc)[]._id'
+      result:
+      - berlin
+      - new_york
+      - not_a_place
+      - oslo
+      - paris
+      - san_francisco
+      - stockholm
+      - tokyo
