@@ -19,6 +19,13 @@ documents:
   _type: "doc"
   value: -3
   values: []
+- _id: "e"
+  _type: "ref"
+  values:
+    - _ref: "a"
+    - _ref: "b"
+    - _ref: "c"
+    - _ref: "d"
 
 tests:
 - name: All numbers
@@ -55,3 +62,10 @@ tests:
 - query: |
     math::max(*[_type == "doc"].values[])
   result: 9
+
+- name: "Max of references"
+  query: |
+    *[_type == "ref"] {
+      "max": math::max(values[]->value)
+    }[0].max
+  result: 99
