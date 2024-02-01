@@ -19,6 +19,14 @@ documents:
   _type: "doc"
   value: -3
   values: []
+- _id: "e"
+  _type: "ref"
+  values:
+    - _ref: "a"
+    - _ref: "b"
+    - _ref: "c"
+    - _ref: "d"
+
 
 tests:
 - name: All numbers
@@ -55,3 +63,10 @@ tests:
 - query: |
     math::min(*[_type == "doc"].values[])
   result: 1
+
+- name: "Min of references"
+  query: |
+    *[_type == "ref"] {
+      "min": math::min(values[]->value)
+    }[0].min
+  result: -3

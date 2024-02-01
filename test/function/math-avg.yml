@@ -19,6 +19,13 @@ documents:
   _type: "doc"
   value: -3
   values: []
+- _id: "e"
+  _type: "ref"
+  values:
+    - _ref: "a"
+    - _ref: "b"
+    - _ref: "c"
+    - _ref: "d"
 
 tests:
 - name: All numbers
@@ -55,3 +62,10 @@ tests:
 - query: |
     math::avg(*[_type == "doc"].values[])
   result: 5
+
+- name: "Avg of references"
+  query: |
+    *[_type == "ref"] {
+      "avg": math::avg(values[]->value)
+    }[0].avg
+  result: 29.75

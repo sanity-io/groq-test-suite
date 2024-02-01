@@ -19,6 +19,13 @@ documents:
   _type: "doc"
   value: -3
   values: []
+- _id: "e"
+  _type: "ref"
+  values:
+    - _ref: "a"
+    - _ref: "b"
+    - _ref: "c"
+    - _ref: "d"
 
 tests:
 - name: All numbers
@@ -59,3 +66,10 @@ tests:
 - query: |
     math::sum(*[_type == "doc"].values[])
   result: 45
+
+- name: "Sum of references"
+  query: |
+    *[_type == "ref"] {
+      "sum": math::sum(values[]->value)
+    }[0].sum
+  result: 119
