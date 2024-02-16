@@ -15,7 +15,7 @@ The test suite uses the version scheme `vX.Y.Z` where `X.Y` follows the version 
 
 The YAML files in this repository is optimized for writing tests.
 For using the test suite it's recommended to use the *compiled* version.
-The compiled test suite is a [NDJSON](http://ndjson.org/) file where every entry uses the schema below.
+The compiled test suite is a [NDJSON](https://github.com/ndjson/ndjson-spec) file where every entry uses the schema below.
 
 The compiled test suite can either be downloaded from [the GitHub Release page](https://github.com/sanity-io/groq-test-suite/releases) or be built from source (see next section).
 
