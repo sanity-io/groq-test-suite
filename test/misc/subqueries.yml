@@ -15,7 +15,7 @@ documents:
 
 
 tests:
-  - name: "sunquery-union"
+  - name: "subquery-union"
     query: |
       *[_type == 'bar'] {
         'matched': count(*[_type == 'foo' && (^._id in sources[]._ref || ^._id in sources[]._ref)])
