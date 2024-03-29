@@ -1,0 +1,125 @@
+name: "array::intersects() function"
+
+tests:
+- name: Invalid left
+  query: |
+    array::intersects(~expr~, [1, 2, 3])
+  result: null
+  tests:
+  - variables: {expr: '42'}
+  - variables: {expr: '"foo"'}
+  - variables: {expr: 'true'}
+  - variables: {expr: 'false'}
+  - variables: {expr: 'null'}
+  - variables: {expr: '{"a": 42}'}
+  - variables: {expr: 'geo({"lat": 1, "lng": 1})'}
+
+# Exactly the same as previous, except reversed order of arguments
+- name: Invalid right
+  query: |
+    array::intersects([1, 2, 3], ~expr~)
+  result: null
+  tests:
+  - variables: {expr: '42'}
+  - variables: {expr: '"foo"'}
+  - variables: {expr: 'true'}
+  - variables: {expr: 'false'}
+  - variables: {expr: 'null'}
+  - variables: {expr: '{"a": 42}'}
+  - variables: {expr: 'geo({"lat": 1, "lng": 1})'}
+
+- name: Non-primitves
+  query: |
+    array::intersects(~expr~, ~expr~)
+  result: false
+  tests:
+  # Arrays of primitives
+  - variables: {expr: '[[]]'}
+  - variables: {expr: '[[1]]'}
+  - variables: {expr: '[["foo"]]'}
+  - variables: {expr: '[[null]]'}
+  - variables: {expr: '[[false]]'}
+  - variables: {expr: '[[true]]'}
+  # Object
+  - variables: {expr: '[{"a": 42}]'}
+  # Geo
+  - variables: {expr: '[geo({"lat": 1, "lng": 1})]'}
+
+- name: Array right
+  query: |
+    array::intersects(~arr~, ~lit~)
+  variables:
+    lit: '[1, "1", null, true, false, dateTime("2002-10-02T12:34:56Z"), {"a": 42}, geo({"lat": 1, "lng": 1})]'
+  tests:
+  # Equal
+  - result: true
+    variables:
+      arr: '[1, "1", null, true, false, dateTime("2002-10-02T12:34:56Z"), {"a": 42}, geo({"lat": 1, "lng": 1})]'
+  # Superset
+  - result: true
+    variables:
+      arr: '[1, "1", null, true, false, dateTime("2002-10-02T12:34:56Z"), {"a": 42}, geo({"lat": 1, "lng": 1}), "2"]'
+  # Subset
+  - result: true
+    variables:
+      arr:
+      - '[1]'
+      - '["1"]'
+      - '[null]'
+      - '[true]'
+      - '[false]'
+  # Overlapping
+  - result: true
+    variables:
+      arr:
+      - '[1, 2]'
+      - '["1", "2"]'
+      - '[null, 0]'
+      - '[true, 0]'
+      - '[false, 0]'
+  # Disjoint
+  - result: false
+    variables:
+      arr:
+      - '[2]'
+      - '["2"]'
+
+# Exactly the same as previous, except reversed order of arguments
+- name: Array left
+  query: |
+    array::intersects(~lit~, ~arr~)
+  variables:
+    lit: '[1, "1", null, true, false, dateTime("2002-10-02T12:34:56Z"), {"a": 42}, geo({"lat": 1, "lng": 1})]'
+  tests:
+  # Equal
+  - result: true
+    variables:
+      arr: '[1, "1", null, true, false, dateTime("2002-10-02T12:34:56Z"), {"a": 42}, geo({"lat": 1, "lng": 1})]'
+  # Superset
+  - result: true
+    variables:
+      arr: '[1, "1", null, true, false, dateTime("2002-10-02T12:34:56Z"), {"a": 42}, geo({"lat": 1, "lng": 1}), "2"]'
+  # Subset
+  - result: true
+    variables:
+      arr:
+      - '[1]'
+      - '["1"]'
+      - '[null]'
+      - '[true]'
+      - '[false]'
+  # Overlapping
+  - result: true
+    variables:
+      arr:
+      - '[1, 2]'
+      - '["1", "2"]'
+      - '[null, 0]'
+      - '[true, 0]'
+      - '[false, 0]'
+  # Disjoint
+  - result: false
+    variables:
+      arr:
+      - '[2]'
+      - '["2"]'
