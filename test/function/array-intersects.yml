@@ -21,12 +21,15 @@ tests:
     array::intersects([1, 2, 3], ~expr~)
   result: null
   tests:
+  # Non-array primitives
   - variables: {expr: '42'}
   - variables: {expr: '"foo"'}
   - variables: {expr: 'true'}
   - variables: {expr: 'false'}
   - variables: {expr: 'null'}
+  # Non-array object
   - variables: {expr: '{"a": 42}'}
+  # Non-array geo
   - variables: {expr: 'geo({"lat": 1, "lng": 1})'}
 
 - name: Non-primitves
@@ -41,25 +44,25 @@ tests:
   - variables: {expr: '[[null]]'}
   - variables: {expr: '[[false]]'}
   - variables: {expr: '[[true]]'}
-  # Object
+  # Array of object
   - variables: {expr: '[{"a": 42}]'}
-  # Geo
+  # Array of geo
   - variables: {expr: '[geo({"lat": 1, "lng": 1})]'}
 
 - name: Array right
   query: |
     array::intersects(~arr~, ~lit~)
   variables:
-    lit: '[1, "1", null, true, false, dateTime("2002-10-02T12:34:56Z"), {"a": 42}, geo({"lat": 1, "lng": 1})]'
+    lit: '[1, "1", null, true, false, {"a": 42}]'
   tests:
   # Equal
   - result: true
     variables:
-      arr: '[1, "1", null, true, false, dateTime("2002-10-02T12:34:56Z"), {"a": 42}, geo({"lat": 1, "lng": 1})]'
+      arr: '[1, "1", null, true, false, {"a": 42}]'
   # Superset
   - result: true
     variables:
-      arr: '[1, "1", null, true, false, dateTime("2002-10-02T12:34:56Z"), {"a": 42}, geo({"lat": 1, "lng": 1}), "2"]'
+      arr: '[1, "1", null, true, false, {"a": 42}, "2"]'
   # Subset
   - result: true
     variables:
@@ -90,16 +93,16 @@ tests:
   query: |
     array::intersects(~lit~, ~arr~)
   variables:
-    lit: '[1, "1", null, true, false, dateTime("2002-10-02T12:34:56Z"), {"a": 42}, geo({"lat": 1, "lng": 1})]'
+    lit: '[1, "1", null, true, false, {"a": 42}]'
   tests:
   # Equal
   - result: true
     variables:
-      arr: '[1, "1", null, true, false, dateTime("2002-10-02T12:34:56Z"), {"a": 42}, geo({"lat": 1, "lng": 1})]'
+      arr: '[1, "1", null, true, false, {"a": 42}]'
   # Superset
   - result: true
     variables:
-      arr: '[1, "1", null, true, false, dateTime("2002-10-02T12:34:56Z"), {"a": 42}, geo({"lat": 1, "lng": 1}), "2"]'
+      arr: '[1, "1", null, true, false, {"a": 42}, "2"]'
   # Subset
   - result: true
     variables:
@@ -124,3 +127,68 @@ tests:
       arr:
       - '[2]'
       - '["2"]'
+
+- name: Datetimes right
+  query: |
+    array::intersects(~arr~, ~lit~)
+  variables:
+    lit: '[dateTime("1900-01-01T00:00:00Z"), dateTime("1901-01-01T00:00:00Z"), dateTime("1902-01-01T00:00:00Z")]'
+  tests:
+  # Equal
+  - result: true
+    variables:
+      arr: '[dateTime("1900-01-01T00:00:00Z"), dateTime("1901-01-01T00:00:00Z"), dateTime("1902-01-01T00:00:00Z")]'
+  # Superset
+  - result: true
+    variables:
+      arr: '[dateTime("1900-01-01T00:00:00Z"), dateTime("1901-01-01T00:00:00Z"), dateTime("1902-01-01T00:00:00Z"), dateTime("1903-01-01T00:00:00Z"), "not a date"]'
+  # Subset
+  - result: true
+    variables:
+      arr:
+      - '[dateTime("1901-01-01T00:00:00Z")]'
+  # Overlapping
+  - result: true
+    variables:
+      arr:
+      - '[dateTime("1900-01-01T00:00:00Z"), dateTime("1903-01-01T00:00:00Z")]'
+  # Disjoint
+  - result: false
+    variables:
+      arr:
+      - '["x"]'
+      - '[dateTime("1903-01-01T00:00:00Z")]'
+      - '["1900-01-01T00:00:00Z"]'
+
+# Exactly the same as previous, except reversed order of arguments
+- name: Datetimes left
+  query: |
+    array::intersects(~lit~, ~arr~)
+  variables:
+    lit: '[dateTime("1900-01-01T00:00:00Z"), dateTime("1901-01-01T00:00:00Z"), dateTime("1902-01-01T00:00:00Z")]'
+  tests:
+  # Equal
+  - result: true
+    variables:
+      arr: '[dateTime("1900-01-01T00:00:00Z"), dateTime("1901-01-01T00:00:00Z"), dateTime("1902-01-01T00:00:00Z")]'
+  # Superset
+  - result: true
+    variables:
+      arr: '[dateTime("1900-01-01T00:00:00Z"), dateTime("1901-01-01T00:00:00Z"), dateTime("1902-01-01T00:00:00Z"), dateTime("1903-01-01T00:00:00Z"), "not a date"]'
+  # Subset
+  - result: true
+    variables:
+      arr:
+      - '[dateTime("1901-01-01T00:00:00Z")]'
+  # Overlapping
+  - result: true
+    variables:
+      arr:
+      - '[dateTime("1900-01-01T00:00:00Z"), dateTime("1903-01-01T00:00:00Z")]'
+  # Disjoint
+  - result: false
+    variables:
+      arr:
+      - '["x"]'
+      - '[dateTime("1903-01-01T00:00:00Z")]'
+      - '["1900-01-01T00:00:00Z"]'
