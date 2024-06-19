@@ -1,0 +1,194 @@
+name: "array::intersects() function"
+version: ">= 1.2"
+
+tests:
+- name: Invalid left
+  query: |
+    array::intersects(~expr~, [1, 2, 3])
+  result: null
+  tests:
+  - variables: {expr: '42'}
+  - variables: {expr: '"foo"'}
+  - variables: {expr: 'true'}
+  - variables: {expr: 'false'}
+  - variables: {expr: 'null'}
+  - variables: {expr: '{"a": 42}'}
+  - variables: {expr: 'geo({"lat": 1, "lng": 1})'}
+
+# Exactly the same as previous, except reversed order of arguments
+- name: Invalid right
+  query: |
+    array::intersects([1, 2, 3], ~expr~)
+  result: null
+  tests:
+  # Non-array primitives
+  - variables: {expr: '42'}
+  - variables: {expr: '"foo"'}
+  - variables: {expr: 'true'}
+  - variables: {expr: 'false'}
+  - variables: {expr: 'null'}
+  # Non-array object
+  - variables: {expr: '{"a": 42}'}
+  # Non-array geo
+  - variables: {expr: 'geo({"lat": 1, "lng": 1})'}
+
+- name: Non-primitves
+  query: |
+    array::intersects(~expr~, ~expr~)
+  result: false
+  tests:
+  # Arrays of primitives
+  - variables: {expr: '[[]]'}
+  - variables: {expr: '[[1]]'}
+  - variables: {expr: '[["foo"]]'}
+  - variables: {expr: '[[null]]'}
+  - variables: {expr: '[[false]]'}
+  - variables: {expr: '[[true]]'}
+  # Array of object
+  - variables: {expr: '[{"a": 42}]'}
+  # Array of geo
+  - variables: {expr: '[geo({"lat": 1, "lng": 1})]'}
+
+- name: Array right
+  query: |
+    array::intersects(~arr~, ~lit~)
+  variables:
+    lit: '[1, "1", null, true, false, {"a": 42}]'
+  tests:
+  # Equal
+  - result: true
+    variables:
+      arr: '[1, "1", null, true, false, {"a": 42}]'
+  # Superset
+  - result: true
+    variables:
+      arr: '[1, "1", null, true, false, {"a": 42}, "2"]'
+  # Subset
+  - result: true
+    variables:
+      arr:
+      - '[1]'
+      - '["1"]'
+      - '[null]'
+      - '[true]'
+      - '[false]'
+  # Overlapping
+  - result: true
+    variables:
+      arr:
+      - '[1, 2]'
+      - '["1", "2"]'
+      - '[null, 0]'
+      - '[true, 0]'
+      - '[false, 0]'
+  # Disjoint
+  - result: false
+    variables:
+      arr:
+      - '[2]'
+      - '["2"]'
+
+# Exactly the same as previous, except reversed order of arguments
+- name: Array left
+  query: |
+    array::intersects(~lit~, ~arr~)
+  variables:
+    lit: '[1, "1", null, true, false, {"a": 42}]'
+  tests:
+  # Equal
+  - result: true
+    variables:
+      arr: '[1, "1", null, true, false, {"a": 42}]'
+  # Superset
+  - result: true
+    variables:
+      arr: '[1, "1", null, true, false, {"a": 42}, "2"]'
+  # Subset
+  - result: true
+    variables:
+      arr:
+      - '[1]'
+      - '["1"]'
+      - '[null]'
+      - '[true]'
+      - '[false]'
+  # Overlapping
+  - result: true
+    variables:
+      arr:
+      - '[1, 2]'
+      - '["1", "2"]'
+      - '[null, 0]'
+      - '[true, 0]'
+      - '[false, 0]'
+  # Disjoint
+  - result: false
+    variables:
+      arr:
+      - '[2]'
+      - '["2"]'
+
+- name: Datetimes right
+  query: |
+    array::intersects(~arr~, ~lit~)
+  variables:
+    lit: '[dateTime("1900-01-01T00:00:00Z"), dateTime("1901-01-01T00:00:00Z"), dateTime("1902-01-01T00:00:00Z")]'
+  tests:
+  # Equal
+  - result: true
+    variables:
+      arr: '[dateTime("1900-01-01T00:00:00Z"), dateTime("1901-01-01T00:00:00Z"), dateTime("1902-01-01T00:00:00Z")]'
+  # Superset
+  - result: true
+    variables:
+      arr: '[dateTime("1900-01-01T00:00:00Z"), dateTime("1901-01-01T00:00:00Z"), dateTime("1902-01-01T00:00:00Z"), dateTime("1903-01-01T00:00:00Z"), "not a date"]'
+  # Subset
+  - result: true
+    variables:
+      arr:
+      - '[dateTime("1901-01-01T00:00:00Z")]'
+  # Overlapping
+  - result: true
+    variables:
+      arr:
+      - '[dateTime("1900-01-01T00:00:00Z"), dateTime("1903-01-01T00:00:00Z")]'
+  # Disjoint
+  - result: false
+    variables:
+      arr:
+      - '["x"]'
+      - '[dateTime("1903-01-01T00:00:00Z")]'
+      - '["1900-01-01T00:00:00Z"]'
+
+# Exactly the same as previous, except reversed order of arguments
+- name: Datetimes left
+  query: |
+    array::intersects(~lit~, ~arr~)
+  variables:
+    lit: '[dateTime("1900-01-01T00:00:00Z"), dateTime("1901-01-01T00:00:00Z"), dateTime("1902-01-01T00:00:00Z")]'
+  tests:
+  # Equal
+  - result: true
+    variables:
+      arr: '[dateTime("1900-01-01T00:00:00Z"), dateTime("1901-01-01T00:00:00Z"), dateTime("1902-01-01T00:00:00Z")]'
+  # Superset
+  - result: true
+    variables:
+      arr: '[dateTime("1900-01-01T00:00:00Z"), dateTime("1901-01-01T00:00:00Z"), dateTime("1902-01-01T00:00:00Z"), dateTime("1903-01-01T00:00:00Z"), "not a date"]'
+  # Subset
+  - result: true
+    variables:
+      arr:
+      - '[dateTime("1901-01-01T00:00:00Z")]'
+  # Overlapping
+  - result: true
+    variables:
+      arr:
+      - '[dateTime("1900-01-01T00:00:00Z"), dateTime("1903-01-01T00:00:00Z")]'
+  # Disjoint
+  - result: false
+    variables:
+      arr:
+      - '["x"]'
+      - '[dateTime("1903-01-01T00:00:00Z")]'
+      - '["1900-01-01T00:00:00Z"]'
