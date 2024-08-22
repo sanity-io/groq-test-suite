@@ -291,3 +291,17 @@ type Test = {
 type Variables = { [key: string]: string }
 ```
 
+## Versioned Releases
+
+The test suite follows semantic versioning and is not tied to the GROQ specification releases.
+
+To release a new version vX.Y.Z of the test suite, run:
+
+```sh
+git switch main
+git pull
+git tag -a vX.Y.Z -m "Release vX.Y.Z"
+git push origin vX.Y.Z
+```
+
+A version tag push triggers [release GitHub Action](https://github.com/sanity-io/groq-test-suite/actions/workflows/release.yml) which will build the test suite and upload it to the [GitHub Release page](https://github.com/sanity-io/groq-test-suite/releases).
