@@ -1,5 +1,7 @@
 name: "array::intersects() function"
 version: ">= 1.2"
+features:
+  - geoFunctions
 
 tests:
 - name: Invalid left
