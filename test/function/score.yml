@@ -144,6 +144,38 @@ tests:
   - _id: b
     _pos: 3
 
+  - name: No text match
+  query: |
+    ~expr~ | score(text match "no match") {_id, _score}
+  variables:
+    expr:
+    - "*"
+    - "*[0..-1]"
+    - "*[_type == 'doc']"
+  result:
+  - _id: d
+    _pos: 0
+  - _id: c
+    _pos: 0
+  - _id: a
+    _pos: 0
+  - _id: b
+    _pos: 0
+
+  - name: Score is excluded from the projection
+  query: |
+    ~expr~ | score(text match "no match") {_id}
+  variables:
+    expr:
+    - "*"
+    - "*[0..-1]"
+    - "*[_type == 'doc']"
+  result:
+  - _id: d
+  - _id: c
+  - _id: a
+  - _id: b
+
 - name: Negated text match
   query: |
     ~expr~ | score(!(text match "fish")) {_id, _score}
