@@ -30,6 +30,13 @@ tests:
     name: "B"
 
 - query: |
+    *[_id == "a"][0].other->
+  result:
+    _id: "b"
+    _type: "test"
+    name: "B"
+
+- query: |
     *[_id == "a"][0].other->missing
   result: null
 
