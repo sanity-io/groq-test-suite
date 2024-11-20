@@ -13,6 +13,12 @@ documents:
   weakother:
     _ref: "b"
     _weak: true
+- _id: "c"
+  _type: "test"
+  name: "C"
+  others:
+    - _ref: "a"
+    - _ref: "b"
 
 tests:
 - query: |
@@ -59,6 +65,54 @@ tests:
 - query: |
     *[_id == "a"][0].weakother->missing
   result: null
+
+- query: |
+    *[_id == "c"][0].others[]-> | order(name asc)
+  result:
+    - _id: "a"
+      _type: "test"
+      name: "A"
+      other:
+        _ref: "b"
+      weakother:
+        _ref: "b"
+        _weak: true
+    - _id: "b"
+      _type: "test"
+      name: "B"
+
+- query: |
+    *[_id == "c"][0].others[]-> | order(name asc)
+  result:
+    - _id: "a"
+      _type: "test"
+      name: "A"
+      other:
+        _ref: "b"
+      weakother:
+        _ref: "b"
+        _weak: true
+    - _id: "b"
+      _type: "test"
+      name: "B"
+
+- query: |
+    *[_id == "c"][0] {
+      others[]-> | order(name asc)
+    }
+  result:
+    others:
+      - _id: "a"
+        _type: "test"
+        name: "A"
+        other:
+          _ref: "b"
+        weakother:
+          _ref: "b"
+          _weak: true
+      - _id: "b"
+        _type: "test"
+        name: "B"
 
 - name: "Unsupported types"
   variables:
