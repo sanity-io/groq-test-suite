@@ -292,7 +292,11 @@ type Variables = {[key: string]: string}
 
 ## Versioned Releases
 
-The test suite follows semantic versioning and is not tied to the GROQ specification releases.
+The test suite uses semantic versioning for its YAML/JSON test files and their functionality, independent of the GROQ language specification version. Version numbers are determined by changes to these files specifically:
+
+- Major: breaking change in the file YAML/JSON format
+- Minor: new functionality in the file YAML/JSON format
+- Patch: no change in the file format or functionality, i.e. adding more tests.
 
 To release a new version vX.Y.Z of the test suite, run:
 
