@@ -2,15 +2,6 @@
 
 The GROQ test suite is the official conformance test suite for the [GROQ specification](https://github.com/sanity-io/GROQ).
 
-## Status
-
-The test suite (and the specification) was started in August 2019 and has good coverage of the basic features.
-Currently we're working on moving over tests from the internal GROQ implementation used in [Sanity](https://www.sanity.io/).
-
-## Versioning
-
-The test suite uses the version scheme `vX.Y.Z` where `X.Y` follows the version of [GROQ](https://github.com/sanity-io/GROQ) and `Z` is monotonically increasing.
-
 ## Using the test suite
 
 The YAML files in this repository is optimized for writing tests.
@@ -131,7 +122,7 @@ tests:
     result: 3
 ```
 
-### Versioning
+### Test versioning
 
 Each test can be tagged with a `version` field which should contain a version selector.
 The version is on the form `X.Y` and specifies that it targets GROQ-X.revisionY.
@@ -290,7 +281,7 @@ type Test = {
 type Variables = {[key: string]: string}
 ```
 
-## Versioned Releases
+## Release
 
 The test suite uses semantic versioning for its YAML/JSON test files and their functionality, independent of the GROQ language specification version. Version numbers are determined by changes to these files specifically:
 
