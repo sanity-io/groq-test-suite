@@ -14,7 +14,7 @@ The test suite uses the version scheme `vX.Y.Z` where `X.Y` follows the version 
 ## Using the test suite
 
 The YAML files in this repository is optimized for writing tests.
-For using the test suite it's recommended to use the *compiled* version.
+For using the test suite it's recommended to use the _compiled_ version.
 The compiled test suite is a [NDJSON](https://github.com/ndjson/ndjson-spec) file where every entry uses the schema below.
 
 The compiled test suite can either be downloaded from [the GitHub Release page](https://github.com/sanity-io/groq-test-suite/releases) or be built from source (see next section).
@@ -23,7 +23,7 @@ The compiled test suite can either be downloaded from [the GitHub Release page](
 type Entry = Dataset | Test
 
 type Dataset = {
-  _type: "dataset"
+  _type: 'dataset'
   _id: string
 
   name: string
@@ -32,7 +32,7 @@ type Dataset = {
 }
 
 type Test = {
-  _type: "test"
+  _type: 'test'
   _id: string
 
   name: string
@@ -41,7 +41,7 @@ type Test = {
   result: any
   valid: boolean
   dataset: {
-    _type: "reference"
+    _type: 'reference'
     _ref: string
   }
 }
@@ -69,21 +69,21 @@ The test suite is written in YAML files in the `test/` directory. Here's an exam
 
 ```yaml
 documents:
-  - _id: "a"
-    _type: "person"
-    name: "George Michael Bluth"
-  - _id: "b"
-    _type: "company"
-    name: "Bluth Inc."
+  - _id: 'a'
+    _type: 'person'
+    name: 'George Michael Bluth'
+  - _id: 'b'
+    _type: 'company'
+    name: 'Bluth Inc.'
     manager:
-      _ref: "a"
+      _ref: 'a'
 
 tests:
-  - name: "Resolve references"
+  - name: 'Resolve references'
     query: |
       *[_type == "company"][].manager->name
     result:
-      - "George Michael Bluth"
+      - 'George Michael Bluth'
 ```
 
 ### Nesting tests
@@ -139,18 +139,17 @@ The version is on the form `X.Y` and specifies that it targets GROQ-X.revisionY.
 ```yaml
 # This test file:
 documents:
-  - _id: "a"
-  - _id: "b"
+  - _id: 'a'
+  - _id: 'b'
 
-version: ">= 1.0"
+version: '>= 1.0'
 
 tests:
-  name: "Counting"
+  name: 'Counting'
   query: |
     count(*)
   result: 2
 ```
-
 
 The version `0.1` is used for the original implementation of GROQ before there was a finalized specification and is maintained here for historical reasons.
 
@@ -161,12 +160,12 @@ Together with test inheritance this can be used to succinctly test many differen
 
 ```yaml
 documents:
-  - _id: "a"
-  - _id: "b"
-  - _id: "c"
+  - _id: 'a'
+  - _id: 'b'
+  - _id: 'c'
 
 tests:
-  - name: "Filtering"
+  - name: 'Filtering'
     query: |
       count(*[~filter~])
     tests:
@@ -185,11 +184,11 @@ The following test case,
 
 ```yaml
 tests:
-  - name: "Compare"
+  - name: 'Compare'
     query: |
       ~str~ < "z"
     variables:
-      str: ["a", "b"]
+      str: ['a', 'b']
 ```
 
 will generate the following additional test queries:
@@ -203,7 +202,7 @@ The rules of how the tests are generated are as follows:
 
 - If a test case has an explicit dataset (either `documents` or `dataset`) then nothing will be generated.
 - Every variable which contains valid JSON is eligable for automatic test generation.
-- We assume that every variable is *standalone* (e.g. we can safely pull them out).
+- We assume that every variable is _standalone_ (e.g. we can safely pull them out).
   You can use `standaloneVariables: ["var1"]` in case there are some variables which are not standalone.
 - Set `genFilter: false`, `genFetch: false` and/or `genJoin: false` to disable the generated tests.
 
@@ -219,27 +218,27 @@ A test can specify a list of named features that it requires, which a test runne
 
 Since the scoring algorithm used by `score()` is currently implementation-defined, tests cannot contain the literal score. Instead, tests must use an ordinal number to represent the _position_ among the total list of result scores. The test runner, when comparing results, should replace the actual scores with this algorithm:
 
-* Take all encountered scores in the results
-* Remove duplicates
-* Sort them
-* Replace each score with an attribute `_pos` containing the position in the list
+- Take all encountered scores in the results
+- Remove duplicates
+- Sort them
+- Replace each score with an attribute `_pos` containing the position in the list
 
 For example: If a query returns:
 
 ```yaml
-- {id: "a", _score: 1.0}
-- {id: "b", _score: 1.2}
-- {id: "c", _score: 1.2}
-- {id: "d", _score: 1.4}
+- {id: 'a', _score: 1.0}
+- {id: 'b', _score: 1.2}
+- {id: 'c', _score: 1.2}
+- {id: 'd', _score: 1.4}
 ```
 
 then these should be remapped as:
 
 ```yaml
-- {id: "a", _pos: 1}
-- {id: "b", _pos: 2}
-- {id: "c", _pos: 2}
-- {id: "d", _pos: 3}
+- {id: 'a', _pos: 1}
+- {id: 'b', _pos: 2}
+- {id: 'c', _pos: 2}
+- {id: 'd', _pos: 3}
 ```
 
 …and this is what the test needs to test equality against.
@@ -253,7 +252,7 @@ Tests can either declare datasets inline (using the `documents` property) or ref
 ```yaml
 dataset: movies
 tests:
-  - name: "Good movies"
+  - name: 'Good movies'
     query: |
       count(*[_type == "movive" && rating > 8.0])
     result: 123
@@ -261,8 +260,8 @@ tests:
 
 Currently the following named datasets are available:
 
-| Name | Size | Documentation | URL |
-| --- | --- | --- | --- |
+| Name     | Size                     | Documentation                                            | URL                                                                                                                 |
+| -------- | ------------------------ | -------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------- |
 | `movies` | ~500k documents (~200MB) | [./utils/the-movies-dataset](./utils/the-movies-dataset) | [🔗](https://groq-test-suite.storage.googleapis.com/datasets/movies/movies-8807c4bb9fa31a9a6c21a4f7e41662d6.ndjson) |
 
 ### Schema
@@ -288,7 +287,7 @@ type Test = {
   tests?: Array<Test>
 }
 
-type Variables = { [key: string]: string }
+type Variables = {[key: string]: string}
 ```
 
 ## Versioned Releases
