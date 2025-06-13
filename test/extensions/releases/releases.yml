@@ -1,0 +1,41 @@
+name: "releases::all"
+version: ">= 1.0" # Available in all GROQ-1 versions
+features:
+- internalDocuments
+- contentReleases
+
+documents:
+  - _id: _.releases.winter
+    _type: system.release
+    title: "Winter release"
+
+  - _id: summer
+    _type: system.release
+    title: "Summer release"
+
+tests:
+  - name: "Everything"
+    query: |
+      releases::all()
+    result:
+      - _id: _.releases.winter
+        _type: system.release
+        title: "Winter release"
+
+      - _id: summer
+        _type: system.release
+        title: "Summer release"
+
+  - name: "With filters"
+    query: |
+      releases::all()[title == "Winter release"]._id
+    result:
+      - _.releases.winter
+
+  - name: "With arguments"
+    valid: false
+    tests:
+      - query: "releases::all(123)"
+      - query: "releases::all(123, 456)"
+      - query: "releases::all(123, 456, 789)"
+
