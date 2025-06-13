@@ -1,0 +1,76 @@
+name: "sanityPartOfRelease"
+version: ">= 1.1"
+features:
+  - contentReleases
+
+documents:
+  - _id: book1
+    _type: book
+    title: "Frankenstein"
+    price: 10.99
+
+  - _id: drafts.book1
+    _type: book
+    title: "Frankenstein"
+    price: 10.99
+
+  - _id: versions.sale.book1
+    _type: book
+    title: "Frankenstein"
+    price: 9.99
+
+  - _id: book2
+    _type: book
+    title: "Dracula"
+    price: 9.99
+
+  - _id: versions.sale.book3
+    _type: book
+    title: "Pi"
+    price: 3.14
+
+tests:
+  - name: "simple"
+    query: |
+      *[sanity::partOfRelease("sale")]
+    result:
+      - _id: versions.sale.book1
+        _type: book
+        title: "Frankenstein"
+        price: 9.99
+      - _id: versions.sale.book3
+        _type: book
+        title: "Pi"
+        price: 3.14
+
+  - name: "no argument"
+    query: |
+      *[sanity::partOfRelease()]
+    valid: false
+
+  - name: "more than one argument"
+    query: |
+      *[sanity::partOfRelease("sale", "launch")]
+    valid: false
+
+  - name: "non-string argument"
+    query: |
+      *[sanity::partOfRelease(true)]
+    result: []
+
+  - name: "negation"
+    query: |
+      *[!sanity::partOfRelease("sale")]
+    result:
+      - _id: book1
+        _type: book
+        title: "Frankenstein"
+        price: 10.99
+      - _id: book2
+        _type: book
+        title: "Dracula"
+        price: 9.99
+      - _id: drafts.book1
+        _type: book
+        title: "Frankenstein"
+        price: 10.99

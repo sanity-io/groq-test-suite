@@ -1,0 +1,67 @@
+name: "sanityVersionOf"
+version: ">= 1.1"
+features:
+  - contentReleases
+
+documents:
+  - _id: book1
+    _type: book
+    title: "Frankenstein"
+    price: 10.99
+
+  - _id: drafts.book1
+    _type: book
+    title: "Frankenstein"
+    price: 10.99
+
+  - _id: versions.sale.book1
+    _type: book
+    title: "Frankenstein"
+    price: 9.99
+
+  - _id: book2
+    _type: book
+    title: "Dracula"
+    price: 9.99
+
+tests:
+  - name: "simple"
+    query: |
+      *[sanity::versionOf("book1")]
+    result:
+      - _id: book1
+        _type: book
+        title: "Frankenstein"
+        price: 10.99
+      - _id: drafts.book1
+        _type: book
+        title: "Frankenstein"
+        price: 10.99
+      - _id: versions.sale.book1
+        _type: book
+        title: "Frankenstein"
+        price: 9.99
+
+  - name: "no argument"
+    query: |
+      *[sanity::versionOf()]
+    valid: false
+
+  - name: "more than one argument"
+    query: |
+      *[sanity::versionOf("book1", "book2")]
+    valid: false
+
+  - name: "non-string argument"
+    query: |
+      *[sanity::versionOf(true)]
+    result: []
+
+  - name: "negation"
+    query: |
+      *[!sanity::versionOf("book1")]
+    result:
+      - _id: book2
+        _type: book
+        title: "Dracula"
+        price: 9.99
