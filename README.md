@@ -44,14 +44,14 @@ Use the provided `build` script to compile the test suite:
 
 ```bash
 # Install dependencies
-$ yarn
+$ pnpm install
 
 # Build the test suite
-$ yarn build # outputs to suite.ndjson
-$ yarn build --stdout # outputs to stdout
-$ yarn build --out=custom.ndjson # outputs to custom.ndjson
-$ yarn build --pattern='**/misc.yml' # Only build for files which matched the pattern.
-$ yarn build --baseDir=/some/dir' # Look for test  files in this base directory
+$ pnpm build # outputs to suite.ndjson
+$ pnpm build --stdout # outputs to stdout
+$ pnpm build --out=custom.ndjson # outputs to custom.ndjson
+$ pnpm build --pattern='**/misc.yml' # Only build for files which matched the pattern.
+$ pnpm build --baseDir=/some/dir' # Look for test  files in this base directory
 ```
 
 ## Structure
