@@ -73,3 +73,118 @@ tests:
     - "'foo'"
     - "123"
     - "1 + 1 == 2"
+
+- name: "diff::changedAny"
+  genFilter: false
+  genFetch: false
+  genJoin: false
+  tests:
+  - name: Top-level attribute
+    query: |
+      diff::changedAny(
+        {"left": 1, "same": 2, "diff": 3},
+        {"right": 1, "same": 2, "diff": 4},
+        ~selector~
+      )
+    tests:
+      - name: differ
+        variables: {selector: ["left", "right", "diff"]}
+        result: true
+      - name: same
+        variables: { selector: [ "same", "missing" ] }
+        result: false
+  - name: Nested attribute
+    query: |
+      diff::changedAny(
+        {
+          "left": {"a": 1},
+          "same": {"a": 1},
+          "both": {"left": 1, "same": 2, "diff": 3},
+        },
+        {
+          "right": {"a": 1},
+          "both": {"right": 1, "same": 2, "diff": 4},
+          "same": {"a": 1},
+        },
+        ~selector~
+      )
+    tests:
+    - name: differ
+      variables: {selector: ["left", "right", "both.left", "both.right", "both.diff"]}
+      result: true
+    - name: same
+      variables: { selector: [ "both.same", "both.missing" ] }
+      result: false
+    - name: tuple, one differ
+      variables: { selector: [ "(left, same)", "both.(left, same)", "both.(left, right)" ] }
+      result: true
+    - name: tuple, both differ
+      variables: { selector: [ "(left, right)", "both.(left, right)", "both.(left, right)" ] }
+      result: true
+    - name: tuple, both same
+      variables: { selector: [ "(missing, same)", "both.(same, missing)" ] }
+      result: false
+
+  - name: Array filtering
+    query: |
+      diff::changedAny(
+        {
+          "same": [{"name": "Alice"}, {"name": "Bob"}],
+          "reorder": [{"name": "Alice"}, {"name": "Bob"}],
+          "pop": [{"name": "Alice"}, {"name": "Bob"}],
+          "unshift": [{"name": "Alice"}, {"name": "Bob"}],
+          "push": [{"name": "Alice"}, {"name": "Bob"}],
+          "diff1": [{"name": "Alice"}, {"name": "Bob"}],
+          "diff2": [{"name": "Alice"}, {"name": "Bob"}],
+          "obj": {"name": "Alice"},
+          "num": 1,
+          "str": "a",
+          "bool": true
+        },
+        {
+          "same": [{"name": "Alice"}, {"name": "Bob"}],
+          "reorder": [{"name": "Bob"}, {"name": "Alice"}],
+          "pop": [{"name": "Alice"}],
+          "unshift": [{"name": "Carol"}, {"name": "Alice"}, {"name": "Bob"}],
+          "push": [{"name": "Alice"}, {"name": "Bob"}, {"name": "Carol"}],
+          "diff1": [{"name": "Alice2"}, {"name": "Bob"}],
+          "diff2": [{"name": "Alice"}, {"name": "Bob2"}],
+          "obj": {"name": "Bob"},
+          "num": 2,
+          "str": "b",
+          "bool": false
+        },
+        ~selector~
+      )
+    tests:
+    - name: differ
+      result: true
+      variables:
+        selector:
+          - reorder[].name
+          - pop[].name
+          - unshift[].name
+          - diff1[].name
+          - diff2[].name
+          # The whole array is considered changed when the length changes:
+          - push[].name
+          - push[name == "Alice"].name
+          - pop[name == "Alice"].name
+    - name: non-differ
+      result: false
+      variables:
+        selector:
+          # This have not changed position:
+          - same[].name
+
+          # These haven't changed:
+          - diff1[name == "Bob"].name
+          - diff2[name == "Alice"].name
+
+    - name: non-array
+      variables: {selector: ["obj[]", "obj[].name", "num[]", "str[]", "bool[]"]}
+      result: false
+    - name: top-level diff
+      # Also test that top-level attributes are correctly detected with diffs:
+      result: true
+      variables: {selector: ["reorder", "pop", "unshift", "push", "diff1", "diff2"]}
