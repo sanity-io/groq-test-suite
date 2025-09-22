@@ -1,0 +1,147 @@
+name: 'customFunctions'
+version: '>= 1.0'
+features:
+  - customFunctions
+documents:
+  - _id: a
+    _type: person
+    name:
+      - first: 'Jane'
+      - last: 'Doe'
+    age: 99
+    occupation: {_ref: 'developer'}
+    stuff: [{'key': 1}, {'key': 2}, {'key': 3}]
+    pet: [{_ref: 'dog'}, {_ref: 'dog2'}]
+
+  - _id: 'developer'
+    _type: 'occupation'
+    title: 'Software Engineer'
+
+  - _id: 'dog'
+    _type: 'pet'
+    name: 'Pookie'
+
+  - _id: 'dog2'
+    _type: 'pet'
+    name: 'Snookie'
+
+tests:
+  - name: 'simple projection'
+    query: |
+      fn foo::bar($baz) = $baz{name, age}; *[_type == "person"] { "info": foo::bar(@) }
+    result:
+      - info:
+          age: 99
+          name:
+            - first: 'Jane'
+            - last: 'Doe'
+
+  - name: 'with array'
+    query: |
+      fn foo::bar($baz) = $baz[]{key}; *[_type == "person"] { "stuff": foo::bar(stuff) }
+    result:
+      - stuff:
+          - key: 1
+          - key: 2
+          - key: 3
+
+  - name: 'with reference'
+    query: |
+      fn foo::bar($baz) = $baz->{title}; *[_type == "person"] { "occupation": foo::bar(occupation) }
+    result:
+      - occupation:
+          title: 'Software Engineer'
+
+  - name: 'with array of references'
+    query: |
+      fn foo::bar($baz) = $baz[]->{name}; *[_type == "person"] {"pet": foo::bar(pet) }
+    result:
+      - pet:
+          - name: 'Pookie'
+          - name: 'Snookie'
+
+  - name: "Order of functions doesn't matter"
+    query: |
+      fn foo::info($person) = $person{name, "names": foo::name(name), age};
+      fn foo::name($names) = $names[]{first, last};
+      *[_type == "person"] {
+        "info": foo::info(@)
+      }
+    result:
+      - info:
+          age: 99
+          name:
+            - first: 'Jane'
+            - last: 'Doe'
+          names:
+            - first: 'Jane'
+              last: null
+            - first: null
+              last: 'Doe'
+
+  - name: 'with no arguments'
+    query: |
+      fn foo::bar($baz) = $baz[]->{name}; *[_type == "person"] {"pet": foo::bar() }
+    valid: false
+
+  - name: 'with more than one argument'
+    query: |
+      fn foo::bar($baz) = $baz[]->{name}; *[_type == "person"] {"pet": foo::bar(pet, extra) }
+    valid: false
+
+  - name: 'undefined function'
+    query: |
+      fn foo::bar($baz) = $baz[]->{name}; *[_type == "person"] {"pet": foo::barrrr(pet) }
+    valid: false
+
+  - name: 'overriding an existing function'
+    query: |
+      fn math::sum($baz) = $baz[]->{name}; *[_type == "person"] {"pet": math::sum(pet) }
+    result:
+      - pet:
+          - name: 'Pookie'
+          - name: 'Snookie'
+
+  - name: 'invalid function definition syntax'
+    query: |
+      fn foo::bar($baz, $bazzz) = $baz[]->{name}; *[]
+    valid: false
+
+  - name: 'using the function argument more than once in the function body'
+    query: |
+      fn foo::bar($baz) = $baz[]->{name, $baz}; *[]
+    valid: false
+
+  - name: 'using the function argument more than once in the function body - nested'
+    query: |
+      fn foo::bar($baz) = $baz[]->{name, "foo": {"bar": *[_type == "person"]{ name, $baz}}}; *[]
+    valid: false
+
+  - name: 'referencing a parent scope which reaches outside the function'
+    query: |
+      fn foo::bar($baz) = $baz[]->{^.name}; *[]
+    valid: false
+
+  - name: 'referencing parent scope within a filter'
+    query: |
+      fn foo::bar($baz) = $baz[]->{"foo": *[_type == ^.bar]}; *[_type == "person"] {"pet": foo::bar(pet) }
+    result:
+      - pet:
+          - foo: []
+          - foo: []
+
+  - name: 'referencing parent scope within a projection'
+    query: |
+      fn foo::bar($baz) = $baz[]->{"foo": *[_type == "person"]{ "bar": ^.baz}}; *[_type == "person"]{name}
+    result:
+      - name:
+          - first: 'Jane'
+          - last: 'Doe'
+
+  - name: 'referencing parent scope within global::order()'
+    query: |
+      fn foo::bar($baz) = $baz[]->{"foo": *[_type == "person"] | order(^.foo)}; *[_type == "person"]{name}
+    result:
+      - name:
+          - first: 'Jane'
+          - last: 'Doe'
