@@ -30,6 +30,12 @@ documents:
     - val2: "a"
     - val2: "b"
 
+- _id: "e"
+  _type: "test"
+  list:
+  - val:
+    - val2: "e"
+
 tests:
 - name: "One level"
   query: |
@@ -43,6 +49,20 @@ tests:
   result:
   - "a"
 
+- name: "One level Negated"
+  query: |
+    *[_type == "test" && !(~val~ in list[].val)]._id
+  variables:
+    val:
+    - '1'
+    - '2'
+    - '"a"'
+    - '"b"'
+  result:
+  - "c"
+  - "d"
+  - "e"
+
 - name: "Two levels"
   query: |
     *[_type == "test" && ~val~ in list[].val[].val2]._id
@@ -54,3 +74,15 @@ tests:
     - '"b"'
   result:
   - "d"
+
+- name: "Two levels Negated"
+  query: |
+    *[_type == "test" && !(~val~ in list[].val[].val2)]._id
+  variables:
+    val:
+    - '1'
+    - '2'
+    - '"a"'
+    - '"b"'
+  result:
+  - "e"
