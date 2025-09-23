@@ -24,7 +24,7 @@ jobs:
       - uses: ncipollo/release-action@v1
         with:
           tag: ${{ github.ref }}
-          release: ${{ github.ref }}
+          name: ${{ github.ref }}
           artifacts: 'suite.ndjson'
           artifactContentType: application/x-ndjson
           body: 'See suite.ndjson for the compiled test suite.'
