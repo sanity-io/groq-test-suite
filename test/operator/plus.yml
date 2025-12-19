@@ -45,3 +45,20 @@ tests:
       left: '"2020-01-01T11:59:59.500Z"'
       right: '0.5'
     result: "2020-01-01T12:00:00Z"
+
+- name: "number + datetime"
+  query: |
+    ~left~ + dateTime(~right~)
+  tests:
+  - variables:
+      left: '3600'
+      right: '"2020-01-01T11:00:00Z"'
+    result: "2020-01-01T12:00:00Z"
+  - variables:
+      left: '5'
+      right: '"2020-01-01T11:59:55Z"'
+    result: "2020-01-01T12:00:00Z"
+  - variables:
+      left: '0.5'
+      right: '"2020-01-01T11:59:59.500Z"'
+    result: "2020-01-01T12:00:00Z"
