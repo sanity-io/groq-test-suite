@@ -22,3 +22,1241 @@ tests:
       }
     result:
       - matched: 1
+
+  - name: "Author, post and organization graph"
+    version: ">= 1.0"
+    documents:
+      - _id: company-1
+        _type: company
+        name: Acme Corp
+        country: US
+        active: true
+
+      - _id: company-2
+        _type: company
+        name: Globex
+        country: UK
+        active: true
+
+      - _id: company-3
+        _type: company
+        name: Defunct Inc
+        country: US
+        active: false
+
+      - _id: author-1
+        _type: author
+        name: Alice
+        email: alice@example.com
+        company:
+          _ref: company-1
+        minScore: 50
+
+      - _id: author-2
+        _type: author
+        name: Bob
+        email: bob@example.com
+        company:
+          _ref: company-2
+        minScore: 70
+
+      - _id: author-3
+        _type: author
+        name: Charlie
+        email: charlie@example.com
+        company:
+          _ref: company-3
+        minScore: 30
+
+      - _id: post-1
+        _type: post
+        title: Hello World
+        author:
+          _ref: author-1
+        category: tech
+        score: 80
+
+      - _id: post-2
+        _type: post
+        title: Advanced GROQ
+        author:
+          _ref: author-1
+        category: tech
+        score: 95
+
+      - _id: post-3
+        _type: post
+        title: UK News
+        author:
+          _ref: author-2
+        category: news
+        score: 60
+
+      - _id: post-4
+        _type: post
+        title: Old Post
+        author:
+          _ref: author-3
+        category: tech
+        score: 40
+
+      - _id: post-5
+        _type: post
+        title: Sports Update
+        author:
+          _ref: author-2
+        category: sports
+        score: 75
+
+      - _id: org-1
+        _type: org
+        name: MegaCorp
+
+      - _id: org-2
+        _type: org
+        name: StartupXYZ
+
+      - _id: dept-1
+        _type: dept
+        name: Engineering
+        org:
+          _ref: org-1
+        budget: 1000000
+
+      - _id: dept-2
+        _type: dept
+        name: Sales
+        org:
+          _ref: org-1
+        budget: 500000
+
+      - _id: dept-3
+        _type: dept
+        name: Product
+        org:
+          _ref: org-2
+        budget: 200000
+
+      - _id: emp-1
+        _type: emp
+        name: Eve
+        dept:
+          _ref: dept-1
+        org:
+          _ref: org-1
+        salary: 100000
+
+      - _id: emp-2
+        _type: emp
+        name: Frank
+        dept:
+          _ref: dept-1
+        org:
+          _ref: org-1
+        salary: 90000
+
+      - _id: emp-3
+        _type: emp
+        name: Grace
+        dept:
+          _ref: dept-2
+        org:
+          _ref: org-1
+        salary: 80000
+
+      - _id: emp-4
+        _type: emp
+        name: Henry
+        dept:
+          _ref: dept-3
+        org:
+          _ref: org-2
+        salary: 95000
+
+      - _id: p1
+        _type: parent
+
+      - _id: c1
+        _type: child
+        parentId: p1
+        priority: 1
+
+      - _id: c2
+        _type: child
+        parentId: p1
+        priority: 3
+
+    tests:
+      - name: "Uncorrelated subqueries"
+        query: |
+          {
+            "authors": *[_type == "author"]{name} | order(name),
+            "posts": *[_type == "post"]{title} | order(title),
+            "authorCount": count(*[_type == "author"]),
+            "postCount": count(*[_type == "post"])
+          }
+        result:
+          authorCount: 3
+          authors:
+            - name: Alice
+            - name: Bob
+            - name: Charlie
+          postCount: 5
+          posts:
+            - title: Advanced GROQ
+            - title: Hello World
+            - title: Old Post
+            - title: Sports Update
+            - title: UK News
+
+      - name: "Correlated by equality"
+        query: |
+          *[_type == "author"]{
+            name,
+            "posts": *[_type == "post" && author._ref == ^._id]{title, score}
+          } | order(name)
+        result:
+          - name: Alice
+            posts:
+              - score: 80
+                title: Hello World
+              - score: 95
+                title: Advanced GROQ
+          - name: Bob
+            posts:
+              - score: 60
+                title: UK News
+              - score: 75
+                title: Sports Update
+          - name: Charlie
+            posts:
+              - score: 40
+                title: Old Post
+
+      - name: "Correlated by inequality"
+        query: |
+          *[_type == "author"]{
+            name,
+            minScore,
+            "qualifyingPosts": *[_type == "post" && score > ^.minScore]{title, score}
+          } | order(name)
+        result:
+          - minScore: 50
+            name: Alice
+            qualifyingPosts:
+              - score: 80
+                title: Hello World
+              - score: 95
+                title: Advanced GROQ
+              - score: 60
+                title: UK News
+              - score: 75
+                title: Sports Update
+          - minScore: 70
+            name: Bob
+            qualifyingPosts:
+              - score: 80
+                title: Hello World
+              - score: 95
+                title: Advanced GROQ
+              - score: 75
+                title: Sports Update
+          - minScore: 30
+            name: Charlie
+            qualifyingPosts:
+              - score: 80
+                title: Hello World
+              - score: 95
+                title: Advanced GROQ
+              - score: 60
+                title: UK News
+              - score: 40
+                title: Old Post
+              - score: 75
+                title: Sports Update
+
+      - name: "Correlated by equality and inequality"
+        query: |
+          *[_type == "author"]{
+            name,
+            minScore,
+            "posts": *[_type == "post" && author._ref == ^._id && score > ^.minScore]{
+              title,
+              score
+            }
+          } | order(name)
+        result:
+          - minScore: 50
+            name: Alice
+            posts:
+              - score: 80
+                title: Hello World
+              - score: 95
+                title: Advanced GROQ
+          - minScore: 70
+            name: Bob
+            posts:
+              - score: 75
+                title: Sports Update
+          - minScore: 30
+            name: Charlie
+            posts:
+              - score: 40
+                title: Old Post
+
+      - name: "Nested two levels"
+        query: |
+          *[_type == "org"]{
+            name,
+            "departments": *[_type == "dept" && org._ref == ^._id]{
+              name,
+              budget,
+              "employees": *[_type == "emp" && dept._ref == ^._id]{
+                name,
+                salary
+              } | order(name)
+            } | order(name)
+          } | order(name)
+        result:
+          - departments:
+              - budget: 1000000
+                employees:
+                  - name: Eve
+                    salary: 100000
+                  - name: Frank
+                    salary: 90000
+                name: Engineering
+              - budget: 500000
+                employees:
+                  - name: Grace
+                    salary: 80000
+                name: Sales
+            name: MegaCorp
+          - departments:
+              - budget: 200000
+                employees:
+                  - name: Henry
+                    salary: 95000
+                name: Product
+            name: StartupXYZ
+
+      - name: "Nested two levels without the intermediate fields"
+        query: |
+          *[_type == "org"]{
+            name,
+            "departments": *[_type == "dept" && org._ref == ^._id]{
+              name,
+              "employees": *[_type == "emp" && dept._ref == ^._id]{
+                name
+              } | order(name)
+            } | order(name)
+          } | order(name)
+        result:
+          - departments:
+              - employees:
+                  - name: Eve
+                  - name: Frank
+                name: Engineering
+              - employees:
+                  - name: Grace
+                name: Sales
+            name: MegaCorp
+          - departments:
+              - employees:
+                  - name: Henry
+                name: Product
+            name: StartupXYZ
+
+      - name: "Dereference inside a correlated subquery"
+        query: |
+          *[_type == "author"]{
+            name,
+            "posts": *[_type == "post" && author._ref == ^._id]{
+              title,
+              "authorName": author->name,
+              "companyName": author->company->name
+            }
+          } | order(name)
+        result:
+          - name: Alice
+            posts:
+              - authorName: Alice
+                companyName: Acme Corp
+                title: Hello World
+              - authorName: Alice
+                companyName: Acme Corp
+                title: Advanced GROQ
+          - name: Bob
+            posts:
+              - authorName: Bob
+                companyName: Globex
+                title: UK News
+              - authorName: Bob
+                companyName: Globex
+                title: Sports Update
+          - name: Charlie
+            posts:
+              - authorName: Charlie
+                companyName: Defunct Inc
+                title: Old Post
+
+      - name: "Subquery inside a dereferencing projection"
+        query: |
+          *[_type == "post"]{
+            title,
+            "author": author->{
+              name,
+              "otherPosts": *[_type == "post" && author._ref == ^._id]{title}
+            }
+          } | order(title)
+        result:
+          - author:
+              name: Alice
+              otherPosts:
+                - title: Hello World
+                - title: Advanced GROQ
+            title: Advanced GROQ
+          - author:
+              name: Alice
+              otherPosts:
+                - title: Hello World
+                - title: Advanced GROQ
+            title: Hello World
+          - author:
+              name: Charlie
+              otherPosts:
+                - title: Old Post
+            title: Old Post
+          - author:
+              name: Bob
+              otherPosts:
+                - title: UK News
+                - title: Sports Update
+            title: Sports Update
+          - author:
+              name: Bob
+              otherPosts:
+                - title: UK News
+                - title: Sports Update
+            title: UK News
+
+      - name: "count() in a correlated subquery"
+        query: |
+          *[_type == "author"]{
+            name,
+            "postCount": count(*[_type == "post" && author._ref == ^._id])
+          } | order(name)
+        result:
+          - name: Alice
+            postCount: 2
+          - name: Bob
+            postCount: 2
+          - name: Charlie
+            postCount: 1
+
+      - name: "Correlated subquery with ordering and a slice"
+        query: |
+          *[_type == "author"]{
+            name,
+            "topPosts": *[_type == "post" && author._ref == ^._id] | order(score desc)[0..2]{
+              title,
+              score
+            }
+          } | order(name)
+        result:
+          - name: Alice
+            topPosts:
+              - score: 95
+                title: Advanced GROQ
+              - score: 80
+                title: Hello World
+          - name: Bob
+            topPosts:
+              - score: 75
+                title: Sports Update
+              - score: 60
+                title: UK News
+          - name: Charlie
+            topPosts:
+              - score: 40
+                title: Old Post
+
+      - name: "Correlated subquery with element access"
+        query: |
+          *[_type == "author"]{
+            name,
+            "bestPost": *[_type == "post" && author._ref == ^._id] | order(score desc)[0]{
+              title,
+              score
+            }
+          } | order(name)
+        result:
+          - bestPost:
+              score: 95
+              title: Advanced GROQ
+            name: Alice
+          - bestPost:
+              score: 75
+              title: Sports Update
+            name: Bob
+          - bestPost:
+              score: 40
+              title: Old Post
+            name: Charlie
+
+      - name: "Several correlated subqueries at the same level"
+        query: |
+          *[_type == "author"]{
+            name,
+            "posts": *[_type == "post" && author._ref == ^._id]{title},
+            "techPosts": *[_type == "post" && author._ref == ^._id && category == "tech"]{title},
+            "postCount": count(*[_type == "post" && author._ref == ^._id])
+          } | order(name)
+        result:
+          - name: Alice
+            postCount: 2
+            posts:
+              - title: Hello World
+              - title: Advanced GROQ
+            techPosts:
+              - title: Hello World
+              - title: Advanced GROQ
+          - name: Bob
+            postCount: 2
+            posts:
+              - title: UK News
+              - title: Sports Update
+            techPosts: []
+          - name: Charlie
+            postCount: 1
+            posts:
+              - title: Old Post
+            techPosts:
+              - title: Old Post
+
+      - name: "Correlated subquery with a residual arithmetic filter"
+        query: |
+          *[_type == "parent"]{ "kids": *[_type == "child" && parentId == ^._id && (priority * 3) > 2]._id }
+        result:
+          - kids: ["c1", "c2"]
+
+      - name: "Correlated existence check in a filter"
+        query: |
+          *[_type == "author" && count(*[_type == "post" && author._ref == ^._id && category == "tech"]) > 0]{
+            name,
+            "techPostCount": count(*[_type == "post" && author._ref == ^._id && category == "tech"])
+          } | order(name)
+        result:
+          - name: Alice
+            techPostCount: 2
+          - name: Charlie
+            techPostCount: 1
+
+      - name: "references() over a document graph"
+        query: |
+          *[_type == "post" && references("author-1")]{
+            title,
+            "authorRef": author._ref
+          } | order(title)
+        result:
+          - authorRef: author-1
+            title: Advanced GROQ
+          - authorRef: author-1
+            title: Hello World
+
+      - name: "Self-referential subquery"
+        query: |
+          *[_type == "author"]{
+            name,
+            "companyName": company->name,
+            "colleagues": *[_type == "author" && company._ref == ^.company._ref && _id != ^._id]{
+              name
+            } | order(name)
+          } | order(name)
+        result:
+          - colleagues: []
+            companyName: Acme Corp
+            name: Alice
+          - colleagues: []
+            companyName: Globex
+            name: Bob
+          - colleagues: []
+            companyName: Defunct Inc
+            name: Charlie
+
+      - name: "Aggregation in a correlated subquery"
+        query: |
+          *[_type == "author"]{
+            name,
+            "postCount": count(*[_type == "post" && author._ref == ^._id]),
+            "totalScore": math::sum(*[_type == "post" && author._ref == ^._id].score),
+            "avgScore": math::avg(*[_type == "post" && author._ref == ^._id].score)
+          } | order(name)
+        result:
+          - avgScore: 87.5
+            name: Alice
+            postCount: 2
+            totalScore: 175
+          - avgScore: 67.5
+            name: Bob
+            postCount: 2
+            totalScore: 135
+          - avgScore: 40
+            name: Charlie
+            postCount: 1
+            totalScore: 40
+
+  - name: "Correlated array containment"
+    version: ">= 1.0"
+    documents:
+      - _id: "parent-1"
+        _type: "parent"
+        title: "Parent One"
+      - _id: "parent-2"
+        _type: "parent"
+        title: "Parent Two"
+      - _id: "parent-3"
+        _type: "parent"
+        title: "Parent Three"
+      - _id: "child-1"
+        _type: "child"
+        title: "Child A"
+        parents:
+          - _ref: "parent-1"
+            _type: "reference"
+          - _ref: "parent-2"
+            _type: "reference"
+      - _id: "child-2"
+        _type: "child"
+        title: "Child B"
+        parents:
+          - _ref: "parent-2"
+            _type: "reference"
+          - _ref: "parent-3"
+            _type: "reference"
+      - _id: "child-3"
+        _type: "child"
+        title: "Child C"
+        parents:
+          - _ref: "parent-1"
+            _type: "reference"
+
+      - _id: "or-parent-1"
+        _type: "or-parent"
+      - _id: "or-parent-2"
+        _type: "or-parent"
+      - _id: "or-child-1"
+        _type: "or-child"
+        refs:
+          - _ref: "or-parent-1"
+      - _id: "or-child-2"
+        _type: "or-child"
+        altRefs:
+          - _ref: "or-parent-1"
+          - _ref: "or-parent-2"
+      - _id: "or-child-3"
+        _type: "or-child"
+        refs:
+          - _ref: "or-parent-1"
+        altRefs:
+          - _ref: "other"
+            _weak: true
+
+    tests:
+      - name: "Basic"
+        query: |
+          *[_type == "parent"] | order(_id) {
+            _id,
+            "children": *[^._id in parents[]._ref] | order(_id) { _id }
+          }
+        result:
+          - _id: "parent-1"
+            children:
+              - _id: "child-1"
+              - _id: "child-3"
+          - _id: "parent-2"
+            children:
+              - _id: "child-1"
+              - _id: "child-2"
+          - _id: "parent-3"
+            children:
+              - _id: "child-2"
+
+      - name: "With element access"
+        query: |
+          *[_type == "parent"] | order(_id) {
+            _id,
+            "firstChild": *[^._id in parents[]._ref] | order(_id) [0] { _id }
+          }
+        result:
+          - _id: "parent-1"
+            firstChild:
+              _id: "child-1"
+          - _id: "parent-2"
+            firstChild:
+              _id: "child-1"
+          - _id: "parent-3"
+            firstChild:
+              _id: "child-2"
+
+      - name: "With no match"
+        query: |
+          *[_type == "parent"] | order(_id) {
+            _id,
+            "orphans": *[^._id in parents[]._ref && _type == "orphan"] { _id }
+          }
+        result:
+          - _id: "parent-1"
+            orphans: []
+          - _id: "parent-2"
+            orphans: []
+          - _id: "parent-3"
+            orphans: []
+
+      - name: "In a disjunction"
+        query: |
+          *[_type == "or-parent"] | order(_id) {
+            _id,
+            "related": *[_type == "or-child" && ^._id in refs[]._ref || ^._id in altRefs[]._ref] | order(_id) { _id }
+          }
+        result:
+          - _id: "or-parent-1"
+            related:
+              - _id: "or-child-1"
+              - _id: "or-child-2"
+              - _id: "or-child-3"
+          - _id: "or-parent-2"
+            related:
+              - _id: "or-child-2"
+
+  - name: "Array-valued join keys"
+    documents:
+      - _id: brand-a
+        _type: brand
+      - _id: brand-b
+        _type: brand
+      - _id: brand-c
+        _type: brand
+      - _id: brand-other
+        _type: brand
+
+      - _id: hub-a
+        _type: brandHub
+        isVisible: true
+        brands:
+          - _ref: brand-a
+          - _ref: brand-b
+      - _id: hub-b
+        _type: brandHub
+        isVisible: true
+        brands:
+          - _ref: brand-c
+      - _id: hub-hidden
+        _type: brandHub
+        isVisible: false
+        brands:
+          - _ref: brand-other
+      - _id: product-a
+        _type: product
+        verified: true
+        brand:
+          _ref: brand-a
+      - _id: product-b
+        _type: product
+        verified: true
+        brand:
+          _ref: brand-b
+      - _id: product-c
+        _type: product
+        verified: true
+        brand:
+          _ref: brand-c
+      - _id: product-other
+        _type: product
+        verified: true
+        brand:
+          _ref: brand-other
+      - _id: product-unverified
+        _type: product
+        verified: false
+        brand:
+          _ref: brand-a
+    query: |
+      *[_type == "brandHub" && isVisible == true]{
+        _id,
+        "productCount": count(*[
+          _type == "product" &&
+          verified == true &&
+          brand._ref in ^.brands[]._ref
+        ])
+      } | order(_id asc)
+    result:
+      - _id: hub-a
+        productCount: 2
+      - _id: hub-b
+        productCount: 1
+
+  - name: "Subquery inside a filter"
+    version: ">= 1.0"
+    documents:
+      - _id: "author-1"
+        _type: "author"
+        name: "Alice"
+        _updatedAt: "2025-11-04T10:00:00Z"
+      - _id: "author-2"
+        _type: "author"
+        name: "Bob"
+        _updatedAt: "2025-11-04T20:00:00Z"
+      - _id: "author-3"
+        _type: "author"
+        name: "Carol"
+        _updatedAt: "2025-11-04T22:00:00Z"
+      - _id: "article-1"
+        _type: "article"
+        sport:
+          _ref: "sport-football"
+          _weak: true
+          _type: "reference"
+        author:
+          _ref: "author-1"
+          _type: "reference"
+      - _id: "article-2"
+        _type: "article"
+        sport:
+          _ref: "sport-football"
+          _weak: true
+          _type: "reference"
+        author:
+          _ref: "author-2"
+          _type: "reference"
+      - _id: "article-3"
+        _type: "article"
+        sport:
+          _ref: "sport-basketball"
+          _weak: true
+          _type: "reference"
+        author:
+          _ref: "author-3"
+          _type: "reference"
+
+    tests:
+      - name: "Membership in a subquery, ordered by a non-id field"
+        query: '*[_type == "author" && _id in *[_type == "article" && sport._ref == $sportId].author._ref && _updatedAt < $cutoff] | order(_updatedAt desc) [0...12]{_id, name}'
+        params:
+          sportId: "sport-football"
+          cutoff: "2025-11-04T21:00:00Z"
+        result:
+          - _id: "author-2"
+            name: "Bob"
+          - _id: "author-1"
+            name: "Alice"
+
+      - name: "references() over a subquery, ordered by a non-id field"
+        query: '*[_type == "author" && references(*[_type == "article" && sport._ref == $sportId]._id)] | order(_updatedAt desc) [0...12]{_id}'
+        params:
+          sportId: "sport-football"
+        result: []
+
+  - name: "Correlated over an employee and project graph"
+    version: ">= 1.0"
+    documents:
+      - _id: org-1
+        _type: org
+        name: MegaCorp
+
+      - _id: dept-1
+        _type: dept
+        name: Engineering
+        org:
+          _ref: org-1
+        budget: 1000000
+
+      - _id: dept-3
+        _type: dept
+        name: Product
+        org:
+          _ref: org-1
+        budget: 200000
+
+      - _id: emp-1
+        _type: emp
+        name: Eve
+        dept:
+          _ref: dept-1
+        salary: 100000
+
+      - _id: emp-2
+        _type: emp
+        name: Frank
+        dept:
+          _ref: dept-1
+        salary: 90000
+
+      - _id: emp-3
+        _type: emp
+        name: Grace
+        dept:
+          _ref: dept-3
+        salary: 80000
+
+      - _id: emp-4
+        _type: emp
+        name: Henry
+        dept:
+          _ref: dept-3
+        salary: 95000
+
+      - _id: project-1
+        _type: project
+        name: Website Redesign
+        lead:
+          _ref: emp-1
+        members:
+          - _ref: emp-1
+          - _ref: emp-2
+
+      - _id: project-2
+        _type: project
+        name: Mobile App
+        lead:
+          _ref: emp-4
+        members:
+          - _ref: emp-4
+
+    tests:
+      - name: "Parent id contained in an array of references"
+        query: |
+          *[_type == "emp"]{
+            _id,
+            name,
+            "projects": *[_type == "project" && ^._id in members[]._ref]{
+              _id,
+              name
+            }
+          } | order(_id)
+        result:
+          - _id: emp-1
+            name: Eve
+            projects:
+              - _id: project-1
+                name: Website Redesign
+          - _id: emp-2
+            name: Frank
+            projects:
+              - _id: project-1
+                name: Website Redesign
+          - _id: emp-3
+            name: Grace
+            projects: []
+          - _id: emp-4
+            name: Henry
+            projects:
+              - _id: project-2
+                name: Mobile App
+
+      - name: "Parent reference inside an array dereference"
+        query: |
+          *[_type == "project"][0] {
+            _id,
+            name,
+            "memberDetails": members[]-> {
+              _id,
+              name,
+              "memberOfProjects": *[_type == "project" && ^._id in members[]._ref] {
+                _id,
+                name
+              }
+            }
+          }
+        result:
+          _id: project-1
+          memberDetails:
+            - _id: emp-1
+              memberOfProjects:
+                - _id: project-1
+                  name: Website Redesign
+              name: Eve
+            - _id: emp-2
+              memberOfProjects:
+                - _id: project-1
+                  name: Website Redesign
+              name: Frank
+          name: Website Redesign
+
+  - name: "Correlated on multiple parent fields"
+    version: ">= 1.0"
+    documents:
+      - _id: page-1
+        _type: page
+        title: Home Page
+        content: Welcome
+        _updatedAt: "2024-01-05T00:00:00Z"
+
+      - _id: page-2
+        _type: page
+        title: About Page
+        content: About us
+        _updatedAt: "2024-01-10T00:00:00Z"
+
+      - _id: page-3
+        _type: page
+        title: Contact Page
+        content: Contact info
+        _updatedAt: "2024-02-15T00:00:00Z"
+
+      - _id: route-1
+        _type: route
+        slug: /home
+        page:
+          _ref: page-1
+        _updatedAt: "2024-01-01T00:00:00Z"
+
+      - _id: route-2
+        _type: route
+        slug: /about
+        page:
+          _ref: page-2
+        _updatedAt: "2024-01-15T00:00:00Z"
+
+      - _id: route-3
+        _type: route
+        slug: /contact
+        page:
+          _ref: page-3
+        _updatedAt: "2024-02-01T00:00:00Z"
+
+    query: |
+      *[_type == "route"] | order(slug) {
+        slug,
+        "page": *[_id == ^.page._ref && _updatedAt > ^._updatedAt][0] {
+          title
+        }
+      }
+    result:
+      - page: null
+        slug: /about
+      - page:
+          title: Contact Page
+        slug: /contact
+      - page:
+          title: Home Page
+        slug: /home
+
+  - name: "Correlated on non-string keys"
+    version: ">= 1.0"
+    documents:
+      - _id: sensor-1
+        _type: sensor
+        name: Temp Sensor A
+        numericCode: 100
+        location: Room 1
+        tags:
+          - indoor
+          - temp
+        config:
+          unit: celsius
+          precision: 2
+
+      - _id: sensor-2
+        _type: sensor
+        name: Temp Sensor B
+        numericCode: 100
+        location: Room 2
+        tags:
+          - indoor
+          - temp
+        config:
+          unit: celsius
+          precision: 1
+
+      - _id: sensor-3
+        _type: sensor
+        name: Humidity Sensor
+        numericCode: 200
+        location: Room 1
+        tags:
+          - indoor
+          - humidity
+        config:
+          unit: percent
+          precision: 0
+
+      - _id: sensor-4
+        _type: sensor
+        name: Outdoor Temp
+        numericCode: 100
+        location: Outside
+        tags:
+          - outdoor
+          - temp
+        config:
+          unit: fahrenheit
+          precision: 1
+
+      - _id: reading-1
+        _type: reading
+        sensorCode: 100
+        value: 22.5
+        timestamp: "2024-01-01T10:00:00Z"
+
+      - _id: reading-2
+        _type: reading
+        sensorCode: 100
+        value: 23.0
+        timestamp: "2024-01-01T11:00:00Z"
+
+      - _id: reading-3
+        _type: reading
+        sensorCode: 200
+        value: 45.0
+        timestamp: "2024-01-01T10:00:00Z"
+
+      - _id: reading-4
+        _type: reading
+        sensorCode: 300
+        value: 0.0
+        timestamp: "2024-01-01T10:00:00Z"
+
+    query: |
+      {
+        "numericJoin": *[_type == "sensor"] | order(name) {
+          name,
+          numericCode,
+          "readings": *[_type == "reading" && sensorCode == ^.numericCode] | order(timestamp) {
+            value,
+            timestamp
+          }
+        },
+        "arrayJoinAttempt": *[_type == "sensor"] | order(name) {
+          name,
+          tags,
+          "matchingByTags": *[_type == "sensor" && tags == ^.tags && _id != ^._id]{name}
+        },
+        "objectJoinAttempt": *[_type == "sensor"] | order(name) {
+          name,
+          config,
+          "matchingByConfig": *[_type == "sensor" && config == ^.config && _id != ^._id]{name}
+        }
+      }
+    result:
+      arrayJoinAttempt:
+        - matchingByTags: []
+          name: Humidity Sensor
+          tags:
+            - indoor
+            - humidity
+        - matchingByTags: []
+          name: Outdoor Temp
+          tags:
+            - outdoor
+            - temp
+        - matchingByTags: []
+          name: Temp Sensor A
+          tags:
+            - indoor
+            - temp
+        - matchingByTags: []
+          name: Temp Sensor B
+          tags:
+            - indoor
+            - temp
+      numericJoin:
+        - name: Humidity Sensor
+          numericCode: 200
+          readings:
+            - timestamp: "2024-01-01T10:00:00Z"
+              value: 45
+        - name: Outdoor Temp
+          numericCode: 100
+          readings:
+            - timestamp: "2024-01-01T10:00:00Z"
+              value: 22.5
+            - timestamp: "2024-01-01T11:00:00Z"
+              value: 23
+        - name: Temp Sensor A
+          numericCode: 100
+          readings:
+            - timestamp: "2024-01-01T10:00:00Z"
+              value: 22.5
+            - timestamp: "2024-01-01T11:00:00Z"
+              value: 23
+        - name: Temp Sensor B
+          numericCode: 100
+          readings:
+            - timestamp: "2024-01-01T10:00:00Z"
+              value: 22.5
+            - timestamp: "2024-01-01T11:00:00Z"
+              value: 23
+      objectJoinAttempt:
+        - config:
+            precision: 0
+            unit: percent
+          matchingByConfig: []
+          name: Humidity Sensor
+        - config:
+            precision: 1
+            unit: fahrenheit
+          matchingByConfig: []
+          name: Outdoor Temp
+        - config:
+            precision: 2
+            unit: celsius
+          matchingByConfig: []
+          name: Temp Sensor A
+        - config:
+            precision: 1
+            unit: celsius
+          matchingByConfig: []
+          name: Temp Sensor B
+
+  - name: "Parent references inside function calls"
+    version: ">= 1.0"
+    documents:
+      - _id: "p-1"
+        _type: "parent"
+        tag: "red"
+        created: "2024-01-15T10:00:00Z"
+      - _id: "p-2"
+        _type: "parent"
+        tag: "blue"
+        created: "2024-06-20T15:30:00.500Z"
+      - _id: "p-3"
+        _type: "parent"
+        tag: "green"
+        created: "2025-03-01T00:00:00Z"
+
+    query: |
+      *[_id == "p-2"] {
+        _id,
+        "earlier": *[_type == "parent" && dateTime(created) < dateTime(^.created)] | order(_id) { _id }
+      }
+    result:
+      - _id: "p-2"
+        earlier:
+          - _id: "p-1"
+
+  - name: "Parent reference compared against Portable Text"
+    version: ">= 1.0"
+    features:
+      - portableText
+    documents:
+      - _id: "pt-doc"
+        _type: "pt"
+        blocks:
+          - _type: "block"
+            children:
+              - _type: "span"
+                text: "alpha-leaf"
+      - _id: "pt-other"
+        _type: "pt-search"
+        needle: "alpha-leaf"
+
+    query: |
+      *[_id == "pt-other"] {
+        _id,
+        "found": *[_id == "pt-doc" && pt::text(blocks) == ^.needle]._id
+      }
+    result:
+      - _id: "pt-other"
+        found:
+          - "pt-doc"

@@ -417,3 +417,328 @@ tests:
   result:
   - null
   - null
+
+- name: "Conditional spread"
+  documents:
+  - _id: doc1
+    _type: test
+    title: Test Document
+    nested:
+      a: 1
+      b: 2
+      c: 3
+
+  - _id: doc2
+    _type: test
+    title: Another Document
+    nested:
+      x: 10
+      y: 20
+
+  - _id: doc3
+    _type: test
+    title: Third Document
+    flag: true
+    nested:
+      p: 100
+      q: 200
+
+  - _id: doc4
+    _type: pageTest
+    pageBuilder:
+    - _key: builder1
+      _type: sectionRichText
+      content:
+        en:
+        - _key: block1
+          _type: block
+          style: normal
+          markDefs: []
+          children:
+          - _key: span1
+            _type: span
+            text: Hello
+
+  - _id: lesson1
+    _type: lesson
+    content:
+    - _key: task1
+      _type: block
+      listItem: task
+
+  tests:
+  - name: "True condition"
+    query: |
+      *[_type == "test"] { _id, "n": nested { a, true => { ... } } } | order(_id)
+    result:
+    - _id: doc1
+      n:
+        a: 1
+        b: 2
+        c: 3
+    - _id: doc2
+      n:
+        a: null
+        x: 10
+        y: 20
+    - _id: doc3
+      n:
+        a: null
+        p: 100
+        q: 200
+
+  - name: "False condition"
+    query: |
+      *[_type == "test"] { _id, "n": nested { a, false => { ... } } } | order(_id)
+    result:
+    - _id: doc1
+      n:
+        a: 1
+    - _id: doc2
+      n:
+        a: null
+    - _id: doc3
+      n:
+        a: null
+
+  - name: "Condition reading a field"
+    query: |
+      *[_type == "test" && _id == "doc3"] { _id, flag => { title } }
+    result:
+    - _id: doc3
+      title: Third Document
+
+  - name: "Only a spread"
+    query: |
+      *[_type == "test" && _id == "doc1"] { _id, "first": nested { true => { ... } } }
+    result:
+    - _id: doc1
+      first:
+        a: 1
+        b: 2
+        c: 3
+
+  - name: "Spread with an extra field"
+    query: |
+      *[_type == "test" && _id == "doc1"] { _id, "n": nested { true => { ..., "doubled": a * 2 } } }
+    result:
+    - _id: doc1
+      n:
+        a: 1
+        b: 2
+        c: 3
+        doubled: 2
+
+  - name: "Preserves the parent scope"
+    query: |
+      *[_id == "lesson1"][0] {
+        content[] {
+          listItem == "task" => {
+            ...,
+            "documentId": ^._id,
+            "documentType": ^._type
+          }
+        }
+      }
+    result:
+      content:
+      - _key: task1
+        _type: block
+        listItem: task
+        documentId: lesson1
+        documentType: lesson
+
+  - name: "Nested conditional spread"
+    query: |
+      *[_type == "test" && _id == "doc1"] { _id, true => { true => { "x": 1 } } }
+    result:
+    - _id: doc1
+      x: 1
+
+  - name: "Nested conditional spread reading a field"
+    query: |
+      *[_type == "test" && _id == "doc3"] { _id, flag => { flag => { title } } }
+    result:
+    - _id: doc3
+      title: Third Document
+
+  - name: "Nested conditional spread, inner false"
+    query: |
+      *[_type == "test" && _id == "doc1"] { _id, true => { false => { "x": 1 } } }
+    result:
+    - _id: doc1
+
+  - name: "Nested conditional spread, outer false"
+    query: |
+      *[_type == "test" && _id == "doc1"] { _id, false => { true => { "x": 1 } } }
+    result:
+    - _id: doc1
+
+  - name: "Spread preserves fields when overriding an empty array field"
+    query: |
+      *[_type == "pageTest" && _id == "doc4"][0]{
+        pageBuilder[]{
+          _type == "sectionRichText" => {
+            _type,
+            _key,
+            "content": content.en[]{
+              ...{
+                ...,
+                markDefs[]{...}
+              }
+            }[0]
+          }
+        }[0]
+      }
+    result:
+      pageBuilder:
+        _key: builder1
+        _type: sectionRichText
+        content:
+          _key: block1
+          _type: block
+          style: normal
+          markDefs: []
+          children:
+          - _key: span1
+            _type: span
+            text: Hello
+
+- name: "Missing fields and object keys"
+  documents:
+  - _id: page-1
+    _type: page
+    title: Home Page
+    slug:
+      _type: slug
+      current: home
+
+  - _id: page-2
+    _type: page
+    title: About Page
+    slug:
+      _type: slug
+      current: about
+
+  - _id: person-1
+    _type: person
+    name: Alice
+    age: 30
+    email: alice@example.com
+
+  - _id: person-2
+    _type: person
+    name: Bob
+    age: 25
+    email: bob@example.com
+
+  - _id: campaign-1
+    _type: campaign
+    name: Summer Sale
+
+  - _id: campaign-2
+    _type: campaign
+    name: Winter Promo
+
+  tests:
+  - name: "Nested field path"
+    query: |
+      *[_type == "page"]{
+        title,
+        "slugValue": slug.current
+      } | order(title)
+    result:
+    - slugValue: about
+      title: About Page
+    - slugValue: home
+      title: Home Page
+
+  - name: "Nested object is preserved"
+    query: |
+      *[_type == "page"]{
+        title,
+        slug
+      } | order(title)
+    result:
+    - slug:
+        _type: slug
+        current: about
+      title: About Page
+    - slug:
+        _type: slug
+        current: home
+      title: Home Page
+
+  - name: "A missing field projects as null"
+    query: |
+      *[_type == "page"] | order(_id){
+        _id,
+        title,
+        subtitle
+      }
+    result:
+    - _id: page-1
+      subtitle: null
+      title: Home Page
+    - _id: page-2
+      subtitle: null
+      title: About Page
+
+  - name: "Splat with a computed field"
+    query: |
+      *[_type == "person"]{
+        ...,
+        "upperName": upper(name)
+      } | order(name)
+    result:
+    - _id: person-1
+      _type: person
+      age: 30
+      email: alice@example.com
+      name: Alice
+      upperName: ALICE
+    - _id: person-2
+      _type: person
+      age: 25
+      email: bob@example.com
+      name: Bob
+      upperName: BOB
+
+  - name: "Object at the root containing a subquery"
+    query: |
+      {"resource": *[_id == "campaign-1"][0]}
+    result:
+      resource:
+        _id: campaign-1
+        _type: campaign
+        name: Summer Sale
+
+  - name: "Conditional spread that matches"
+    query: |
+      *[_type == "campaign"]{
+        _type == "campaign" => {name}
+      } | order(name)
+    result:
+    - name: Summer Sale
+    - name: Winter Promo
+
+  - name: "Conditional spread that does not match"
+    query: |
+      *[_type == "campaign"]{
+        _type == "product" => {name}
+      } | order(_id)
+    result:
+    - {}
+    - {}
+
+  - name: "Limit after a non-pushable comparison"
+    query: |
+      *[_type == "page" && _id > "page-1"] | order(_id)[0...10]._id
+    result:
+    - page-2
+
+  - name: "Limit after an equality"
+    query: |
+      *[_type == "page"] | order(_id)[0...1]._id
+    result:
+    - page-1

@@ -57,3 +57,58 @@ tests:
   tests:
   - query: 'select("a", 2 > 1 => "b")'
   - query: 'select("a", "b")'
+
+- name: "Document-independent conditions"
+  documents:
+  - _id: "dept1"
+    _type: "department"
+    name: "Engineering"
+  - _id: "dept2"
+    _type: "department"
+    name: "Sales"
+  - _id: "doc1"
+    _type: "page"
+    department:
+      _ref: "dept1"
+  - _id: "doc2"
+    _type: "page"
+    department:
+      _ref: "dept2"
+  tests:
+  - name: "False condition uses the fallback"
+    query: '*[_type == "page"]{_id, "dept": select($p == "x" => "override", department._ref)} | order(_id)'
+    params:
+      p: "y"
+    result:
+    - _id: "doc1"
+      dept: "dept1"
+    - _id: "doc2"
+      dept: "dept2"
+
+  - name: "True condition uses the branch value"
+    query: '*[_type == "page"]{_id, "dept": select($p == "x" => "override", department._ref)} | order(_id)'
+    params:
+      p: "x"
+    result:
+    - _id: "doc1"
+      dept: "override"
+    - _id: "doc2"
+      dept: "override"
+
+  - name: "In a filter with a false condition"
+    query: '*[department._ref == select($p == "special" => "dept1", "dept2")]'
+    params:
+      p: "normal"
+    result:
+    - _id: "doc2"
+      _type: "page"
+      department:
+        _ref: "dept2"
+
+  - name: "No matching branch and no fallback is null"
+    query: '*[_type == "page"][0]{_id, "val": select($p == "a" => "A", $p == "b" => "B")}'
+    params:
+      p: "c"
+    result:
+      _id: "doc1"
+      val: null

@@ -495,3 +495,136 @@ tests:
       - query: "pt::text(~body~) == ~text~"
       - query: "~text~ == pt::text(~body~)"
 
+  - name: "match field paths"
+    documents:
+      - _id: pt-direct-object
+        _type: direct
+        body:
+          _type: block
+          children:
+            - _type: span
+              text: "alpha beta"
+      - _id: pt-direct-array-both
+        _type: direct
+        body:
+          - _type: block
+            children:
+              - _type: span
+                text: "alpha beta"
+      - _id: pt-direct-array-split
+        _type: direct
+        body:
+          - _type: block
+            children:
+              - _type: span
+                text: "alpha"
+          - _type: block
+            children:
+              - _type: span
+                text: "beta"
+      - _id: pt-nested-object
+        _type: nested
+        modules:
+          - content:
+              _type: block
+              children:
+                - _type: span
+                  text: "alpha beta"
+      - _id: pt-nested-array
+        _type: nested
+        modules:
+          - content:
+              - _type: block
+                children:
+                  - _type: span
+                    text: "alpha"
+              - _type: block
+                children:
+                  - _type: span
+                    text: "beta"
+      - _id: pt-fields-first-both
+        _type: fields
+        primary:
+          _type: block
+          children:
+            - _type: span
+              text: "alpha beta"
+        secondary:
+          _type: block
+          children:
+            - _type: span
+              text: "gamma"
+      - _id: pt-fields-second-both
+        _type: fields
+        primary:
+          _type: block
+          children:
+            - _type: span
+              text: "gamma"
+        secondary:
+          _type: block
+          children:
+            - _type: span
+              text: "alpha beta"
+      - _id: pt-fields-split
+        _type: fields
+        primary:
+          _type: block
+          children:
+            - _type: span
+              text: "alpha"
+        secondary:
+          _type: block
+          children:
+            - _type: span
+              text: "beta"
+
+    tests:
+      - name: "a field matches object and array values"
+        query: '*[_type == "direct" && pt::text(body) match "alpha"] | order(_id)._id'
+        result:
+          - pt-direct-array-both
+          - pt-direct-array-split
+          - pt-direct-object
+
+      - name: "a field with a pattern array matches object and array values"
+        query: '*[_type == "direct" && pt::text(body) match ["alpha", "beta"]] | order(_id)._id'
+        result:
+          - pt-direct-array-both
+          - pt-direct-array-split
+          - pt-direct-object
+
+      - name: "a terminal array postfix requires an array"
+        query: '*[_type == "direct" && pt::text(body[]) match "alpha"] | order(_id)._id'
+        result:
+          - pt-direct-array-both
+          - pt-direct-array-split
+
+      - name: "a terminal array postfix with a pattern array requires an array"
+        query: '*[_type == "direct" && pt::text(body[]) match ["alpha", "beta"]] | order(_id)._id'
+        result:
+          - pt-direct-array-both
+          - pt-direct-array-split
+
+      - name: "a path through an array matches object and array values"
+        query: '*[_type == "nested" && pt::text(modules[].content) match "alpha"] | order(_id)._id'
+        result:
+          - pt-nested-array
+          - pt-nested-object
+
+      - name: "a path through an array with a pattern array matches object and array values"
+        query: '*[_type == "nested" && pt::text(modules[].content) match ["alpha", "beta"]] | order(_id)._id'
+        result:
+          - pt-nested-array
+          - pt-nested-object
+
+      - name: "a nested terminal array postfix requires an array"
+        query: '*[_type == "nested" && pt::text(modules[].content[]) match "alpha"] | order(_id)._id'
+        result:
+          - pt-nested-array
+
+      - name: "a nested terminal array postfix with a pattern array requires an array"
+        query: '*[_type == "nested" && pt::text(modules[].content[]) match ["alpha", "beta"]] | order(_id)._id'
+        result:
+          - pt-nested-array
+

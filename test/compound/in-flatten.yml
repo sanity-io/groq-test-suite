@@ -54,3 +54,277 @@ tests:
     - '"b"'
   result:
   - "d"
+
+- name: "Plain array fields"
+  documents:
+  - _id: "area-1"
+    _type: "area"
+    name: "Area One"
+    postalNumbers: ["1000", "1001", "1002"]
+  - _id: "area-2"
+    _type: "area"
+    name: "Area Two"
+    postalNumbers: ["2000", "2001"]
+  - _id: "region-1"
+    _type: "region"
+    name: "Region One"
+    postalNumbers: ["3000", "3001", "3002"]
+  - _id: "special-1"
+    _type: "special"
+    slug:
+      current: "monthly-index"
+  - _id: "other-1"
+    _type: "article"
+    name: "Unrelated"
+    postalNumbers: ["1000"]
+
+  tests:
+  - name: "Literal in a plain array field"
+    query: |
+      *[_type in ['area', 'region'] && "1000" in postalNumbers] | order(_id asc) { _id }
+    result:
+    - _id: "area-1"
+
+  - name: "Literal in a plain array field, without a type filter"
+    query: |
+      *["1001" in postalNumbers] | order(_id asc) { _id }
+    result:
+    - _id: "area-1"
+
+  - name: "Conjunction with a plain array field"
+    query: |
+      *[_type in ['area', 'region'] && "3001" in postalNumbers] { _id }
+    result:
+    - _id: "region-1"
+
+  - name: "Disjunction with a plain array field"
+    query: |
+      *[_type in ['area', 'region'] && "1000" in postalNumbers || slug.current == 'monthly-index'] | order(_id asc) { _id, _type }
+    result:
+    - _id: "area-1"
+      _type: "area"
+    - _id: "special-1"
+      _type: "special"
+
+- name: "Plain array fields, both disjunction branches matching"
+  documents:
+  - _id: "area-1"
+    _type: "area"
+    name: "Area One"
+    postalNumbers: ["1000", "1001", "1002"]
+  - _id: "area-2"
+    _type: "area"
+    name: "Area Two"
+    postalNumbers: ["2000", "2001"]
+  - _id: "region-1"
+    _type: "region"
+    name: "Region One"
+    postalNumbers: ["3000", "3001", "3002"]
+  - _id: "index-1"
+    _type: "priceIndex"
+    slug:
+      current: "monthly-index"
+    postalNumbers: ["4000"]
+  - _id: "other-1"
+    _type: "article"
+    name: "Unrelated"
+    postalNumbers: ["1000"]
+
+  tests:
+  - name: "Disjunction where each branch matches a different document"
+    query: |
+      *[_type in ['area', 'region', 'priceIndex'] && "1000" in postalNumbers || slug.current == 'monthly-index'] | order(_id asc) { _id, _type }
+    result:
+    - _id: "area-1"
+      _type: "area"
+    - _id: "index-1"
+      _type: "priceIndex"
+
+  - name: "Conjunction with a plain array field"
+    query: |
+      *[_type == "area" && "1001" in postalNumbers] { _id }
+    result:
+    - _id: "area-1"
+
+  - name: "Disjunction where both branches match the same documents"
+    query: |
+      *["1000" in postalNumbers || _type == "region"] | order(_id asc) { _id }
+    result:
+    - _id: "area-1"
+    - _id: "other-1"
+    - _id: "region-1"
+
+- name: "Nested object paths"
+  documents:
+  - _id: area
+    _type: area
+    geography:
+      postalNumbers:
+      - "1263"
+
+  - _id: wrong-shape
+    _type: area
+    geography:
+    - postalNumbers: "1263"
+
+  - _id: monthly
+    _type: priceIndex
+    slug:
+      current: norge-monthly
+
+  query: |
+    *[
+      _type in ["area", "region", "priceIndex"]
+      && "1263" in geography.postalNumbers
+      || slug.current == "norge-monthly"
+    ] | order(_id asc)._id
+  result:
+  - area
+  - monthly
+
+- name: "Document-relative reference arrays"
+  documents:
+  - _id: a1
+    _type: article
+    title: First
+    tags:
+    - _ref: t1
+      _weak: true
+    - _ref: t2
+      _weak: true
+  - _id: a2
+    _type: article
+    title: Second
+    tags:
+    - _ref: t2
+      _weak: true
+    - _ref: t3
+      _weak: true
+  - _id: a3
+    _type: article
+    title: Third
+    tags:
+    - _ref: t4
+      _weak: true
+  - _id: a4
+    _type: article
+    title: NoTags
+
+  tests:
+  - name: "Scalar in a document-relative array of references"
+    query: |
+      *[_type == "article" && "t1" in tags[]._ref] | order(_id) {_id}
+    result:
+    - {_id: a1}
+
+  - name: "Scalar in a document-relative array of references, no match"
+    query: |
+      *[_type == "article" && "nope" in tags[]._ref] | order(_id) {_id}
+    result: []
+
+  - name: "Scalar in a document-relative array of references, several matches"
+    query: |
+      *[_type == "article" && "t2" in tags[]._ref] | order(_id) {_id}
+    result:
+    - {_id: a1}
+    - {_id: a2}
+
+  - name: "Scalar in a document-relative array with ordering and a limit"
+    query: |
+      *[_type == "article" && "t2" in tags[]._ref] | order(_id desc) [0...1] {_id}
+    result:
+    - {_id: a2}
+
+- name: "Dereference on the right-hand side"
+  documents:
+  - _id: parent-a
+    _type: parent
+    activeAutomatedVariants:
+      automatedVariants:
+      - productId: product-a
+      - productId: product-b
+
+  - _id: parent-b
+    _type: parent
+    activeAutomatedVariants:
+      automatedVariants:
+      - productId: product-c
+
+  - _id: product-a
+    _type: product
+    parentProductReference:
+      _ref: parent-a
+
+  - _id: product-b
+    _type: product
+    parentProductReference:
+      _ref: parent-a
+
+  - _id: product-c
+    _type: product
+    parentProductReference:
+      _ref: parent-b
+
+  - _id: product-unlisted
+    _type: product
+    parentProductReference:
+      _ref: parent-a
+
+  query: |
+    *[
+      _type == "product"
+      && _id in parentProductReference->activeAutomatedVariants.automatedVariants[].productId
+    ] | order(_id)._id
+  result:
+  - product-a
+  - product-b
+  - product-c
+
+- name: "Dereferenced array membership with a pagination filter"
+  documents:
+  - _id: category-how-to
+    _type: category
+    slug:
+      current: how-to
+
+  - _id: category-technology
+    _type: category
+    slug:
+      current: technology
+
+  - _id: category-gear
+    _type: category
+    slug:
+      current: gear
+
+  - _id: article-no-match
+    _type: article
+    date: "2022-01-11T00:00:00Z"
+    categories:
+    - _ref: category-how-to
+    - _ref: category-gear
+
+  - _id: article-middle-match
+    _type: article
+    date: "2022-01-10T00:00:00Z"
+    categories:
+    - _ref: category-how-to
+    - _ref: category-technology
+    - _ref: category-gear
+
+  - _id: article-first-match
+    _type: article
+    date: "2022-01-09T00:00:00Z"
+    categories:
+    - _ref: category-technology
+    - _ref: category-gear
+
+  query: '*[_type == "article" && $category in categories[]->slug.current && (date < $lastDate || (date == $lastDate && _id < $lastId))] | order(date desc, _id desc)[0...$count]._id'
+  params:
+    category: technology
+    count: 2
+    lastDate: "2022-01-12T00:00:00Z"
+    lastId: z
+  result:
+  - article-middle-match
+  - article-first-match

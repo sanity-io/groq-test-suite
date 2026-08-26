@@ -299,3 +299,19 @@ tests:
   - {_id: c, score: 1}
   - {_id: d, score: 1}
   - {_id: a, score: 0}
+
+- name: Text match after a non-trivial filter
+  documents:
+  - _id: book-dracula
+    _type: book
+    title: Dracula
+  - _id: book-other
+    _type: book
+    title: Frankenstein
+  - _id: book-empty
+    _type: book
+    title: ""
+  query: '*[_type == "book" && length(title) > 0] | score(title match "Dracula")._id'
+  result:
+  - book-dracula
+  - book-other

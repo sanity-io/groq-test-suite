@@ -68,3 +68,210 @@ tests:
     - 'null, null'
     - 'null, null, null'
     - 'null, null, null, null'
+
+- name: "Across value shapes"
+  documents:
+  # Scalar string field
+  - _id: d-str
+    _type: test
+    field: "hello"
+
+  # Scalar number field
+  - _id: d-num
+    _type: test
+    field: 42
+
+  # Scalar boolean true
+  - _id: d-true
+    _type: test
+    field: true
+
+  # Scalar boolean false
+  - _id: d-false
+    _type: test
+    field: false
+
+  # Explicit null
+  - _id: d-null
+    _type: test
+    field: null
+
+  # Field entirely missing
+  - _id: d-missing
+    _type: test
+
+  # Empty string
+  - _id: d-empty-str
+    _type: test
+    field: ""
+
+  # Zero
+  - _id: d-zero
+    _type: test
+    field: 0
+
+  # Empty object
+  - _id: d-empty-obj
+    _type: test
+    field: {}
+
+  # Non-empty object
+  - _id: d-obj
+    _type: test
+    field:
+      nested: "value"
+
+  # Empty array
+  - _id: d-empty-arr
+    _type: test
+    field: []
+
+  # Non-empty array with scalars
+  - _id: d-arr
+    _type: test
+    field:
+    - 1
+    - 2
+    - 3
+
+  # Non-empty array with objects
+  - _id: d-arr-obj
+    _type: test
+    field:
+    - name: "a"
+    - name: "b"
+
+  # Non-empty array with single boolean true
+  - _id: d-arr-true
+    _type: test
+    field:
+    - true
+
+  # Nested field: parent is object
+  - _id: d-nested
+    _type: test
+    parent:
+      child: "exists"
+
+  # Nested field: parent exists but child missing
+  - _id: d-nested-miss
+    _type: test
+    parent:
+      other: "no child here"
+
+  tests:
+  # defined(field) is true for every value except null and missing
+  - name: "Includes every present value"
+    query: |
+      *[_type == "test" && defined(field)] | order(_id)[]._id
+    result:
+    - d-arr
+    - d-arr-obj
+    - d-arr-true
+    - d-empty-arr
+    - d-empty-obj
+    - d-empty-str
+    - d-false
+    - d-num
+    - d-obj
+    - d-str
+    - d-true
+    - d-zero
+
+  # !defined(field) matches null and missing
+  - name: "Negated excludes every present value"
+    query: |
+      *[_type == "test" && !defined(field)] | order(_id)[]._id
+    result:
+    - d-missing
+    - d-nested
+    - d-nested-miss
+    - d-null
+
+  - name: "Nested field"
+    query: |
+      *[_type == "test" && defined(parent.child)] | order(_id)[]._id
+    result:
+    - d-nested
+
+  - name: "Negated nested field"
+    query: |
+      *[_type == "test" && !defined(parent.child)] | order(_id)[]._id
+    result:
+    - d-arr
+    - d-arr-obj
+    - d-arr-true
+    - d-empty-arr
+    - d-empty-obj
+    - d-empty-str
+    - d-false
+    - d-missing
+    - d-nested-miss
+    - d-null
+    - d-num
+    - d-obj
+    - d-str
+    - d-true
+    - d-zero
+
+  # (!defined(field) || field > "threshold") includes missing, null, and
+  # string values greater than the threshold. Non-string types compare to
+  # null, so `null || null` leaves them out.
+  - name: "Disjunction with a comparison"
+    query: |
+      *[_type == "test" && (!defined(field) || field > "hello")] | order(_id)[]._id
+    result:
+    - d-missing
+    - d-nested
+    - d-nested-miss
+    - d-null
+
+  - name: "Empty object"
+    query: |
+      *[_id == "d-empty-obj" && defined(field)][]._id
+    result:
+    - d-empty-obj
+
+  - name: "Empty array"
+    query: |
+      *[_id == "d-empty-arr" && defined(field)][]._id
+    result:
+    - d-empty-arr
+
+  - name: "Non-empty object"
+    query: |
+      *[_id == "d-obj" && defined(field)][]._id
+    result:
+    - d-obj
+
+  - name: "Non-empty array"
+    query: |
+      *[_id == "d-arr" && defined(field)][]._id
+    result:
+    - d-arr
+
+  - name: "Inequality against null behaves like defined()"
+    query: |
+      *[_type == "test" && field != null] | order(_id)[]._id
+    result:
+    - d-arr
+    - d-arr-obj
+    - d-arr-true
+    - d-empty-arr
+    - d-empty-obj
+    - d-empty-str
+    - d-false
+    - d-num
+    - d-obj
+    - d-str
+    - d-true
+    - d-zero
+
+  - name: "Equality against null behaves like !defined()"
+    query: |
+      *[_type == "test" && field == null] | order(_id)[]._id
+    result:
+    - d-missing
+    - d-nested
+    - d-nested-miss
+    - d-null

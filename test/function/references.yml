@@ -188,3 +188,82 @@ tests:
   query: |
     *[_type == "doc"]{"res": references()}
   valid: false
+
+- name: "Correlated with the parent document"
+  documents:
+  - _id: author-1
+    _type: author
+    name: Alice
+
+  - _id: author-2
+    _type: author
+    name: Bob
+
+  - _id: post-1
+    _type: post
+    title: Hello
+    author:
+      _ref: author-1
+
+  - _id: post-2
+    _type: post
+    title: World
+    author:
+      _ref: author-1
+
+  - _id: post-3
+    _type: post
+    title: Goodbye
+    author:
+      _ref: author-2
+
+  tests:
+  - name: "In a projection subquery"
+    query: |
+      *[_type == "author"] | order(_id) {
+        _id,
+        "posts": *[_type == "post" && references(^._id)] | order(_id) { _id, title }
+      }
+    result:
+    - _id: author-1
+      posts:
+      - _id: post-1
+        title: Hello
+      - _id: post-2
+        title: World
+    - _id: author-2
+      posts:
+      - _id: post-3
+        title: Goodbye
+
+  - name: "With element access"
+    query: |
+      *[_type == "author"] | order(_id) {
+        _id,
+        "latestPost": *[_type == "post" && references(^._id)] | order(_id) [0] { _id }
+      }
+    result:
+    - _id: author-1
+      latestPost:
+        _id: post-1
+    - _id: author-2
+      latestPost:
+        _id: post-3
+
+  - name: "Counted"
+    query: |
+      *[_type == "author"] | order(_id) {
+        _id,
+        "postCount": count(*[_type == "post" && references(^._id)])
+      }
+    result:
+    - _id: author-1
+      postCount: 2
+    - _id: author-2
+      postCount: 1
+
+  - name: "Counted inside a filter"
+    query: |
+      *[_type == "author" && count(*[references(^._id)]) > 1] | order(_id) { _id }
+    result:
+    - _id: author-1
