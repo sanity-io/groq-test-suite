@@ -621,3 +621,129 @@ tests:
   result:
   - 1
   - 3
+
+- name: "Traversal after a projection"
+  documents:
+  - _id: headerMenu
+    _type: headerMenu
+    subMenus:
+    - _type: subMenu
+      title: Main
+      menuItems:
+      - _type: menuItem
+        link: https://example.com/
+        title: Example
+  - _id: article
+    _type: article
+    content:
+    - _type: block
+      name: Alpha
+      hidden: ignored
+    - _type: block
+      name: Beta
+      hidden: ignored
+  - _id: settings
+    _type: settings
+    resortSelection:
+    - resort:
+        _type: reference
+        _ref: resort-a
+    - resort:
+        _type: reference
+        _ref: resort-b
+  - _id: resort-a
+    _type: resort
+    slug:
+      current: resort-a
+  - _id: resort-b
+    _type: resort
+    slug:
+      current: resort-b
+
+  tests:
+  - name: "Array traversal after a projection maps array values"
+    query: |
+      *[_id == "headerMenu"][0].subMenus[] {
+        _type,
+        menuItems {
+          _type,
+          link,
+          title
+        }[],
+        title
+      }
+    result:
+    - _type: subMenu
+      menuItems:
+      - _type: menuItem
+        link: https://example.com/
+        title: Example
+      title: Main
+
+  - name: "Array postfix after a projection on an array field maps inside"
+    query: |
+      *[_id == "article"][0]{
+        content {
+          name
+        }[]
+      }
+    result:
+      content:
+      - name: Alpha
+      - name: Beta
+
+  - name: "Filter after a projection on an array field maps inside"
+    query: |
+      *[_id == "article"][0]{
+        "content": content {
+          name
+        }[name == "Alpha"]
+      }
+    result:
+      content:
+      - name: Alpha
+
+  - name: "Element access after a projection on an array field maps inside"
+    query: |
+      *[_id == "article"][0]{
+        "content": content {
+          name
+        }[0]
+      }
+    result:
+      content:
+        name: Alpha
+
+  - name: "Slice after a projection stays inside the array target traversal"
+    query: |
+      [{"a": {"x": 1}}, {"a": {"x": 2}}].a{"x": x}[0...1]
+    result:
+    - null
+    - null
+
+  - name: "Chained filter and slice after a projection stay inside the array target traversal"
+    query: |
+      [
+        {"a": [{"x": 1}, {"x": 2}]},
+        {"a": [{"x": 3}, {"x": 4}]}
+      ].a{"x": x}[x > 1][0...1]
+    result:
+    - x: 2
+    - x: 3
+
+  - name: "Slice after a dereferencing projection stays inside the array target traversal"
+    query: |
+      *[_id == "settings"][0].resortSelection[defined(resort->slug.current)].resort->{
+        "resortSlug": slug.current
+      }[0...1]
+    result:
+    - null
+    - null
+
+  - name: "A grouped dereferencing projection applies the slice to the projected array"
+    query: |
+      (*[_id == "settings"][0].resortSelection[defined(resort->slug.current)].resort->{
+        "resortSlug": slug.current
+      })[0...1]
+    result:
+    - resortSlug: resort-a

@@ -209,3 +209,114 @@ tests:
     - query: |
         *[!(_id in path("a.*"))][]._id
       result: ["a"]
+
+- name: "Mixed primitive containers"
+  documents:
+  - _id: "missing"
+    _type: "item"
+  - _id: "null"
+    _type: "item"
+    value: null
+  - _id: "string"
+    _type: "item"
+    value: "target"
+  - _id: "other-string"
+    _type: "item"
+    value: "other"
+  - _id: "number"
+    _type: "item"
+    value: 2
+  - _id: "other-number"
+    _type: "item"
+    value: 3
+  - _id: "bool"
+    _type: "item"
+    value: true
+  - _id: "other-bool"
+    _type: "item"
+    value: false
+  tests:
+  - name: "A null element matches missing and null fields"
+    query: "*[value in $values]._id | order(@ asc)"
+    params:
+      values: [null]
+    result:
+    - "missing"
+    - "null"
+
+  - name: "A heterogeneous container matches each comparable type"
+    query: "*[value in $values]._id | order(@ asc)"
+    params:
+      values: [null, "target", 2, true]
+    result:
+    - "bool"
+    - "missing"
+    - "null"
+    - "number"
+    - "string"
+
+- name: "Right-hand sides that cannot be containers"
+  documents:
+  - _id: first
+    _type: article
+    foo: alpha
+    text: Alpha
+    values: "alpha,beta"
+  - _id: second
+    _type: article
+    foo: beta
+    text: Beta
+    values: "alpha,beta"
+  tests:
+  - name: "A string result is not a container"
+    query: "*[foo in lower(text)]._id"
+    result: []
+
+  - name: "A conjunction with a non-container stays empty"
+    query: "*[_type == \"article\" && foo in lower(text)]._id"
+    result: []
+
+  - name: "Negating a non-container membership stays empty"
+    query: "*[!(foo in lower(text))]._id"
+    result: []
+
+  - name: "Comparing a non-container membership preserves null"
+    query: "*[(foo in lower(text)) == false]._id"
+    result: []
+
+  - name: "An array-returning function is a valid container"
+    query: "*[foo in string::split(values, \",\")]._id | order(@ asc)"
+    result:
+    - first
+    - second
+
+- name: "Portable Text right-hand sides cannot be containers"
+  features:
+  - portableText
+  documents:
+  - _id: first
+    _type: article
+    foo: alpha
+    text: Alpha
+    body:
+      _type: block
+      children:
+      - _type: span
+        text: alpha
+  - _id: second
+    _type: article
+    foo: beta
+    text: Beta
+    body:
+      _type: block
+      children:
+      - _type: span
+        text: beta
+  tests:
+  - name: "A Portable Text result is not a container"
+    query: "*[foo in pt::text(body)]._id"
+    result: []
+
+  - name: "A disjunction of non-container memberships stays empty"
+    query: "*[foo in lower(text) || foo in pt::text(body)]._id"
+    result: []

@@ -228,3 +228,303 @@ tests:
     ][].name
   result:
   - A
+
+- name: "Boolean values"
+  documents:
+  - _id: doc-1
+    _type: item
+    visible: true
+
+  - _id: doc-2
+    _type: item
+    visible: false
+
+  - _id: doc-3
+    _type: item
+    visible: null
+
+  - _id: doc-4
+    _type: item
+    count: 42
+
+  tests:
+  - name: "A bare field only passes when true"
+    query: |
+      *[_type == "item" && visible] | order(_id) { _id }
+    result:
+    - _id: doc-1
+
+  - name: "A negated field only passes when false"
+    # !null is null and !42 is null; neither passes the filter.
+    query: |
+      *[_type == "item" && !visible] | order(_id) { _id }
+    result:
+    - _id: doc-2
+
+  - name: "Negation combined with inequality"
+    # true:  !true == false, true != false == true    -> true
+    # false: !false == true                           -> true
+    # null:  null != false == true                    -> true
+    # 42:    42 != false == true                      -> true
+    query: |
+      *[_type == "item" && (!visible || visible != false)] | order(_id) { _id }
+    result:
+    - _id: doc-1
+    - _id: doc-2
+    - _id: doc-3
+    - _id: doc-4
+
+- name: "Boolean identities in nested predicates"
+  documents:
+  - _id: "doc1"
+    _type: "post"
+    title: "Hello"
+  - _id: "doc2"
+    _type: "page"
+    title: "World"
+  - _id: "doc3"
+    _type: "post"
+    title: "Goodbye"
+  - _id: "doc4"
+    _type: "resource"
+    title: "Missing categories"
+  - _id: "doc5"
+    _type: "resource"
+    title: "Null categories"
+    resourceCategories: null
+  - _id: "doc6"
+    _type: "resource"
+    title: "Empty categories"
+    resourceCategories: []
+
+  tests:
+  - name: "Disjunction with an always-false branch"
+    # `_id in $b` is false because $b is empty.
+    query: '*[(_id in $a || _id in $b) && _type in $types]._id'
+    params:
+      a: ["doc1"]
+      b: []
+      types: ["post"]
+    result:
+    - "doc1"
+
+  - name: "Disjunction with an always-false branch, mirrored"
+    query: '*[(_id in $a || _id in $b) && _type in $types]._id'
+    params:
+      a: []
+      b: ["doc1", "doc3"]
+      types: ["post"]
+    result:
+    - "doc1"
+    - "doc3"
+
+  - name: "Conjunction with an always-true branch"
+    query: '*[(defined(_id) && true) && _type in $types]._id'
+    params:
+      types: ["post"]
+    result:
+    - "doc1"
+    - "doc3"
+
+  - name: "Deeply nested identities"
+    query: '*[((_type == $t || false) && true) || (false || _id == $id)]._id | order(@ asc)'
+    params:
+      t: "page"
+      id: "doc1"
+    result:
+    - "doc1"
+    - "doc2"
+
+  - name: "No identity terms present"
+    query: '*[_type == $t && defined(title)]._id | order(@ asc)'
+    params:
+      t: "post"
+    result:
+    - "doc1"
+    - "doc3"
+
+  - name: "Disjunction with an always-true branch"
+    query: '*[(_type == "post") || true]._id | order(@ asc)'
+    result:
+    - "doc1"
+    - "doc2"
+    - "doc3"
+    - "doc4"
+    - "doc5"
+    - "doc6"
+
+  - name: "A non-array membership parameter is false in a positive context"
+    query: |
+      *[
+        (_type == "post" && brand._ref in $brandIds)
+        || (_type == "post" && title match $query)
+      ]._id | order(@ asc)
+    params:
+      brandIds: ""
+      query: "*Hello*"
+    result:
+    - "doc1"
+
+  - name: "A non-array membership parameter stays null under negation"
+    query: '*[!(title in $brandIds)]._id'
+    params:
+      brandIds: ""
+    result: []
+
+  - name: "An always-false filter over a null traversal keeps null"
+    query: |
+      *[_type == "resource"]{
+        _id,
+        "filtered": resourceCategories[_ref in []],
+        "filteredDeref": resourceCategories[_ref in []]->{_id}
+      } | order(_id asc)
+    result:
+    - _id: "doc4"
+      filtered: null
+      filteredDeref: null
+    - _id: "doc5"
+      filtered: null
+      filteredDeref: null
+    - _id: "doc6"
+      filtered: []
+      filteredDeref: []
+
+- name: "Conjunctions with differing selectivity"
+  # `_type == "common"` matches eleven documents while
+  # `slug.current == "other"` matches exactly one, and that one document has
+  # a different type. Both conjuncts must be applied.
+  documents:
+  - {_id: c01, _type: common, slug: {current: alpha}}
+  - {_id: c02, _type: common, slug: {current: beta}}
+  - {_id: c03, _type: common, slug: {current: gamma}}
+  - {_id: c04, _type: common, slug: {current: delta}}
+  - {_id: c05, _type: common, slug: {current: epsilon}}
+  - {_id: c06, _type: common, slug: {current: zeta}}
+  - {_id: c07, _type: common, slug: {current: eta}}
+  - {_id: c08, _type: common, slug: {current: theta}}
+  - {_id: c09, _type: common, slug: {current: iota}}
+  - {_id: c10, _type: common, slug: {current: kappa}}
+  - {_id: c11, _type: common, slug: {current: target}}
+  - {_id: r01, _type: rare, slug: {current: other}}
+
+  tests:
+  - name: "No document matches both conjuncts"
+    query: |
+      *[_type == "common" && slug.current == "other"] { _id, _type }
+    result: []
+
+  - name: "No document matches both conjuncts, with element access"
+    query: |
+      *[_type == "common" && slug.current == "other"][0]
+    result: null
+
+  - name: "No document matches both conjuncts, with element access and projection"
+    query: |
+      *[_type == "common" && slug.current == "other"][0] {
+        _id,
+        _type,
+        "slug": slug.current
+      }
+    result: null
+
+  - name: "A document matching both conjuncts is returned"
+    query: |
+      *[_type == "common" && slug.current == "target"][0] { _id }
+    result:
+      _id: c11
+
+  - name: "A document matching both conjuncts is returned as a list"
+    query: |
+      *[_type == "common" && slug.current == "alpha"] { _id, _type }
+    result:
+    - _id: c01
+      _type: common
+
+- name: "Disjunction sharing a conjunct"
+  documents:
+  - _id: article-linked
+    _type: article
+    hero:
+      display: video
+  - _id: article-unlinked
+    _type: article
+    hero:
+      display: video
+  - _id: excluded
+    _type: video
+    video:
+      type: mux
+  - _id: other
+    _type: other
+  - _id: video-linked
+    _type: video
+    article:
+      _ref: article-linked
+    video:
+      type: mux
+  params:
+    currentId: excluded
+  query: |
+    *[
+      (
+        (
+          _type == "video" &&
+          coalesce(
+            video,
+            *[_type == "translation.metadata" && references(^._id)][0].fallback->video
+          ).type == "mux"
+        ) || (
+          _type == "article" &&
+          !(_id in *[_type == "video" && defined(article)].article._ref) &&
+          hero.display == "video"
+        )
+      ) &&
+      _id != $currentId
+    ] | order(_id asc)._id
+  result:
+  - article-unlinked
+  - video-linked
+
+- name: "Grouped array traversal within a conjunction"
+  documents:
+  - _id: pattern-match
+    _type: pattern
+    rank: 3
+    type:
+    - Wool
+    level: Beginner
+    yarnFilters:
+    - _ref: target
+      _weak: true
+    - _ref: other
+      _weak: true
+
+  - _id: pattern-miss
+    _type: pattern
+    rank: 2
+    type:
+    - Wool
+    level: Beginner
+    yarnFilters:
+    - _ref: other
+      _weak: true
+
+  - _id: wrong-type
+    _type: article
+    rank: 1
+    type:
+    - Wool
+    level: Beginner
+    yarnFilters:
+    - _ref: target
+      _weak: true
+
+  query: |
+    *[
+      _type == "pattern"
+      && count((type)[@ in ["Wool"]]) > 0
+      && count((yarnFilters[]._ref)[@ in ["target"]]) > 0
+      && level in ["Beginner"]
+    ] | order(rank desc, _id asc)[0...4]{_id}
+  result:
+  - _id: pattern-match

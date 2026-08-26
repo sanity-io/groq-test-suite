@@ -28,3 +28,184 @@ tests:
 - query: |
     coalesce(null, false, 1)
   result: false
+
+- name: "Falls back when a traversal yields null"
+  version: ">= 1.0"
+  documents:
+  - _id: parent-1
+    _type: parentProduct
+    variants:
+    - handle: alpha
+      markets: ["US", "UK", "DE"]
+    - handle: beta
+      markets: ["US", "FR"]
+    seasonal:
+    - handle: alpha
+      markets: ["JP", "KR"]
+    - handle: beta
+      markets: ["JP"]
+  query: |
+    *[_id == "parent-1"][0]{
+      "result": coalesce(
+        variants[handle == "nonexistent"][0].markets[],
+        seasonal[handle == "alpha"][0].markets[]
+      )
+    }
+  result:
+    result:
+    - "JP"
+    - "KR"
+
+- name: "Around a nested array path used as a membership container"
+  version: ">= 1.0"
+  documents:
+  - _id: doc-1
+    _type: article
+    title: Visible
+    comment:
+      customBlocks:
+      - tag: note
+      - tag: warning
+
+  - _id: doc-2
+    _type: article
+    title: Hidden
+    comment:
+      customBlocks:
+      - tag: note
+      - tag: "@hidden"
+
+  - _id: doc-3
+    _type: article
+    title: NoBlocks
+    comment:
+      customBlocks: []
+
+  - _id: doc-4
+    _type: article
+    title: NoComment
+
+  - _id: doc-5
+    _type: article
+    title: NullCustomBlocks
+    comment:
+      customBlocks: null
+
+  tests:
+  - name: "Negated membership in a coalesced nested array path"
+    query: |
+      *[_type == "article" && !("@hidden" in coalesce(comment.customBlocks[].tag, []))] | order(_id) { _id }
+    result:
+    - _id: doc-1
+    - _id: doc-3
+    - _id: doc-4
+    - _id: doc-5
+
+  - name: "Membership in a coalesced nested array path"
+    query: |
+      *[_type == "article" && "@hidden" in coalesce(comment.customBlocks[].tag, [])] | order(_id) { _id }
+    result:
+    - _id: doc-2
+
+  - name: "Negated membership in a coalesced nested array path inside a subquery"
+    query: |
+      *[_id == "doc-1"][0]{
+        "siblings": *[_type == "article" && _id != ^._id && !("@hidden" in coalesce(comment.customBlocks[].tag, []))] | order(_id) { _id }
+      }
+    result:
+      siblings:
+      - _id: doc-3
+      - _id: doc-4
+      - _id: doc-5
+
+- name: "Around a dereference"
+  version: ">= 1.0"
+  documents:
+  - _id: company-1
+    _type: company
+    name: Acme Corp
+    country: US
+    active: true
+
+  - _id: company-2
+    _type: company
+    name: Globex
+    country: UK
+    active: true
+
+  - _id: company-3
+    _type: company
+    name: Defunct Inc
+    country: US
+    active: false
+
+  - _id: author-1
+    _type: author
+    name: Alice
+    company:
+      _ref: company-1
+
+  - _id: author-2
+    _type: author
+    name: Bob
+    company:
+      _ref: company-2
+
+  - _id: author-3
+    _type: author
+    name: Charlie
+    company:
+      _ref: company-3
+
+  - _id: post-1
+    _type: post
+    title: Hello World
+    author:
+      _ref: author-1
+
+  - _id: post-2
+    _type: post
+    title: Advanced GROQ
+    author:
+      _ref: author-1
+
+  - _id: post-3
+    _type: post
+    title: UK News
+    author:
+      _ref: author-2
+
+  - _id: post-4
+    _type: post
+    title: Old Post
+    author:
+      _ref: author-3
+
+  - _id: post-5
+    _type: post
+    title: Sports Update
+    author:
+      _ref: author-2
+
+  query: |
+    *[_type == "post"]{
+      title,
+      "authorName": coalesce(author->name, "Unknown Author"),
+      "companyName": coalesce(author->company->name, "No Company")
+    } | order(title)
+  result:
+  - authorName: Alice
+    companyName: Acme Corp
+    title: Advanced GROQ
+  - authorName: Alice
+    companyName: Acme Corp
+    title: Hello World
+  - authorName: Charlie
+    companyName: Defunct Inc
+    title: Old Post
+  - authorName: Bob
+    companyName: Globex
+    title: Sports Update
+  - authorName: Bob
+    companyName: Globex
+    title: UK News

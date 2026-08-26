@@ -46,3 +46,24 @@ tests:
     - 'true'
     - '3.14'
   result: null
+
+- name: "In a filter over documents"
+  documents:
+  - _id: "c-1"
+    _type: "child"
+    name: "alpha-leaf"
+  - _id: "c-2"
+    _type: "child"
+    name: "alpha-stem"
+  tests:
+  - name: "Empty prefix"
+    query: |
+      *[_id == "c-1"][string::startsWith(name, "")]._id
+    result:
+    - "c-1"
+
+  - name: "Non-empty prefix"
+    query: |
+      *[_id == "c-1"][string::startsWith(name, "alpha")]._id
+    result:
+    - "c-1"

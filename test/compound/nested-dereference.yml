@@ -343,3 +343,1658 @@ tests:
      phaseName1:
      - name: "Phase 2"
        other: null
+
+- name: Chained in a projection
+  documents:
+  - _id: footer-1
+    _type: footer
+    text: "Copyright 2025"
+
+  - _id: navbar-1
+    _type: navbar
+    brand: "Acme"
+
+  - _id: layout-1
+    _type: layout
+    footer:
+      _ref: footer-1
+    navbar:
+      _ref: navbar-1
+
+  - _id: page-1
+    _type: page
+    layout:
+      _ref: layout-1
+
+  tests:
+  - name: "Single dereference"
+    query: |
+      *[_id == "page-1"][0].layout -> { _id, footer, navbar }
+    result:
+      _id: layout-1
+      footer:
+        _ref: footer-1
+      navbar:
+        _ref: navbar-1
+
+  - name: "Second-level dereference with attribute access"
+    query: |
+      *[_id == "page-1"][0].layout -> { "footerText": footer->text, "navBrand": navbar->brand }
+    result:
+      footerText: "Copyright 2025"
+      navBrand: "Acme"
+
+  - name: "Second-level dereference with a projection"
+    query: |
+      *[_id == "page-1"][0].layout -> { footer -> { _id, text }, navbar -> { _id, brand } }
+    result:
+      footer:
+        _id: footer-1
+        text: "Copyright 2025"
+      navbar:
+        _id: navbar-1
+        brand: "Acme"
+
+  - name: "Second-level dereference selecting only the id"
+    query: |
+      *[_id == "page-1"][0].layout -> { footer -> { _id }, navbar -> { _id } }
+    result:
+      footer:
+        _id: footer-1
+      navbar:
+        _id: navbar-1
+
+- name: Post, author and company graph
+  documents:
+  - _id: company-1
+    _type: company
+    name: Acme Corp
+    country: US
+    active: true
+
+  - _id: company-2
+    _type: company
+    name: Globex
+    country: UK
+    active: true
+
+  - _id: company-3
+    _type: company
+    name: Defunct Inc
+    country: US
+    active: false
+
+  - _id: author-1
+    _type: author
+    name: Alice
+    email: alice@example.com
+    company:
+      _ref: company-1
+    minScore: 50
+
+  - _id: author-2
+    _type: author
+    name: Bob
+    email: bob@example.com
+    company:
+      _ref: company-2
+    minScore: 70
+
+  - _id: author-3
+    _type: author
+    name: Charlie
+    email: charlie@example.com
+    company:
+      _ref: company-3
+    minScore: 30
+
+  - _id: post-1
+    _type: post
+    title: Hello World
+    author:
+      _ref: author-1
+    category: tech
+    score: 80
+    tags:
+    - intro
+    - tutorial
+
+  - _id: post-2
+    _type: post
+    title: Advanced GROQ
+    author:
+      _ref: author-1
+    category: tech
+    score: 95
+    tags:
+    - advanced
+    - groq
+
+  - _id: post-3
+    _type: post
+    title: UK News
+    author:
+      _ref: author-2
+    category: news
+    score: 60
+    tags:
+    - uk
+    - news
+
+  - _id: post-4
+    _type: post
+    title: Old Post
+    author:
+      _ref: author-3
+    category: tech
+    score: 40
+    tags:
+    - archive
+
+  - _id: post-5
+    _type: post
+    title: Sports Update
+    author:
+      _ref: author-2
+    category: sports
+    score: 75
+    tags:
+    - sports
+
+  tests:
+  - name: "Simple dereference"
+    query: |
+      *[_type == "post"]{
+        title,
+        "author": author->
+      } | order(title)
+    result:
+    - author:
+        _id: author-1
+        _type: author
+        company:
+          _ref: company-1
+        email: alice@example.com
+        minScore: 50
+        name: Alice
+      title: Advanced GROQ
+    - author:
+        _id: author-1
+        _type: author
+        company:
+          _ref: company-1
+        email: alice@example.com
+        minScore: 50
+        name: Alice
+      title: Hello World
+    - author:
+        _id: author-3
+        _type: author
+        company:
+          _ref: company-3
+        email: charlie@example.com
+        minScore: 30
+        name: Charlie
+      title: Old Post
+    - author:
+        _id: author-2
+        _type: author
+        company:
+          _ref: company-2
+        email: bob@example.com
+        minScore: 70
+        name: Bob
+      title: Sports Update
+    - author:
+        _id: author-2
+        _type: author
+        company:
+          _ref: company-2
+        email: bob@example.com
+        minScore: 70
+        name: Bob
+      title: UK News
+
+  - name: "Dereference with a projection"
+    query: |
+      *[_type == "post"]{
+        title,
+        "author": author->{name, email}
+      } | order(title)
+    result:
+    - author:
+        email: alice@example.com
+        name: Alice
+      title: Advanced GROQ
+    - author:
+        email: alice@example.com
+        name: Alice
+      title: Hello World
+    - author:
+        email: charlie@example.com
+        name: Charlie
+      title: Old Post
+    - author:
+        email: bob@example.com
+        name: Bob
+      title: Sports Update
+    - author:
+        email: bob@example.com
+        name: Bob
+      title: UK News
+
+  - name: "Chained dereference"
+    query: |
+      *[_type == "post"]{
+        title,
+        "authorName": author->name,
+        "companyName": author->company->name,
+        "companyCountry": author->company->country
+      } | order(title)
+    result:
+    - authorName: Alice
+      companyCountry: US
+      companyName: Acme Corp
+      title: Advanced GROQ
+    - authorName: Alice
+      companyCountry: US
+      companyName: Acme Corp
+      title: Hello World
+    - authorName: Charlie
+      companyCountry: US
+      companyName: Defunct Inc
+      title: Old Post
+    - authorName: Bob
+      companyCountry: UK
+      companyName: Globex
+      title: Sports Update
+    - authorName: Bob
+      companyCountry: UK
+      companyName: Globex
+      title: UK News
+
+  - name: "Dereference in a filter"
+    query: |
+      *[_type == "post" && author->name == "Alice"]{
+        title,
+        "authorName": author->name
+      } | order(title)
+    result:
+    - authorName: Alice
+      title: Advanced GROQ
+    - authorName: Alice
+      title: Hello World
+
+  - name: "Chained dereference in a filter"
+    query: |
+      *[_type == "post" && author->company->active == true]{
+        title,
+        "companyName": author->company->name
+      } | order(title)
+    result:
+    - companyName: Acme Corp
+      title: Advanced GROQ
+    - companyName: Acme Corp
+      title: Hello World
+    - companyName: Globex
+      title: Sports Update
+    - companyName: Globex
+      title: UK News
+
+  - name: "Dereference of a missing document type"
+    query: |
+      *[_type == "post" || _type == "orphan"]{
+        _id,
+        title,
+        "authorName": author->name,
+        "hasAuthor": defined(author->name)
+      } | order(_id)
+    result:
+    - _id: post-1
+      authorName: Alice
+      hasAuthor: true
+      title: Hello World
+    - _id: post-2
+      authorName: Alice
+      hasAuthor: true
+      title: Advanced GROQ
+    - _id: post-3
+      authorName: Bob
+      hasAuthor: true
+      title: UK News
+    - _id: post-4
+      authorName: Charlie
+      hasAuthor: true
+      title: Old Post
+    - _id: post-5
+      authorName: Bob
+      hasAuthor: true
+      title: Sports Update
+
+  - name: "Equality over a chained dereference"
+    query: |
+      *[_type == "post"]{
+        title,
+        "inUS": author->company->country == "US"
+      } | order(title)
+    result:
+    - inUS: true
+      title: Advanced GROQ
+    - inUS: true
+      title: Hello World
+    - inUS: true
+      title: Old Post
+    - inUS: false
+      title: Sports Update
+    - inUS: false
+      title: UK News
+
+  - name: "select() over a chained dereference"
+    query: |
+      *[_type == "post"]{
+        title,
+        "region": select(
+          author->company->country == "US" => "North America",
+          author->company->country == "UK" => "Europe",
+          "Other"
+        )
+      } | order(title)
+    result:
+    - region: North America
+      title: Advanced GROQ
+    - region: North America
+      title: Hello World
+    - region: North America
+      title: Old Post
+    - region: Europe
+      title: Sports Update
+    - region: Europe
+      title: UK News
+
+  - name: "Spread of a dereferenced projection"
+    query: |
+      *[_type == "post"]{
+        title,
+        score,
+        "authorInfo": {
+          ...author->{name, email}
+        }
+      } | order(title)
+    result:
+    - authorInfo:
+        email: alice@example.com
+        name: Alice
+      score: 95
+      title: Advanced GROQ
+    - authorInfo:
+        email: alice@example.com
+        name: Alice
+      score: 80
+      title: Hello World
+    - authorInfo:
+        email: charlie@example.com
+        name: Charlie
+      score: 40
+      title: Old Post
+    - authorInfo:
+        email: bob@example.com
+        name: Bob
+      score: 75
+      title: Sports Update
+    - authorInfo:
+        email: bob@example.com
+        name: Bob
+      score: 60
+      title: UK News
+
+- name: Organization, department, employee and project graph
+  documents:
+  - _id: org-1
+    _type: org
+    name: MegaCorp
+
+  - _id: org-2
+    _type: org
+    name: StartupXYZ
+
+  - _id: dept-1
+    _type: dept
+    name: Engineering
+    org:
+      _ref: org-1
+    budget: 1000000
+
+  - _id: dept-2
+    _type: dept
+    name: Sales
+    org:
+      _ref: org-1
+    budget: 500000
+
+  - _id: dept-3
+    _type: dept
+    name: Product
+    org:
+      _ref: org-2
+    budget: 200000
+
+  - _id: emp-1
+    _type: emp
+    name: Eve
+    dept:
+      _ref: dept-1
+    org:
+      _ref: org-1
+    salary: 100000
+
+  - _id: emp-2
+    _type: emp
+    name: Frank
+    dept:
+      _ref: dept-1
+    org:
+      _ref: org-1
+    salary: 90000
+
+  - _id: emp-3
+    _type: emp
+    name: Grace
+    dept:
+      _ref: dept-2
+    org:
+      _ref: org-1
+    salary: 80000
+
+  - _id: emp-4
+    _type: emp
+    name: Henry
+    dept:
+      _ref: dept-3
+    org:
+      _ref: org-2
+    salary: 95000
+
+  - _id: project-1
+    _type: project
+    name: Website Redesign
+    lead:
+      _ref: emp-1
+    members:
+    - _ref: emp-1
+    - _ref: emp-2
+
+  - _id: project-2
+    _type: project
+    name: Mobile App
+    lead:
+      _ref: emp-4
+    members:
+    - _ref: emp-4
+
+  - _id: portfolio-1
+    _type: portfolio
+    name: Test Portfolio
+    items:
+    - _key: item1
+      project:
+        _ref: project-1
+    - _key: item2
+      project:
+        _ref: project-2
+
+  - _id: ref-list
+    _type: refList
+    refs:
+    - _ref: emp-1
+    - _ref: missing-emp
+      _weak: true
+
+  - _id: array-target-a
+    _type: arrayTargetTarget
+    objects:
+    - value: 1
+
+  - _id: array-target-b
+    _type: arrayTargetTarget
+    objects:
+    - value: 2
+    - value: 4
+
+  - _id: array-target-c
+    _type: arrayTargetTarget
+    objects:
+    - value: 1
+    - value: 3
+
+  - _id: array-target-refs
+    _type: arrayTargetRefs
+    refs:
+    - _ref: array-target-a
+    - _ref: array-target-b
+    - _ref: array-target-c
+
+  - _id: array-target-root
+    _type: arrayTargetRoot
+    objects:
+    - ref:
+        _ref: array-target-refs
+
+  tests:
+  - name: "Array dereference"
+    query: |
+      *[_type == "project"]{
+        name,
+        "memberNames": members[]->name,
+        "memberCount": count(members)
+      } | order(name)
+    result:
+    - memberCount: 1
+      memberNames:
+      - Henry
+      name: Mobile App
+    - memberCount: 2
+      memberNames:
+      - Eve
+      - Frank
+      name: Website Redesign
+
+  - name: "Array dereference with a projection"
+    query: |
+      *[_type == "project"]{
+        name,
+        "members": members[]->{name, salary}
+      } | order(name)
+    result:
+    - members:
+      - name: Henry
+        salary: 95000
+      name: Mobile App
+    - members:
+      - name: Eve
+        salary: 100000
+      - name: Frank
+        salary: 90000
+      name: Website Redesign
+
+  - name: "Chained array dereference"
+    query: |
+      *[_type == "project"]{
+        name,
+        "memberDepts": members[]->{
+          name,
+          "deptName": dept->name,
+          "deptBudget": dept->budget
+        }
+      } | order(name)
+    result:
+    - memberDepts:
+      - deptBudget: 200000
+        deptName: Product
+        name: Henry
+      name: Mobile App
+    - memberDepts:
+      - deptBudget: 1000000
+        deptName: Engineering
+        name: Eve
+      - deptBudget: 1000000
+        deptName: Engineering
+        name: Frank
+      name: Website Redesign
+
+  - name: "Filter on a grouped array dereference"
+    query: |
+      *[_type == "project"]{
+        name,
+        "highPaidMembers": (members[]->)[ salary > 90000 ]{name, salary}
+      } | order(name)
+    result:
+    - highPaidMembers:
+      - name: Henry
+        salary: 95000
+      name: Mobile App
+    - highPaidMembers:
+      - name: Eve
+        salary: 100000
+      name: Website Redesign
+
+  - name: "Filter directly after an array dereference maps per element"
+    query: |
+      *[_type == "project"]{
+        name,
+        "highPaidMembers": members[]->[ salary > 90000 ]{name, salary}
+      } | order(name)
+    result:
+    - highPaidMembers: [null]
+      name: Mobile App
+    - highPaidMembers: [null, null]
+      name: Website Redesign
+
+  - name: "A grouped array dereference filter drops unresolved references"
+    query: |
+      (*[_id == "ref-list"][0].refs[]->)[salary > 90000]{name}
+    result:
+    - name: Eve
+
+  - name: "Element access after an array dereference maps per element"
+    query: |
+      *[_id == "array-target-root"][0].objects[ref._ref == "array-target-refs"][].ref->refs[]->objects[value in [1,3]][1].value
+    result:
+    - null
+    - null
+    - 3
+
+  - name: "Nested dereference in an object projection"
+    query: |
+      *[_type == "project" && _id == "project-1"][0]{
+        _id,
+        name,
+        "members": [...members[]->{
+          _id,
+          name,
+          "dept": dept->{
+            _id,
+            name,
+            "org": org->{
+              _id,
+              name
+            }
+          }
+        }][defined(_id)]
+      }
+    result:
+      _id: project-1
+      members:
+      - _id: emp-1
+        dept:
+          _id: dept-1
+          name: Engineering
+          org:
+            _id: org-1
+            name: MegaCorp
+        name: Eve
+      - _id: emp-2
+        dept:
+          _id: dept-1
+          name: Engineering
+          org:
+            _id: org-1
+            name: MegaCorp
+        name: Frank
+      name: Website Redesign
+
+  - name: "Grouping exits the iteration"
+    query: |
+      (*[_type=="project"][].members[])[0]->dept->name
+    result: Engineering
+
+  - name: "Grouping followed by a filter on a dereference"
+    query: |
+      (*[_type=="emp"][].dept)[0]->[budget > 500000].name
+    result: null
+
+  - name: "A per-element filter does not preserve null"
+    query: |
+      (*[_type=="project"][].members[]->dept->)[budget > 500000].name
+    result:
+    - Engineering
+    - Engineering
+
+  - name: "Array traversal does not treat a non-array chain as an array"
+    query: |
+      *[_type=="project"][].members[]->dept->[budget > 500000].name
+    result:
+    - null
+    - null
+    - null
+
+  - name: "Slice after a conditional dereferencing spread"
+    query: |
+      *[_type == "project" && name == "Website Redesign"][0].members[]{
+        @->salary > 90000 => @->{name, salary}
+      }[0..1]
+    result:
+    - name: Eve
+      salary: 100000
+    - {}
+
+  - name: "Nested dereference in an array projection"
+    query: |
+      *[_type=="project"][0]{_id, "emps": members[]->{name, "department": dept->{name, "organization": org->{name}}}}{..., "emps": emps[]{...}}
+    result:
+      _id: project-1
+      emps:
+      - department:
+          name: Engineering
+          organization:
+            name: MegaCorp
+        name: Eve
+      - department:
+          name: Engineering
+          organization:
+            name: MegaCorp
+        name: Frank
+
+  - name: "Nested dereference through an object"
+    query: |
+      *[_type=="portfolio"][0]{_id, "item": items[0]{_key, project->{name, lead->{name}}}}
+    result:
+      _id: portfolio-1
+      item:
+        _key: item1
+        project:
+          lead:
+            name: Eve
+          name: Website Redesign
+
+- name: Fields selected through an array dereference
+  documents:
+  - _id: resource-1
+    _type: resource
+    title: "Resource One"
+    images:
+    - _key: img1
+      alt: "First image"
+    - _key: img2
+      alt: "Second image"
+
+  - _id: resource-2
+    _type: resource
+    title: "Resource Two"
+    images:
+    - _key: img3
+      alt: "Third image"
+
+  - _id: collection-1
+    _type: collection
+    resources:
+    - _ref: resource-1
+    - _ref: resource-2
+
+  - _id: section-calories
+    _type: section
+    options:
+    - _ref: picker-calories
+
+  - _id: picker-calories
+    _type: picker
+    options:
+    - option:
+        _ref: item-calories
+
+  - _id: item-calories
+    _type: item
+    nutrition:
+      calories: 820
+
+  - _id: product-list-images
+    _type: productList
+    products:
+    - _ref: product-images
+
+  - _id: product-images
+    _type: product
+    images:
+    - _key: main
+      _type: image
+      verified: true
+      type: main image
+      asset:
+        _ref: asset-images
+
+  - _id: asset-images
+    _type: sanity.imageAsset
+
+  tests:
+  - name: "Simple field"
+    query: |
+      *[_id == "collection-1"][0].resources[]->{ _id, title }
+    result:
+    - _id: resource-1
+      title: "Resource One"
+    - _id: resource-2
+      title: "Resource Two"
+
+  - name: "Nested array element"
+    query: |
+      *[_id == "collection-1"][0].resources[]->{ _id, "firstImage": images[0] }
+    result:
+    - _id: resource-1
+      firstImage:
+        _key: img1
+        alt: "First image"
+    - _id: resource-2
+      firstImage:
+        _key: img3
+        alt: "Third image"
+
+  - name: "Attribute of a nested array element"
+    query: |
+      *[_id == "collection-1"][0].resources[]->{ _id, "firstAlt": images[0].alt }
+    result:
+    - _id: resource-1
+      firstAlt: "First image"
+    - _id: resource-2
+      firstAlt: "Third image"
+
+  - name: "Nested object projection"
+    query: |
+      *[_id == "collection-1"][0] {
+        "resources": resources[]->{
+          _id,
+          "details": {
+            "title": title
+          }
+        }
+      }
+    result:
+      resources:
+      - _id: resource-1
+        details:
+          title: "Resource One"
+      - _id: resource-2
+        details:
+          title: "Resource Two"
+
+  - name: "Fields used only in a coalesce() fallback"
+    query: |
+      *[_id == "section-calories"][0] {
+        "options": options[]-> {
+          _id,
+          "calories": coalesce(
+            nutrition.calories,
+            ((options[].option->)[_type == "item"])[0].nutrition.calories
+          )
+        }
+      }
+    result:
+      options:
+      - _id: picker-calories
+        calories: 820
+
+  - name: "Fields used only inside a concatenation with a slice"
+    query: |
+      *[_id == "product-list-images"][0] {
+        "products": products[]-> {
+          _id,
+          "images": (
+            images[verified == true && type in ["main image", "product"]]
+            + images[verified == true && !(type in ["main image", "product"])]
+          )[0...1] {
+            ...,
+            "asset": asset->{_id}
+          }
+        }
+      }
+    result:
+      products:
+      - _id: product-images
+        images:
+        - _key: main
+          _type: image
+          verified: true
+          type: main image
+          asset:
+            _id: asset-images
+
+- name: Slice between two array dereferences
+  documents:
+  - _id: course-1
+    _type: course
+    slug:
+      current: cypress-point
+
+  - _id: course-2
+    _type: course
+    slug:
+      current: pine-valley
+
+  - _id: course-3
+    _type: course
+    slug:
+      current: shinnecock-hills
+
+  - _id: ranking-list-1
+    _type: rankingList
+    rankings:
+    - _ref: course-1
+    - _ref: course-2
+
+  - _id: ranking-list-2
+    _type: rankingList
+    rankings:
+    - _ref: course-3
+
+  - _id: settings
+    _type: settings
+    preRenderRankings:
+    - _ref: ranking-list-1
+    - _ref: ranking-list-2
+
+  query: |
+    *[_type == "settings"][0] {
+      "courseSlugsFromRankings": preRenderRankings[]->rankings[0...10]->slug.current
+    }
+  result:
+    courseSlugsFromRankings:
+    - cypress-point
+    - pine-valley
+    - shinnecock-hills
+
+- name: Fields selected inside select() and spreads
+  documents:
+  - _id: article-html
+    _type: article
+    bodyHtml: "abcdef"
+    body:
+    - _type: block
+      children:
+      - _type: span
+        text: "fallback"
+
+  - _id: article-body
+    _type: article
+    body:
+    - _type: block
+      children:
+      - _type: span
+        text: "abcdefghij"
+
+  - _id: site-settings
+    _type: siteSettings
+    partnerContent:
+    - _ref: article-html
+    - _ref: article-body
+
+  - _id: image-og
+    _type: sanity.imageAsset
+    assetId: image-og
+    url: https://cdn.example.test/image-og.png
+
+  - _id: image-full
+    _type: sanity.imageAsset
+    assetId: image-full
+    mimeType: image/png
+    size: 175850
+    uploadId: upload-full
+    url: https://cdn.example.test/image-full.png
+
+  - _id: asset-page
+    _type: websitePage
+    seo:
+      openGraphImage:
+        asset:
+          _ref: image-og
+    sections:
+    - _type: imageBlock
+      image:
+        _type: image
+        alt: Full image
+        asset:
+          _ref: image-full
+
+  tests:
+  - name: "select() reads dereferenced fields"
+    features:
+    - portableText
+    query: |
+      *[_type == "siteSettings"][0] {
+        "partnerContent": partnerContent[_ref in ["article-html", "article-body"]]-> {
+          "readTime": round(select(
+            defined(bodyHtml) && length(bodyHtml) > 0 => length(bodyHtml) / 2,
+            defined(body) => length(pt::text(body)) / 5,
+            0
+          ))
+        }
+      }
+    result:
+      partnerContent:
+      - readTime: 3
+      - readTime: 2
+
+  - name: "A spread dereference keeps the whole document alongside a narrow projection"
+    query: |
+      *[_id == "asset-page"][0] {
+        seo {
+          openGraphImage { asset-> { _id, url } }
+        },
+        sections[] {
+          image { _type, alt, asset-> { ... } }
+        }
+      }
+    result:
+      seo:
+        openGraphImage:
+          asset:
+            _id: image-og
+            url: https://cdn.example.test/image-og.png
+      sections:
+      - image:
+          _type: image
+          alt: Full image
+          asset:
+            _id: image-full
+            _type: sanity.imageAsset
+            assetId: image-full
+            mimeType: image/png
+            size: 175850
+            uploadId: upload-full
+            url: https://cdn.example.test/image-full.png
+
+- name: Fields required by a dereferencing projection
+  documents:
+  - _id: lesson-1
+    _type: lesson
+    title: Lesson 1
+
+  - _id: course-1
+    _type: course
+    title: Introduction to GROQ
+    lessons:
+    - _ref: lesson-1
+    - _ref: missing-lesson
+      _weak: true
+
+  - _id: campaign-1
+    _type: campaign
+    name: Summer Sale
+
+  - _id: campaign-2
+    _type: campaign
+    name: Winter Promo
+
+  - _id: product-1
+    _type: product
+    name: Widget
+    activeCampaigns:
+    - _ref: campaign-1
+    - _ref: campaign-2
+
+  - _id: product-2
+    _type: product
+    name: Gadget
+    activeCampaigns:
+    - _ref: campaign-1
+
+  - _id: collection-1
+    _type: collection
+    collection_slug: target
+
+  - _id: collection-2
+    _type: collection
+    collection_slug: display
+
+  - _id: product-3
+    _type: productReferenceTest
+    name: Pendant
+    hidden: false
+    category: ring
+    collection:
+      _ref: collection-1
+    collections:
+    - _ref: collection-2
+
+  - _id: product-4
+    _type: productReferenceTest
+    name: Bracelet
+    hidden: false
+    category: ring
+    collections:
+    - _ref: collection-1
+
+  - _id: article-1
+    _type: article
+    title: Article One
+    slug:
+      _type: slug
+      current: article-one
+    relatedArticles:
+    - _ref: article-2
+      _weak: true
+
+  - _id: article-2
+    _type: article
+    title: Article Two
+    slug:
+      _type: slug
+      current: article-two
+    relatedArticles:
+    - _ref: article-1
+      _weak: true
+
+  - _id: asset-1
+    _type: mux.videoAsset
+    playbackId: play1
+
+  - _id: video-pushdown-mux
+    _type: projectionVideo
+    video:
+      type: mux
+      video:
+        asset:
+          _ref: asset-1
+
+  - _id: video-pushdown-youtube
+    _type: projectionVideo
+    video:
+      type: youtube
+      youTubeId: example
+
+  tests:
+  - name: "Attribute of an array dereference"
+    query: |
+      *[_type == "product"]{
+        name,
+        "campaigns": activeCampaigns[]->name
+      } | order(name)
+    result:
+    - campaigns:
+      - Summer Sale
+      name: Gadget
+    - campaigns:
+      - Summer Sale
+      - Winter Promo
+      name: Widget
+
+  - name: "A broken reference projects as null"
+    query: |
+      *[_type == "course"]{
+        title,
+        "lessonTitles": lessons[]->{_id, title}
+      }
+    result:
+    - lessonTitles:
+      - _id: lesson-1
+        title: Lesson 1
+      - null
+      title: Introduction to GROQ
+
+  - name: "A references() filter still sees the whole document"
+    query: |
+      *[_type == "productReferenceTest" && hidden == false && category == "ring" && references($collectionRefs)]{
+        _id,
+        name,
+        "collectionSlugs": collections[]->collection_slug
+      } | order(_id)
+    params:
+      collectionRefs:
+      - collection-1
+    result:
+    - _id: product-3
+      collectionSlugs:
+      - display
+      name: Pendant
+    - _id: product-4
+      collectionSlugs:
+      - target
+      name: Bracelet
+
+  - name: "Parent reference inside a dereferencing projection"
+    query: |
+      *[_type == "article" && _id == "article-1"]{
+        title,
+        "relatedWithParentSlug": relatedArticles[]->{
+          title,
+          "parentSlug": ^.slug.current
+        }
+      }
+    result:
+    - relatedWithParentSlug:
+      - parentSlug: article-one
+        title: Article Two
+      title: Article One
+
+  - name: "Dereference with a spread"
+    query: |
+      *[_type == "product"]{
+        name,
+        "firstCampaign": activeCampaigns[0]->{...}
+      } | order(name)
+    result:
+    - firstCampaign:
+        _id: campaign-1
+        _type: campaign
+        name: Summer Sale
+      name: Gadget
+    - firstCampaign:
+        _id: campaign-1
+        _type: campaign
+        name: Summer Sale
+      name: Widget
+
+  - name: "Filter on a count of references"
+    query: |
+      *[_type == "product" && count(activeCampaigns) > 1]{
+        name,
+        "campaignNames": activeCampaigns[]->name
+      }
+    result:
+    - campaignNames:
+      - Summer Sale
+      - Winter Promo
+      name: Widget
+
+  - name: "Correlated fields required by a filter"
+    query: |
+      *[
+        _type == "projectionVideo" &&
+        coalesce(
+          video,
+          *[
+            _type == "translation.metadata" &&
+            references(^._id)
+          ][0].translations[language == "en-GB"][0].value->video
+        ).type == "mux" &&
+        defined(
+          coalesce(
+            video,
+            *[
+              _type == "translation.metadata" &&
+              references(^._id)
+            ][0].translations[language == "en-GB"][0].value->video
+          ).video.asset
+        )
+      ] | order(_id asc)[0...5]{_id}
+    result:
+    - _id: video-pushdown-mux
+
+- name: Element dereference inside nested projections
+  documents:
+  - _id: artist-1
+    _type: artist
+    name: The Beatles
+    country: UK
+
+  - _id: artist-2
+    _type: artist
+    name: Led Zeppelin
+    country: UK
+
+  - _id: asset-1
+    _type: mux.videoAsset
+    playbackId: play1
+
+  - _id: asset-2
+    _type: mux.videoAsset
+    playbackId: play2
+
+  - _id: asset-3
+    _type: mux.videoAsset
+    playbackId: play3
+
+  - _id: song-1
+    _type: song
+    title: Hey Jude
+    artist:
+      _ref: artist-1
+    duration: 431
+    mux:
+      video:
+        asset:
+          _ref: asset-1
+
+  - _id: song-2
+    _type: song
+    title: Let It Be
+    artist:
+      _ref: artist-1
+    duration: 243
+    mux:
+      video:
+        asset:
+          _ref: asset-2
+
+  - _id: song-3
+    _type: song
+    title: Stairway to Heaven
+    artist:
+      _ref: artist-2
+    duration: 482
+    mux:
+      video:
+        asset:
+          _ref: asset-3
+
+  - _id: playlist-1
+    _type: playlist
+    name: Classic Rock
+    tracks:
+    - _ref: song-1
+    - _ref: song-3
+
+  - _id: playlist-2
+    _type: playlist
+    name: Beatles Only
+    tracks:
+    - _ref: song-1
+    - _ref: song-2
+
+  - _id: videoAsset-1
+    _type: mux.videoAsset
+    playbackId: abc123
+    data:
+      aspect_ratio: "16:9"
+      duration: 300
+
+  - _id: videoAsset-2
+    _type: mux.videoAsset
+    playbackId: def456
+    data:
+      aspect_ratio: "4:3"
+      duration: 180
+
+  - _id: lesson-1
+    _type: lesson
+    title: First Lesson
+    muxVideo:
+      _type: muxVideo
+      video:
+        _type: video
+        asset:
+          _ref: videoAsset-1
+
+  - _id: lesson-2
+    _type: lesson
+    title: Second Lesson
+    muxVideo:
+      _type: muxVideo
+      video:
+        _type: video
+        asset:
+          _ref: videoAsset-2
+
+  - _id: course-1
+    _type: course
+    title: Intro Course
+    lessons:
+    - _type: lesson
+      _ref: lesson-1
+    - _type: lesson
+      _ref: lesson-2
+    - _type: chapter
+      title: Chapter 1
+
+  - _id: learnPage-1
+    _type: learnPage
+    content:
+    - _key: hero1
+      _type: learnPageHero
+      fallbackCourse:
+        _ref: course-1
+    - _key: other1
+      _type: learnPageOther
+      title: Other Content
+
+  - _id: learnHome
+    _type: learnHome
+    page:
+      _ref: learnPage-1
+
+  - _id: courseDoc-1
+    _type: courseDoc
+    slug:
+      _type: slug
+      current: intro-to-groq
+
+  - _id: courseDoc-2
+    _type: courseDoc
+    slug:
+      _type: slug
+      current: advanced-queries
+
+  - _id: courseDoc-3
+    _type: courseDoc
+    slug:
+      _type: slug
+      current: optimization-tips
+
+  - _id: courseDoc-4
+    _type: courseDoc
+    title: No slug course
+
+  - _id: trackDoc-1
+    _type: trackDoc
+    name: GROQ Certification Track
+    courses:
+    - _ref: courseDoc-1
+    - _ref: courseDoc-2
+    - _ref: courseDoc-3
+    - _ref: courseDoc-4
+
+  - _id: certificationTest-1
+    _type: certificationTest
+    name: GROQ Certified Operator
+    track:
+      _ref: trackDoc-1
+
+  - _id: audience-1
+    _type: audience
+    title: Developers
+
+  - _id: audience-2
+    _type: audience
+    title: Designers
+
+  - _id: audience-3
+    _type: audience
+    title: Managers
+
+  - _id: courseWithAudience-1
+    _type: courseWithAudience
+    title: Course One
+    audiences:
+    - _ref: audience-1
+
+  - _id: courseWithAudience-2
+    _type: courseWithAudience
+    title: Course Two
+    audiences:
+    - _ref: audience-2
+    - _ref: audience-3
+
+  - _id: trackWithAudiences-1
+    _type: trackWithAudiences
+    name: Test Track
+    courses:
+    - _ref: courseWithAudience-1
+    - _ref: courseWithAudience-2
+
+  - _id: certification-1
+    _type: certification
+    name: Test Certification
+    track:
+      _ref: trackWithAudiences-1
+
+  - _id: logo-1
+    _type: logo
+    title: Acme Logo
+
+  - _id: logo-2
+    _type: logo
+    title: Globex Logo
+
+  - _id: logoCollection-1
+    _type: logoCollection
+    logos:
+    - _ref: logo-1
+    - _ref: logo-2
+
+  - _id: contentBlock-1
+    _type: contentBlock
+    content:
+    - logoCollection:
+        _ref: logoCollection-1
+
+  - _id: landingPage-1
+    _type: landingPage
+    content:
+    - _type: reference
+      _ref: contentBlock-1
+
+  tests:
+  - name: "Element dereference with a nested dereference"
+    query: |
+      *[_type=="playlist"][0]{name, "songs": tracks[]{"track": select(defined(_ref) => @->{title, artist->{name}})}}
+    result:
+      name: Classic Rock
+      songs:
+      - track:
+          artist:
+            name: The Beatles
+          title: Hey Jude
+      - track:
+          artist:
+            name: Led Zeppelin
+          title: Stairway to Heaven
+
+  - name: "Element dereference reaching a deeply nested asset"
+    query: |
+      *[_type=="playlist"][0]{
+        name,
+        "songs": tracks[]{
+          "track": select(defined(_ref) => @->{
+            title,
+            mux { video { asset->{ playbackId } } }
+          })
+        }
+      }
+    result:
+      name: Classic Rock
+      songs:
+      - track:
+          mux:
+            video:
+              asset:
+                playbackId: play1
+          title: Hey Jude
+      - track:
+          mux:
+            video:
+              asset:
+                playbackId: play3
+          title: Stairway to Heaven
+
+  - name: "Conditional element dereference leaves non-matching elements empty"
+    query: |
+      *[_type == "learnPage" && *[_id == "learnHome"][0].page._ref == _id][0] {
+        _id,
+        content[] {
+          _key,
+          _type == "learnPageHero" => {
+            fallbackCourse-> {
+              _id,
+              "lessons": lessons[] {
+                _type == "lesson" => @-> {
+                  _id,
+                  muxVideo {
+                    _type,
+                    video {
+                      _type,
+                      asset-> { playbackId, data { aspect_ratio, duration } }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    result:
+      _id: learnPage-1
+      content:
+      - _key: hero1
+        fallbackCourse:
+          _id: course-1
+          lessons:
+          - _id: lesson-1
+            muxVideo:
+              _type: muxVideo
+              video:
+                _type: video
+                asset:
+                  data:
+                    aspect_ratio: "16:9"
+                    duration: 300
+                  playbackId: abc123
+          - _id: lesson-2
+            muxVideo:
+              _type: muxVideo
+              video:
+                _type: video
+                asset:
+                  data:
+                    aspect_ratio: "4:3"
+                    duration: 180
+                  playbackId: def456
+          - {}
+      - _key: other1
+
+  - name: "Chained dereference through an array traversal"
+    query: |
+      *[_type == "certificationTest"][0] {
+        _id,
+        "courses": [...track->courses[]->{ _id, slug }][defined(slug.current)]
+      }
+    result:
+      _id: certificationTest-1
+      courses:
+      - _id: courseDoc-1
+        slug:
+          _type: slug
+          current: intro-to-groq
+      - _id: courseDoc-2
+        slug:
+          _type: slug
+          current: advanced-queries
+      - _id: courseDoc-3
+        slug:
+          _type: slug
+          current: optimization-tips
+
+  - name: "Chained array dereference with a nested dereference"
+    query: |
+      *[_type == "certification"][0] {
+        _id,
+        "courses": track->courses[]-> {
+          _id,
+          title,
+          "audiences": audiences[]->title
+        }
+      }
+    result:
+      _id: certification-1
+      courses:
+      - _id: courseWithAudience-1
+        title: Course One
+        audiences:
+        - Developers
+      - _id: courseWithAudience-2
+        title: Course Two
+        audiences:
+        - Designers
+        - Managers
+
+  - name: "Conditional spread with a chained dereference"
+    query: |
+      *[_type == "landingPage"][0]{
+        _id,
+        content[]{
+          _type,
+          _type == "reference" => @->{
+            ...content[0]{
+              "logos": logoCollection->logos[]->{
+                _id,
+                title
+              }
+            }
+          }
+        }
+      }
+    result:
+      _id: landingPage-1
+      content:
+      - _type: reference
+        logos:
+        - _id: logo-1
+          title: Acme Logo
+        - _id: logo-2
+          title: Globex Logo

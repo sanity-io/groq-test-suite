@@ -105,3 +105,209 @@ tests:
   query: |
     ~expr~ match ""
   result: false
+
+- name: "Literal arrays"
+  version: ">= 1.0"
+  documents:
+  - _id: left-first-both
+    _type: fields
+    left: "alpha beta"
+    right: "gamma"
+  - _id: left-second-both
+    _type: fields
+    left: "gamma"
+    right: "alpha beta"
+  - _id: left-split
+    _type: fields
+    left: "alpha"
+    right: "beta"
+  - _id: left-neither
+    _type: fields
+    left: "alpha"
+    right: "gamma"
+  tests:
+  - name: "A literal array on the left is a disjunction"
+    query: '["alpha", "beta"] match "beta"'
+    result: true
+
+  - name: "A literal array on the right is a conjunction"
+    query: '"alpha beta" match ["alpha", "beta"]'
+    result: true
+
+  - name: "A literal array on the right rejects a partial match"
+    query: '"alpha" match ["alpha", "beta"]'
+    result: false
+
+  - name: "An empty literal array on the left does not match"
+    query: '[] match "alpha"'
+    result: false
+
+  - name: "A non-string element on the right produces false"
+    query: '"alpha" match ["alpha", 42]'
+    result: false
+
+  - name: "A nested literal array on the left is not searched"
+    query: '[["alpha"], "beta"] match "alpha"'
+    result: false
+
+  - name: "A spread literal array on the left exposes its strings"
+    query: '[...["alpha"], "beta"] match "alpha"'
+    result: true
+
+  - name: "Literal arrays on both sides match one complete left element"
+    query: '["alpha beta", "gamma"] match ["alpha", "beta"]'
+    result: true
+
+  - name: "A single field with a pattern array is a conjunction"
+    query: '*[_type == "fields" && left match ["alpha", "beta"]] | order(_id)._id'
+    result:
+    - left-first-both
+
+- name: "Field paths"
+  version: ">= 1.0"
+  documents:
+  - _id: direct-scalar-both
+    _type: direct
+    field: "alpha beta"
+  - _id: direct-scalar-partial
+    _type: direct
+    field: "alpha"
+  - _id: direct-array-both
+    _type: direct
+    field:
+    - "alpha beta"
+    - "gamma"
+  - _id: direct-array-split
+    _type: direct
+    field:
+    - "alpha"
+    - "beta"
+  - _id: nested-scalar-both
+    _type: nested
+    field:
+    - subfield: "alpha beta"
+  - _id: nested-scalar-partial
+    _type: nested
+    field:
+    - subfield: "alpha"
+  - _id: nested-split
+    _type: nested
+    field:
+    - subfield: "alpha"
+    - subfield: "beta"
+  - _id: nested-terminal-array
+    _type: nested
+    field:
+    - subfield:
+      - "alpha"
+      - "beta"
+  tests:
+  - name: "A bare field matches scalar and array values"
+    query: '*[_type == "direct" && field match "alpha"] | order(_id)._id'
+    result:
+    - direct-array-both
+    - direct-array-split
+    - direct-scalar-both
+    - direct-scalar-partial
+
+  - name: "A bare field matches all terms across array values"
+    query: '*[_type == "direct" && field match "alpha beta"] | order(_id)._id'
+    result:
+    - direct-array-both
+    - direct-array-split
+    - direct-scalar-both
+
+  - name: "A bare field with a pattern array requires every pattern"
+    query: '*[_type == "direct" && field match ["alpha", "beta"]] | order(_id)._id'
+    result:
+    - direct-array-both
+    - direct-array-split
+    - direct-scalar-both
+
+  - name: "An array subfield path matches scalar terminal values"
+    query: '*[_type == "nested" && field[].subfield match "alpha"] | order(_id)._id'
+    result:
+    - nested-scalar-both
+    - nested-scalar-partial
+    - nested-split
+
+  - name: "An array subfield path does not match terminal arrays"
+    query: '*[_type == "nested" && field[].subfield match "beta"] | order(_id)._id'
+    result:
+    - nested-scalar-both
+    - nested-split
+
+  - name: "An array subfield path matches terms across outer array elements"
+    query: '*[_type == "nested" && field[].subfield match "alpha beta"] | order(_id)._id'
+    result:
+    - nested-scalar-both
+    - nested-split
+
+  - name: "An array subfield path with a pattern array requires every pattern"
+    query: '*[_type == "nested" && field[].subfield match ["alpha", "beta"]] | order(_id)._id'
+    result:
+    - nested-scalar-both
+    - nested-split
+
+- name: "Leading wildcard preserves numeric boundaries"
+  version: ">= 1.0"
+  features:
+  - wildcardMatchSegmentation
+  documents:
+  - _id: boardwalk
+    _type: resort
+    href: "https://www.boardwalk1.com"
+  query: '*[_type == "resort" && href match "*" + $site]._id'
+  params:
+    site: "www.boardwalk1.com"
+  result:
+  - boardwalk
+
+- name: "Correlated patterns"
+  version: ">= 1.0"
+  features:
+  - wildcardMatchSegmentation
+  documents:
+  - _id: albumA
+    _type: album
+  - _id: albumB
+    _type: album
+  - _id: albumAEnglish
+    _type: translation
+  - _id: albumAFrench
+    _type: translation
+  - _id: albumBEnglish
+    _type: translation
+  tests:
+  - name: "Dynamic wildcard pattern"
+    query: |
+      *[_type == "album"] | order(_id) {
+        _id,
+        "translations": *[
+          _type == "translation" && _id match ^._id + "*"
+        ] | order(_id)._id
+      }
+    result:
+    - _id: albumA
+      translations:
+      - albumAEnglish
+      - albumAFrench
+    - _id: albumB
+      translations:
+      - albumBEnglish
+
+  - name: "Dynamic pattern array"
+    query: |
+      *[_type == "album"] | order(_id) {
+        _id,
+        "translations": *[
+          _type == "translation" && _id match [^._id + "*", "*English"]
+        ] | order(_id)._id
+      }
+    result:
+    - _id: albumA
+      translations:
+      - albumAEnglish
+    - _id: albumB
+      translations:
+      - albumBEnglish

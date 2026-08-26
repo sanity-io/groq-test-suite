@@ -100,3 +100,116 @@ tests:
     *[lower(pt::text(body)) match "This is a*"][]._id
   result:
     - "PT-block"
+
+- name: "Over a document field"
+  documents:
+  - _id: "a"
+    _type: "tag"
+    name: "Hello World"
+  - _id: "b"
+    _type: "tag"
+    name: "hello world"
+  - _id: "c"
+    _type: "tag"
+    name: "HELLO WORLD"
+  - _id: "d"
+    _type: "post"
+    name: "Goodbye"
+  - _id: "e"
+    _type: "tag"
+    name: "Other"
+  tests:
+  - name: "Equality"
+    query: '*[lower(name) == "hello world"] | order(_id)'
+    result:
+    - {_id: "a", _type: "tag", name: "Hello World"}
+    - {_id: "b", _type: "tag", name: "hello world"}
+    - {_id: "c", _type: "tag", name: "HELLO WORLD"}
+
+  - name: "Equality with a type filter"
+    query: '*[_type == "tag" && lower(name) == "hello world"] | order(_id)'
+    result:
+    - {_id: "a", _type: "tag", name: "Hello World"}
+    - {_id: "b", _type: "tag", name: "hello world"}
+    - {_id: "c", _type: "tag", name: "HELLO WORLD"}
+
+  - name: "In array"
+    query: '*[lower(name) in ["hello world", "other"]] | order(_id)'
+    result:
+    - {_id: "a", _type: "tag", name: "Hello World"}
+    - {_id: "b", _type: "tag", name: "hello world"}
+    - {_id: "c", _type: "tag", name: "HELLO WORLD"}
+    - {_id: "e", _type: "tag", name: "Other"}
+
+  - name: "No match"
+    query: '*[lower(name) == "nonexistent"]'
+    result: []
+
+  - name: "With projection"
+    query: '*[lower(name) == "goodbye"]{_id, name}'
+    result:
+    - {_id: "d", name: "Goodbye"}
+
+  - name: "With element access"
+    query: '*[lower(name) == "hello world"][0]._id'
+    result: "a"
+
+- name: "Parameterized equality"
+  documents:
+  - _id: "matching-estate"
+    _type: "estate"
+    estateId: "330F94A6-8BE4-47B3-8918-BFCF6EA6B842"
+    title: "Matching estate"
+  - _id: "other-estate"
+    _type: "estate"
+    estateId: "FD925ECF-A513-47FF-8709-AFFB7BE3F063"
+    title: "Other estate"
+  query: |
+    *[
+      _type == "estate" &&
+      lower(estateId) == $estateId
+    ][0]{
+      "estateId": lower(estateId),
+      title
+    }
+  params:
+    estateId: "330f94a6-8be4-47b3-8918-bfcf6ea6b842"
+  result:
+    estateId: "330f94a6-8be4-47b3-8918-bfcf6ea6b842"
+    title: "Matching estate"
+
+- name: "Membership with a null container element"
+  documents:
+  - _id: "missing"
+    _type: "item"
+  - _id: "null"
+    _type: "item"
+    value: null
+  - _id: "string"
+    _type: "item"
+    value: "target"
+  - _id: "other-string"
+    _type: "item"
+    value: "other"
+  - _id: "number"
+    _type: "item"
+    value: 2
+  - _id: "other-number"
+    _type: "item"
+    value: 3
+  - _id: "bool"
+    _type: "item"
+    value: true
+  - _id: "other-bool"
+    _type: "item"
+    value: false
+  query: "*[lower(value) in $values]._id | order(@ asc)"
+  params:
+    values: [null]
+  result:
+  - "bool"
+  - "missing"
+  - "null"
+  - "number"
+  - "other-bool"
+  - "other-number"

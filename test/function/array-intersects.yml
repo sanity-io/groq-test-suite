@@ -198,3 +198,190 @@ tests:
       - '["x"]'
       - '[dateTime("1903-01-01T00:00:00Z")]'
       - '["1900-01-01T00:00:00Z"]'
+
+- name: Document-relative arguments
+  documents:
+  - _id: a1
+    _type: article
+    title: First
+    tags:
+    - _ref: t1
+      _weak: true
+    - _ref: t2
+      _weak: true
+  - _id: a2
+    _type: article
+    title: Second
+    tags:
+    - _ref: t2
+      _weak: true
+    - _ref: t3
+      _weak: true
+  - _id: a3
+    _type: article
+    title: Third
+    tags:
+    - _ref: t4
+      _weak: true
+  - _id: a4
+    _type: article
+    title: NoTags
+  tests:
+  - name: "Document-relative left, literal right"
+    query: |
+      *[_type == "article" && array::intersects(tags[]._ref, ["t1", "t4"])] | order(_id) {_id}
+    result:
+    - {_id: a1}
+    - {_id: a3}
+
+  - name: "Literal left, document-relative right"
+    query: |
+      *[_type == "article" && array::intersects(["t3", "t2"], tags[]._ref)] | order(_id) {_id}
+    result:
+    - {_id: a1}
+    - {_id: a2}
+
+  - name: "Empty literal never intersects"
+    query: |
+      *[_type == "article" && array::intersects(tags[]._ref, [])] | order(_id) {_id}
+    result: []
+
+- name: Correlated arguments
+  documents:
+  - _id: root-number
+    _type: root
+    wanted:
+    - 2
+  - _id: root-string
+    _type: root
+    wanted:
+    - value
+  - _id: root-boolean
+    _type: root
+    wanted:
+    - true
+  - _id: root-null
+    _type: root
+    wanted:
+    - null
+  - _id: root-mixed
+    _type: root
+    wanted:
+    - value
+    - 2
+    - key: composite
+  - _id: root-scalar
+    _type: root
+    wanted: value
+  - _id: item-a
+    _type: item
+    values:
+    - 1
+    - 2
+  - _id: item-b
+    _type: item
+    values:
+    - false
+    - true
+  - _id: item-c
+    _type: item
+    values:
+    - null
+  - _id: item-d
+    _type: item
+    values:
+    - value
+  - _id: item-composite
+    _type: item
+    values:
+    - key: composite
+  - _id: target-number
+    _type: target
+    code: 2
+  - _id: target-string
+    _type: target
+    code: value
+  - _id: linked-number
+    _type: linkedItem
+    targets:
+    - _ref: target-number
+  - _id: linked-string
+    _type: linkedItem
+    targets:
+    - _ref: target-string
+  tests:
+  - name: "Keeps numbers"
+    query: '*[_id == "root-number"][0]{"items": *[_type == "item" && array::intersects(values[], ^.wanted)] | order(_id)._id}.items'
+    result:
+    - item-a
+
+  - name: "Keeps strings"
+    query: '*[_id == "root-string"][0]{"items": *[_type == "item" && array::intersects(values[], ^.wanted)] | order(_id)._id}.items'
+    result:
+    - item-d
+
+  - name: "Keeps booleans"
+    query: '*[_id == "root-boolean"][0]{"items": *[_type == "item" && array::intersects(values[], ^.wanted)] | order(_id)._id}.items'
+    result:
+    - item-b
+
+  - name: "Mixed values preserve exact semantics"
+    query: '*[_id == "root-mixed"][0]{"items": *[_type == "item" && array::intersects(values[], ^.wanted)] | order(_id)._id}.items'
+    result:
+    - item-a
+    - item-d
+
+  - name: "Rejects a scalar argument"
+    query: '*[_id == "root-scalar"][0]{"items": *[_type == "item" && array::intersects(values[], ^.wanted)] | order(_id)._id}.items'
+    result: []
+
+  - name: "Through a dereference, keeps numbers"
+    query: '*[_id == "root-number"][0]{"items": *[_type == "linkedItem" && array::intersects(targets[]->code, ^.wanted)] | order(_id)._id}.items'
+    result:
+    - linked-number
+
+  - name: "Through a dereference, mixed values preserve exact semantics"
+    query: '*[_id == "root-mixed"][0]{"items": *[_type == "linkedItem" && array::intersects(targets[]->code, ^.wanted)] | order(_id)._id}.items'
+    result:
+    - linked-number
+    - linked-string
+
+- name: Correlated single-element literals
+  documents:
+  - _id: "p-1"
+    _type: "parent"
+    tag: "red"
+  - _id: "p-2"
+    _type: "parent"
+    tag: "blue"
+  - _id: "p-3"
+    _type: "parent"
+    tag: "green"
+  - _id: "c-1"
+    _type: "child"
+    parent_tag: "red"
+  - _id: "c-2"
+    _type: "child"
+    parent_tag: "blue"
+  - _id: "c-3"
+    _type: "child"
+    parent_tag: "green"
+  - _id: "c-4"
+    _type: "child"
+    parent_tag: "red"
+  query: |
+    *[_type == "parent"] | order(_id) {
+      _id,
+      "children": *[_type == "child" && array::intersects([parent_tag], [^.tag])] | order(_id) { _id }
+    }
+  result:
+  - _id: "p-1"
+    children:
+    - _id: "c-1"
+    - _id: "c-4"
+  - _id: "p-2"
+    children:
+    - _id: "c-2"
+  - _id: "p-3"
+    children:
+    - _id: "c-3"

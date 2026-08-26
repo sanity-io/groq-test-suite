@@ -157,3 +157,62 @@ tests:
   - variables:
       expr: objsOfMixed[].val
     result: [14, "x", null]
+
+- name: Over document sets
+  documents:
+  - _id: "a1"
+    _type: "article"
+    category: "news"
+  - _id: "a2"
+    _type: "article"
+    category: "sports"
+  - _id: "a3"
+    _type: "article"
+    category: "news"
+  - _id: "p1"
+    _type: "page"
+    category: "about"
+  - _id: "p2"
+    _type: "page"
+    category: "contact"
+  tests:
+  - name: "Filtered by type"
+    query: 'array::unique(*[_type == "article"].category) | order(@ asc)'
+    result:
+    - "news"
+    - "sports"
+
+  - name: "Unfiltered"
+    query: "array::unique(*.category) | order(@ asc)"
+    result:
+    - "about"
+    - "contact"
+    - "news"
+    - "sports"
+
+  - name: "Filtered with no matches"
+    query: 'array::unique(*[_type == "nonexistent"].category) | order(@ asc)'
+    result: []
+
+  - name: "Filtered on a coerced date-time"
+    documents:
+    - _id: "d1"
+      _type: "doc"
+      t: "2019-01-01T00:00:00Z"
+      category: "c"
+    - _id: "d2"
+      _type: "doc"
+      t: "2019-06-15T00:00:00Z"
+      category: "d"
+    - _id: "d3"
+      _type: "doc"
+      t: "2021-03-10T00:00:00Z"
+      category: "a"
+    - _id: "d4"
+      _type: "doc"
+      t: "2022-08-20T00:00:00Z"
+      category: "b"
+    query: 'array::unique(*[_type == "doc" && dateTime(t) > dateTime("2020-01-01T00:00:00Z")].category) | order(@ asc)'
+    result:
+    - "a"
+    - "b"

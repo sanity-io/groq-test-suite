@@ -43,3 +43,385 @@ tests:
       - parentTitle: "Hello"
         grandParentTitle: "Norway"
         title: "World"
+
+- name: "Filter, element access and array postfix"
+  documents:
+  - _id: product-1
+    _type: product
+    slug: alpha
+
+  - _id: product-2
+    _type: product
+    slug: beta
+
+  - _id: parent-1
+    _type: parentProduct
+    variants:
+    - handle: alpha
+      markets: ["US", "UK", "DE"]
+    - handle: beta
+      markets: ["US", "FR"]
+    seasonal:
+    - handle: alpha
+      markets: ["JP", "KR"]
+    - handle: beta
+      markets: ["JP"]
+
+  - _id: suffix-1
+    _type: suffixTraversal
+    scalar: not-array
+    arrays:
+    - [11, 12]
+    - [21, 22]
+    objects:
+    - value: 1
+    - value: 2
+    - value: 3
+
+  - _id: suffix-2
+    _type: suffixTraversal
+    scalar: also-not-array
+    arrays:
+    - [31, 32]
+    objects:
+    - value: 2
+    - value: 4
+
+  - _id: bracket-1
+    _type: bracketAccess
+    items:
+    - k: "a"
+    - k: "b"
+
+  tests:
+  - name: "Filter, then element access, then an array postfix"
+    query: |
+      *[_id == "parent-1"][0].variants[handle == "alpha"][0].markets[]
+    result:
+    - "US"
+    - "UK"
+    - "DE"
+
+  - name: "Filter, then element access, then attribute access"
+    query: |
+      *[_id == "parent-1"][0].variants[handle == "alpha"][0].markets
+    result:
+    - "US"
+    - "UK"
+    - "DE"
+
+  - name: "Inside a nested projection with a parent reference"
+    query: |
+      *[_type == "product"] | order(_id) {
+        _id,
+        "markets": *[_id == "parent-1"][0].variants[handle == ^.slug][0].markets[]
+      }
+    result:
+    - _id: product-1
+      markets:
+      - "US"
+      - "UK"
+      - "DE"
+    - _id: product-2
+      markets:
+      - "US"
+      - "FR"
+
+  - name: "Inside a projection on a single document"
+    query: |
+      *[_type == "product" && _id == "product-1"][0]{
+        _id,
+        "markets": *[_id == "parent-1"][0].seasonal[handle == "alpha"][0].markets[]
+      }
+    result:
+      _id: product-1
+      markets:
+      - "JP"
+      - "KR"
+
+  - name: "An array postfix on a scalar field maps to null"
+    query: |
+      *[_type == "suffixTraversal"] | order(_id).scalar[]
+    result:
+    - null
+    - null
+
+  - name: "A repeated array postfix stays per-element"
+    query: |
+      *[_type == "suffixTraversal"] | order(_id).arrays[][]
+    result:
+    - [11, 12]
+    - [21, 22]
+    - [31, 32]
+
+  - name: "Element access after an array postfix maps per source element"
+    query: |
+      *[_type == "suffixTraversal"] | order(_id).arrays[][1]
+    result:
+    - [21, 22]
+    - null
+
+  - name: "An array postfix after element access flat-maps per source element"
+    query: |
+      *[_type == "suffixTraversal"] | order(_id).arrays[][1][]
+    result:
+    - 21
+    - 22
+    - null
+
+  - name: "Attribute access after a filter and element access maps per source element"
+    query: |
+      *[_type == "suffixTraversal"] | order(_id).objects[value == 2][0].value
+    result:
+    - 2
+    - 2
+
+  - name: "An array postfix after a filter and element access applies to the element"
+    query: |
+      *[_type == "suffixTraversal"] | order(_id).objects[value == 2][0][]
+    result:
+    - null
+    - null
+
+  - name: "String bracket access does not traverse arrays"
+    query: |
+      *[_id == "bracket-1"][0]{
+        "dotArray": items.en,
+        "literalArray": items["en"],
+        "parameterArray": items[$locale],
+        "explicitArrayTraversal": items[].k,
+        "literalObject": {"en": "value"}["en"],
+        "parameterObject": {"en": "value"}[$locale]
+      }
+    params:
+      locale: "en"
+    result:
+      dotArray: null
+      literalArray: null
+      parameterArray: null
+      explicitArrayTraversal:
+      - "a"
+      - "b"
+      literalObject: "value"
+      parameterObject: "value"
+
+- name: "Traversal over null and empty values"
+  documents:
+  - _id: footer-without-logos
+    _type: footer
+
+  - _id: null-test
+    _type: nullTest
+    content: null
+    items: []
+
+  tests:
+  - name: "A filter on a missing array field yields null"
+    query: '*[_type == "footer"].logos[!defined(asset)]'
+    result:
+    - null
+
+  - name: "count() includes the null from a missing array field"
+    query: 'count(*[_type == "footer"].logos[!defined(asset)])'
+    result: 1
+
+  - name: "Null and empty array targets"
+    query: |
+      *[_id == "null-test"][0]{
+        "null_traverse": content[],
+        "null_filter_traverse": content[_type == "foo"][],
+        "null_chain_traverse": content.hosts[],
+        "empty_traverse": items[],
+        "empty_filter_traverse": items[_type == "foo"][]
+      }
+    result:
+      null_traverse: null
+      null_filter_traverse: null
+      null_chain_traverse: null
+      empty_traverse: []
+      empty_filter_traverse: []
+
+- name: "Parent scope"
+  documents:
+  - _id: post-1
+    _type: post
+    title: Hello
+    category: tech
+
+  - _id: post-2
+    _type: post
+    title: World
+    category: news
+
+  - _id: post-3
+    _type: post
+    title: Goodbye
+    category: tech
+
+  - _id: procured-offer-1
+    _type: common.procuredOffer
+    brands:
+    - jetstar-holidays
+    propertyId: property-1
+    rooms:
+    - active: true
+      offers:
+      - id: offer-1
+      - id: offer-2
+
+  - _id: procured-offer-2
+    _type: common.procuredOffer
+    brands:
+    - qantas-holidays
+    propertyId: property-2
+    rooms:
+    - active: true
+      offers:
+      - id: offer-3
+
+  tests:
+  - name: "A parent reference at the root is null"
+    query: |
+      *[_type == "post"]{title, "parentId": ^._id} | order(title)
+    result:
+    - parentId: null
+      title: Goodbye
+    - parentId: null
+      title: Hello
+    - parentId: null
+      title: World
+
+  - name: "A parent attribute reference at the root is null"
+    query: |
+      *[_type == "post"]{title, "parentType": ^._type} | order(title)
+    result:
+    - parentType: null
+      title: Goodbye
+    - parentType: null
+      title: Hello
+    - parentType: null
+      title: World
+
+  - name: "A parent reference inside a sort expression"
+    query: |
+      *[_id == "post-1"][0]{
+        _id,
+        "related": *[_type == "post" && _id != "post-1"]
+          | order((^.category == category) desc, _id asc)
+          { _id, category, "matchesParent": (^.category == category) }
+      }
+    result:
+      _id: post-1
+      related:
+      - _id: post-3
+        category: tech
+        matchesParent: true
+      - _id: post-2
+        category: news
+        matchesParent: false
+
+  - name: "A parent reference skips array traversal scopes in a nested parameter filter"
+    query: |
+      *[_type == "common.procuredOffer" && $brand + "-holidays" in brands && propertyId in $hotelOffers[].propertyId]{
+        ...,
+        "matchedOffers": rooms[active == true][].offers[id in $hotelOffers[propertyId == ^.^.propertyId].offerId]{
+          "propertyId": ^.propertyId,
+          "offerId": id
+        }
+      }.matchedOffers[]
+    params:
+      brand: jetstar
+      hotelOffers:
+      - propertyId: property-1
+        offerId: offer-1
+    result:
+    - propertyId: property-1
+      offerId: offer-1
+
+- name: "Parent scope in nested projections"
+  documents:
+  - _id: asset-svg
+    _type: sanity.imageAsset
+    mimeType: image/svg+xml
+    metadata:
+      dimensions:
+        height: 32
+        width: 87
+      lqip: should-not-leak
+
+  - _id: quote-svg
+    _type: testimonialCard
+    companyLogo:
+      asset:
+        _ref: asset-svg
+
+  - _id: page-1
+    _type: landingPage
+    content:
+    - _key: svg-block
+      _type: quotePageBlock
+      quote:
+        _ref: quote-svg
+
+  - _id: menu-root
+    _type: menuRoot
+    defaultMenu:
+      _ref: menu
+
+  - _id: menu
+    _type: menu
+    options:
+    - _ref: menu-group
+
+  - _id: menu-group
+    _type: menuGroup
+    options:
+    - _ref: picker-1
+
+  - _id: picker-1
+    _type: picker
+
+  tests:
+  - name: "A conditional spread sees the dereferenced parent scope"
+    query: |
+      *[_type == "landingPage"][0] {
+        content[_type == "quotePageBlock"] {
+          _key,
+          quote-> {
+            _type,
+            _type == "testimonialCard" => {
+              companyLogo {
+                asset-> {
+                  _id,
+                  metadata {
+                    "parentMimeType": ^.mimeType,
+                    dimensions { height, width },
+                    ^.mimeType != "image/svg+xml" => { lqip }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    result:
+      content:
+      - _key: svg-block
+        quote:
+          _type: testimonialCard
+          companyLogo:
+            asset:
+              _id: asset-svg
+              metadata:
+                parentMimeType: image/svg+xml
+                dimensions:
+                  height: 32
+                  width: 87
+
+  - name: "A nested query sees parent fields from a chained dereference"
+    query: |
+      *[_id == "menu-root"][0].defaultMenu->options[]->options[]->{
+        "pickers": *["picker" == ^._type && _id == ^._id]._id
+      }.pickers[]
+    result:
+    - picker-1

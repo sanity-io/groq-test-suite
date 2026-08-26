@@ -56,3 +56,117 @@ tests:
   - query: 'dateTime()'
   - query: 'dateTime(1, 2, 3)'
   - query: 'dateTime(1, 2, 3, 4)'
+
+- name: "In a filter"
+  documents:
+  - _id: hours-1
+    _type: hours
+    endDate: "2026-01-01T22:00:00.000Z"
+    startDate: "2025-12-28T15:31:00.000Z"
+  - _id: hours-2
+    _type: hours
+    endDate: "2026-01-02T05:01:00.000Z"
+    startDate: "2026-01-02T05:00:00.000Z"
+  - _id: hours-3
+    _type: hours
+    endDate: "2026-08-01T14:48:00.000Z"
+    startDate: "2026-01-02T05:05:00.000Z"
+  tests:
+  - name: "Comparison with element access"
+    query: |
+      *[_type == "hours"
+        && dateTime("2026-03-22T00:00:00Z") < dateTime(endDate)
+      ][0]{ _id }
+    result:
+      _id: hours-3
+
+  - name: "Comparison without element access"
+    query: |
+      *[_type == "hours"
+        && dateTime("2026-03-22T00:00:00Z") < dateTime(endDate)
+      ]{ _id }
+    result:
+    - _id: hours-3
+
+  - name: "Two comparisons with element access"
+    query: |
+      *[_type == "hours"
+        && dateTime("2026-03-22T00:00:00Z") < dateTime(endDate)
+        && dateTime("2026-03-22T00:00:00Z") >= dateTime(startDate)
+      ][0]{ _id, startDate, endDate }
+    result:
+      _id: hours-3
+      startDate: "2026-01-02T05:05:00.000Z"
+      endDate: "2026-08-01T14:48:00.000Z"
+
+  - name: "Greater-than-or-equal with element access"
+    query: |
+      *[_type == "hours"
+        && dateTime(endDate) >= dateTime("2026-08-01T14:48:00.000Z")
+      ][0]{ _id }
+    result:
+      _id: hours-3
+
+  - name: "No match with element access"
+    query: |
+      *[_type == "hours"
+        && dateTime("2030-01-01T00:00:00Z") < dateTime(endDate)
+      ][0]{ _id }
+    result: null
+
+- name: "Counted over a filtered document set"
+  documents:
+  - _id: "d1"
+    _type: "doc"
+    t: "2019-01-01T00:00:00Z"
+    category: "c"
+  - _id: "d2"
+    _type: "doc"
+    t: "2019-06-15T00:00:00Z"
+    category: "d"
+  - _id: "d3"
+    _type: "doc"
+    t: "2021-03-10T00:00:00Z"
+    category: "a"
+  - _id: "d4"
+    _type: "doc"
+    t: "2022-08-20T00:00:00Z"
+    category: "b"
+  query: 'count(*[_type == "doc" && dateTime(t) > dateTime("2020-01-01T00:00:00Z")])'
+  result: 2
+
+- name: "Ordering and correlated comparison"
+  documents:
+  - _id: event-earlier
+    _type: event
+    published: "2024-01-01T00:00:00+02:00"
+  - _id: event-later
+    _type: event
+    published: "2023-12-31T23:00:00Z"
+  - _id: parent
+    _type: parent
+    published: "2024-01-01T00:00:00+02:00"
+  - _id: child-same-instant
+    _type: child
+    published: "2023-12-31T22:00:00Z"
+  - _id: child-later
+    _type: child
+    published: "2023-12-31T23:00:00Z"
+  tests:
+  - name: "Order by coerced date-time"
+    query: '*[_type == "event"] | order(dateTime(published) asc)._id'
+    result:
+    - event-earlier
+    - event-later
+
+  - name: "Correlated coerced date-time equality"
+    query: |
+      *[_id == "parent"] {
+        "matches": *[
+          _type == "child"
+          && dateTime(published) == dateTime(^.published)
+        ] | order(_id)._id
+      }
+    result:
+    - matches:
+      - child-same-instant

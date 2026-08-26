@@ -136,3 +136,123 @@ tests:
 
       - {variables: {slice: "-10..-1"}, result: ["a", "b", "c", "d"]}
       - {variables: {slice: "-100..-10"}, result: []}
+
+  - name: "Chained slices"
+    documents:
+    - _id: slice-00
+      _type: sliceTraversal
+    - _id: slice-01
+      _type: sliceTraversal
+    - _id: slice-02
+      _type: sliceTraversal
+    - _id: slice-03
+      _type: sliceTraversal
+    - _id: slice-04
+      _type: sliceTraversal
+    - _id: slice-05
+      _type: sliceTraversal
+    - _id: slice-06
+      _type: sliceTraversal
+    - _id: slice-07
+      _type: sliceTraversal
+    - _id: slice-08
+      _type: sliceTraversal
+    - _id: slice-09
+      _type: sliceTraversal
+    tests:
+    - name: "The outer window composes inside the inner one"
+      query: '*[_type == "sliceTraversal"] | order(_id)[2...6][3...10]._id'
+      result:
+      - slice-05
+
+    - name: "The composition can be empty"
+      query: '*[_type == "sliceTraversal"] | order(_id)[2...4][3...5]._id'
+      result: []
+
+    - name: "An out-of-range outer window is clamped"
+      query: '*[_type == "sliceTraversal"] | order(_id)[2...6][20...30]._id'
+      result: []
+
+    - name: "count() observes chained slices"
+      query: 'count(*[_type == "sliceTraversal"][2...6][3...10])'
+      result: 1
+
+    - name: "count() observes a single offset slice"
+      query: 'count(*[_type == "sliceTraversal"][7...20])'
+      result: 3
+
+  - name: "Non-integer indices"
+    documents:
+    - _id: a
+      _type: item
+      value: 1
+    - _id: b
+      _type: item
+      value: 2
+    - _id: c
+      _type: item
+      value: 3
+    tests:
+    - name: "A float literal index is invalid"
+      query: '*[0.100]'
+      valid: false
+
+    - name: "A float parameter index is invalid"
+      query: '*[$idx]'
+      params:
+        idx: 0.1
+      valid: false
+
+    - name: "A float literal range start is invalid"
+      query: '*[0.100..2]'
+      valid: false
+
+    - name: "A float parameter range start is invalid"
+      query: '*[$from..2]'
+      params:
+        from: 0.1
+      valid: false
+
+    - name: "A float literal range end is invalid"
+      query: '*[0..1.5]'
+      valid: false
+
+    - name: "An integer literal index is valid"
+      query: '*[0].value'
+      result: 1
+
+    - name: "A later integer literal index is valid"
+      query: '*[1].value'
+      result: 2
+
+    - name: "An integer parameter index is valid"
+      query: '*[$idx].value'
+      params:
+        idx: 1
+      result: 2
+
+  - name: "Literal bases"
+    tests:
+    - name: "Null propagates"
+      query: 'null[0..2]'
+      result: null
+
+    - name: "Empty array"
+      query: '[][0..2]'
+      result: []
+
+    - name: "Range beyond the length"
+      query: '[1, 2][5..7]'
+      result: []
+
+    - name: "Inclusive range"
+      query: '[1, 2, 3][0..2]'
+      result: [1, 2, 3]
+
+    - name: "Exclusive range"
+      query: '[1, 2, 3][0...2]'
+      result: [1, 2]
+
+    - name: "Adding an array and an object yields null"
+      query: '([] + {})[0..2]'
+      result: null

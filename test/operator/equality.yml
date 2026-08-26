@@ -27,3 +27,105 @@ tests:
   tests:
   - query: "~val~ == ~val~"
     name: "compare with itself"
+
+- name: "Array traversal on one side"
+  version: ">= 1.0"
+  documents:
+  - _id: "doc1"
+    _type: "article"
+    tags:
+    - _ref: "tag1"
+      _weak: true
+      _type: reference
+    - _ref: "tag2"
+      _weak: true
+      _type: reference
+  - _id: "doc2"
+    _type: "article"
+    tags:
+    - _ref: "tag3"
+      _weak: true
+      _type: reference
+  - _id: "doc3"
+    _type: "article"
+  - _id: "doc4"
+    _type: "priceIndex"
+    slug:
+      current: "norge-monthly"
+  - _id: "doc5"
+    _type: "area"
+    children:
+    - _ref: "child"
+      _weak: true
+    areas:
+    - ref: "parent"
+
+  tests:
+  - name: "An array traversal never equals a string"
+    query: '*[tags[]._ref == "tag1"]'
+    result: []
+
+  - name: "A string never equals an array traversal"
+    query: '*["tag1" == tags[]._ref]'
+    result: []
+
+  - name: "An array traversal never equals a number"
+    query: '*[tags[]._ref == 42]'
+    result: []
+
+  - name: "Membership is unaffected"
+    query: '*["tag1" in tags[]._ref]'
+    result:
+    - _id: "doc1"
+      _type: "article"
+      tags:
+      - _ref: "tag1"
+        _weak: true
+        _type: reference
+      - _ref: "tag2"
+        _weak: true
+        _type: reference
+
+  - name: "Always-false branches do not poison a disjunction"
+    query: |
+      *[
+        children[]._ref == "child"
+        || areas[].ref == "parent"
+        || slug.current == "norge-monthly"
+      ] | order(_id)._id
+    result:
+    - "doc4"
+
+- name: "Indexed document-relative path"
+  version: ">= 1.0"
+  documents:
+  - _id: a1
+    _type: article
+    title: First
+    tags:
+    - _ref: t1
+      _weak: true
+    - _ref: t2
+      _weak: true
+  - _id: a2
+    _type: article
+    title: Second
+    tags:
+    - _ref: t2
+      _weak: true
+    - _ref: t3
+      _weak: true
+  - _id: a3
+    _type: article
+    title: Third
+    tags:
+    - _ref: t4
+      _weak: true
+  - _id: a4
+    _type: article
+    title: NoTags
+
+  query: |
+    *[_type == "article" && "t2" == tags[0]._ref] | order(_id) {_id}
+  result:
+  - {_id: a2}

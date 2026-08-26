@@ -55,3 +55,29 @@ tests:
     result: null
   - query: ~I~ || ~I~
     result: null
+
+- name: "Over documents"
+  documents:
+  - _id: "area-1"
+    _type: "area"
+    name: "Area One"
+  - _id: "area-2"
+    _type: "area"
+    name: "Area Two"
+  - _id: "region-1"
+    _type: "region"
+    name: "Region One"
+  - _id: "special-1"
+    _type: "special"
+  - _id: "other-1"
+    _type: "article"
+    name: "Unrelated"
+  query: |
+    *[_type == "area" || _type == "region"] | order(_id asc) { _id, _type }
+  result:
+  - _id: "area-1"
+    _type: "area"
+  - _id: "area-2"
+    _type: "area"
+  - _id: "region-1"
+    _type: "region"

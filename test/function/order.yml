@@ -140,3 +140,731 @@ tests:
     - variables: {dir: "desc"}
       result: [null, true, false, "aa", "aA", "A😀", "Aå", "Aa", 20.4, 13, 7, 3.2, 3.1, 2, 1, 0.8, -3.1, -4]
 
+- name: "Chained ordering is stable"
+  version: ">= 1.0"
+  documents:
+  - _id: pub-1
+    _type: publication
+    year: "2020"
+    published: null
+
+  - _id: pub-2
+    _type: publication
+    year: "2022"
+    published: null
+
+  - _id: pub-3
+    _type: publication
+    year: "2021"
+    published: null
+
+  - _id: pub-4
+    _type: publication
+    year: "2022"
+    published: "2022-06-01"
+
+  - _id: pub-5
+    _type: publication
+    year: "2020"
+    published: null
+
+  tests:
+  - name: "Constant second key preserves the first ordering"
+    query: |
+      *[_type == "publication"]
+        | order(year desc)
+        | order(_type desc)
+        { _id, year }
+    result:
+    - _id: pub-2
+      year: "2022"
+    - _id: pub-4
+      year: "2022"
+    - _id: pub-3
+      year: "2021"
+    - _id: pub-1
+      year: "2020"
+    - _id: pub-5
+      year: "2020"
+
+  - name: "Mixed values preserve the first ordering within a group"
+    # Nulls sort before strings in desc order. Among the null-published
+    # documents, the year desc ordering from the first order() survives.
+    query: |
+      *[_type == "publication"]
+        | order(year desc)
+        | order(published desc)
+        { _id, year, published }
+    result:
+    - _id: pub-2
+      year: "2022"
+      published: null
+    - _id: pub-3
+      year: "2021"
+      published: null
+    - _id: pub-1
+      year: "2020"
+      published: null
+    - _id: pub-5
+      year: "2020"
+      published: null
+    - _id: pub-4
+      year: "2022"
+      published: "2022-06-01"
+
+- name: "With filters and limits"
+  version: ">= 1.0"
+  documents:
+  - _id: art-1
+    _type: article
+    title: "Alpha"
+    year: "2020"
+    publishedAt: "2020-03-15"
+
+  - _id: art-2
+    _type: article
+    title: "Beta"
+    year: "2022"
+    publishedAt: "2022-07-01"
+
+  - _id: art-3
+    _type: article
+    title: "Gamma"
+    year: "2021"
+    publishedAt: "2021-11-20"
+
+  - _id: art-4
+    _type: article
+    title: "Delta"
+    year: "2022"
+    publishedAt: "2022-01-10"
+
+  - _id: art-5
+    _type: article
+    title: "Epsilon"
+    year: "2020"
+    publishedAt: "2020-09-05"
+
+  # publishedAt is explicitly null
+  - _id: art-6
+    _type: article
+    title: "Zeta"
+    year: "2023"
+    publishedAt: null
+
+  # publishedAt is missing entirely
+  - _id: art-7
+    _type: article
+    title: "Eta"
+    year: "2021"
+
+  # Documents where the sort field is missing on every document
+  - _id: svc-1
+    _type: service
+    name: "Auth"
+
+  - _id: svc-2
+    _type: service
+    name: "Billing"
+
+  - _id: svc-3
+    _type: service
+    name: "Cache"
+
+  - _id: svc-4
+    _type: service
+    name: "DNS"
+
+  - _id: svc-5
+    _type: service
+    name: "Events"
+
+  tests:
+  - name: "Ascending with an inequality-against-null filter"
+    query: |
+      *[publishedAt != null] | order(publishedAt asc) { _id, publishedAt }
+    result:
+    - _id: art-1
+      publishedAt: "2020-03-15"
+    - _id: art-5
+      publishedAt: "2020-09-05"
+    - _id: art-3
+      publishedAt: "2021-11-20"
+    - _id: art-4
+      publishedAt: "2022-01-10"
+    - _id: art-2
+      publishedAt: "2022-07-01"
+
+  - name: "Descending with an inequality-against-null filter"
+    query: |
+      *[publishedAt != null] | order(publishedAt desc) { _id, publishedAt }
+    result:
+    - _id: art-2
+      publishedAt: "2022-07-01"
+    - _id: art-4
+      publishedAt: "2022-01-10"
+    - _id: art-3
+      publishedAt: "2021-11-20"
+    - _id: art-5
+      publishedAt: "2020-09-05"
+    - _id: art-1
+      publishedAt: "2020-03-15"
+
+  - name: "Inequality-against-null filter with a slice"
+    query: |
+      *[publishedAt != null] | order(publishedAt asc)[0...3] { _id, publishedAt }
+    result:
+    - _id: art-1
+      publishedAt: "2020-03-15"
+    - _id: art-5
+      publishedAt: "2020-09-05"
+    - _id: art-3
+      publishedAt: "2021-11-20"
+
+  - name: "defined() filter"
+    query: |
+      *[defined(publishedAt)] | order(publishedAt asc) { _id, publishedAt }
+    result:
+    - _id: art-1
+      publishedAt: "2020-03-15"
+    - _id: art-5
+      publishedAt: "2020-09-05"
+    - _id: art-3
+      publishedAt: "2021-11-20"
+    - _id: art-4
+      publishedAt: "2022-01-10"
+    - _id: art-2
+      publishedAt: "2022-07-01"
+
+  - name: "Absent sort field with a slice"
+    # The sort key is null on every document, so ordering is a no-op and
+    # the slice must still return the leading documents.
+    query: |
+      *[_type == "service"] | order(nonExistentField asc)[0...3] { _id }
+    result:
+    - _id: svc-1
+    - _id: svc-2
+    - _id: svc-3
+
+  - name: "Absent sort field descending with a slice"
+    query: |
+      *[_type == "service"] | order(nonExistentField desc)[0...3] { _id }
+    result:
+    - _id: svc-1
+    - _id: svc-2
+    - _id: svc-3
+
+  - name: "Absent sort field without a slice"
+    query: |
+      *[_type == "service"] | order(nonExistentField asc) { _id }
+    result:
+    - _id: svc-1
+    - _id: svc-2
+    - _id: svc-3
+    - _id: svc-4
+    - _id: svc-5
+
+  - name: "Absent sort field with a slice covering everything"
+    query: |
+      *[_type == "service"] | order(nonExistentField asc)[0...10] { _id }
+    result:
+    - _id: svc-1
+    - _id: svc-2
+    - _id: svc-3
+    - _id: svc-4
+    - _id: svc-5
+
+  - name: "Multiple keys with a limit"
+    query: |
+      *[_type == "article"] | order(year desc, _id asc)[0...2] { _id, year }
+    result:
+    - _id: art-6
+      year: "2023"
+    - _id: art-2
+      year: "2022"
+
+  - name: "Multiple keys with a limit spanning a tie"
+    query: |
+      *[_type == "article"] | order(year desc, _id asc)[0...4] { _id, year }
+    result:
+    - _id: art-6
+      year: "2023"
+    - _id: art-2
+      year: "2022"
+    - _id: art-4
+      year: "2022"
+    - _id: art-3
+      year: "2021"
+
+  - name: "Two ascending keys with a limit"
+    query: |
+      *[_type == "article"] | order(year asc, publishedAt asc)[0...3] { _id, year, publishedAt }
+    result:
+    - _id: art-1
+      year: "2020"
+      publishedAt: "2020-03-15"
+    - _id: art-5
+      year: "2020"
+      publishedAt: "2020-09-05"
+    - _id: art-3
+      year: "2021"
+      publishedAt: "2021-11-20"
+
+  - name: "Two descending keys with a limit"
+    query: |
+      *[_type == "article"] | order(year desc, publishedAt desc)[0...3] { _id, year, publishedAt }
+    result:
+    - _id: art-6
+      year: "2023"
+      publishedAt: null
+    - _id: art-2
+      year: "2022"
+      publishedAt: "2022-07-01"
+    - _id: art-4
+      year: "2022"
+      publishedAt: "2022-01-10"
+
+  - name: "Mixed directions with a limit"
+    query: |
+      *[_type == "article"] | order(year desc, publishedAt asc)[0...4] { _id, year, publishedAt }
+    result:
+    - _id: art-6
+      year: "2023"
+      publishedAt: null
+    - _id: art-4
+      year: "2022"
+      publishedAt: "2022-01-10"
+    - _id: art-2
+      year: "2022"
+      publishedAt: "2022-07-01"
+    - _id: art-3
+      year: "2021"
+      publishedAt: "2021-11-20"
+
+  - name: "Multiple keys without a limit"
+    query: |
+      *[_type == "article"] | order(year desc, _id asc) { _id, year }
+    result:
+    - _id: art-6
+      year: "2023"
+    - _id: art-2
+      year: "2022"
+    - _id: art-4
+      year: "2022"
+    - _id: art-3
+      year: "2021"
+    - _id: art-7
+      year: "2021"
+    - _id: art-1
+      year: "2020"
+    - _id: art-5
+      year: "2020"
+
+- name: "With a dereferencing filter"
+  version: ">= 1.0"
+  # Active articles sorted desc:  15, 13, 12, 10, 09, 07, 06, 04, 03, 01
+  # Active articles sorted asc:   01, 03, 04, 06, 07, 09, 10, 12, 13, 15
+  # Inactive articles sorted desc: 14, 11, 08, 05, 02
+  documents:
+  - _id: "author-1"
+    _type: "author"
+    name: "Alice"
+    active: true
+
+  - _id: "author-2"
+    _type: "author"
+    name: "Bob"
+    active: false
+
+  - _id: "author-3"
+    _type: "author"
+    name: "Carol"
+    active: true
+
+  - _id: "article-01"
+    _type: "article"
+    title: "Article One"
+    publishedAt: "2024-01-01T00:00:00Z"
+    author:
+      _ref: "author-1"
+    featured: false
+
+  - _id: "article-02"
+    _type: "article"
+    title: "Article Two"
+    publishedAt: "2024-01-02T00:00:00Z"
+    author:
+      _ref: "author-2"
+    featured: true
+
+  - _id: "article-03"
+    _type: "article"
+    title: "Article Three"
+    publishedAt: "2024-01-03T00:00:00Z"
+    author:
+      _ref: "author-3"
+    featured: false
+
+  - _id: "article-04"
+    _type: "article"
+    title: "Article Four"
+    publishedAt: "2024-01-04T00:00:00Z"
+    author:
+      _ref: "author-1"
+    featured: true
+
+  - _id: "article-05"
+    _type: "article"
+    title: "Article Five"
+    publishedAt: "2024-01-05T00:00:00Z"
+    author:
+      _ref: "author-2"
+    featured: false
+
+  - _id: "article-06"
+    _type: "article"
+    title: "Article Six"
+    publishedAt: "2024-01-06T00:00:00Z"
+    author:
+      _ref: "author-3"
+    featured: true
+
+  - _id: "article-07"
+    _type: "article"
+    title: "Article Seven"
+    publishedAt: "2024-01-07T00:00:00Z"
+    author:
+      _ref: "author-1"
+    featured: false
+
+  - _id: "article-08"
+    _type: "article"
+    title: "Article Eight"
+    publishedAt: "2024-01-08T00:00:00Z"
+    author:
+      _ref: "author-2"
+    featured: true
+
+  - _id: "article-09"
+    _type: "article"
+    title: "Article Nine"
+    publishedAt: "2024-01-09T00:00:00Z"
+    author:
+      _ref: "author-3"
+    featured: false
+
+  - _id: "article-10"
+    _type: "article"
+    title: "Article Ten"
+    publishedAt: "2024-01-10T00:00:00Z"
+    author:
+      _ref: "author-1"
+    featured: true
+
+  - _id: "article-11"
+    _type: "article"
+    title: "Article Eleven"
+    publishedAt: "2024-01-11T00:00:00Z"
+    author:
+      _ref: "author-2"
+    featured: false
+
+  - _id: "article-12"
+    _type: "article"
+    title: "Article Twelve"
+    publishedAt: "2024-01-12T00:00:00Z"
+    author:
+      _ref: "author-3"
+    featured: true
+
+  - _id: "article-13"
+    _type: "article"
+    title: "Article Thirteen"
+    publishedAt: "2024-01-13T00:00:00Z"
+    author:
+      _ref: "author-1"
+    featured: false
+
+  - _id: "article-14"
+    _type: "article"
+    title: "Article Fourteen"
+    publishedAt: "2024-01-14T00:00:00Z"
+    author:
+      _ref: "author-2"
+    featured: true
+
+  - _id: "article-15"
+    _type: "article"
+    title: "Article Fifteen"
+    publishedAt: "2024-01-15T00:00:00Z"
+    author:
+      _ref: "author-3"
+    featured: false
+
+  tests:
+  - name: "Descending with a slice"
+    query: |
+      *[_type == "article" && author->active == true] | order(publishedAt desc)[0...5] { _id }
+    result:
+    - _id: "article-15"
+    - _id: "article-13"
+    - _id: "article-12"
+    - _id: "article-10"
+    - _id: "article-09"
+
+  - name: "Ascending with a slice"
+    query: |
+      *[_type == "article" && author->active == true] | order(publishedAt asc)[0...3] { _id }
+    result:
+    - _id: "article-01"
+    - _id: "article-03"
+    - _id: "article-04"
+
+  - name: "Descending without a slice"
+    query: |
+      *[_type == "article" && author->active != true] | order(publishedAt desc) { _id }
+    result:
+    - _id: "article-14"
+    - _id: "article-11"
+    - _id: "article-08"
+    - _id: "article-05"
+    - _id: "article-02"
+
+  - name: "Descending with an offset slice"
+    query: |
+      *[_type == "article" && author->active == true] | order(publishedAt desc)[2...5] { _id }
+    result:
+    - _id: "article-12"
+    - _id: "article-10"
+    - _id: "article-09"
+
+- name: "With a negated dereferencing filter"
+  version: ">= 1.0"
+  # Articles whose author is not deprioritized: 01, 03, 04, 06, 07
+  # Sorted desc: 07, 06, 04, 03, 01
+  # Sorted asc:  01, 03, 04, 06, 07
+  documents:
+  - _id: "author-1"
+    _type: "author"
+    name: "Alice"
+    deprioritize: false
+
+  - _id: "author-2"
+    _type: "author"
+    name: "Bob"
+    deprioritize: true
+
+  - _id: "author-3"
+    _type: "author"
+    name: "Carol"
+    deprioritize: false
+
+  - _id: "article-01"
+    _type: "article"
+    title: "Article One"
+    publishedAt: "2024-01-01T00:00:00Z"
+    author:
+      _ref: "author-1"
+
+  - _id: "article-02"
+    _type: "article"
+    title: "Article Two"
+    publishedAt: "2024-01-02T00:00:00Z"
+    author:
+      _ref: "author-2"
+
+  - _id: "article-03"
+    _type: "article"
+    title: "Article Three"
+    publishedAt: "2024-01-03T00:00:00Z"
+    author:
+      _ref: "author-3"
+
+  - _id: "article-04"
+    _type: "article"
+    title: "Article Four"
+    publishedAt: "2024-01-04T00:00:00Z"
+    author:
+      _ref: "author-1"
+
+  - _id: "article-05"
+    _type: "article"
+    title: "Article Five"
+    publishedAt: "2024-01-05T00:00:00Z"
+    author:
+      _ref: "author-2"
+
+  - _id: "article-06"
+    _type: "article"
+    title: "Article Six"
+    publishedAt: "2024-01-06T00:00:00Z"
+    author:
+      _ref: "author-3"
+
+  - _id: "article-07"
+    _type: "article"
+    title: "Article Seven"
+    publishedAt: "2024-01-07T00:00:00Z"
+    author:
+      _ref: "author-1"
+
+  - _id: "article-08"
+    _type: "article"
+    title: "Article Eight"
+    publishedAt: "2024-01-08T00:00:00Z"
+    author:
+      _ref: "author-2"
+
+  tests:
+  - name: "Descending with a slice"
+    query: |
+      *[_type == "article" && author->deprioritize != true] | order(publishedAt desc)[0...3] { _id }
+    result:
+    - _id: "article-07"
+    - _id: "article-06"
+    - _id: "article-04"
+
+  - name: "Ascending with a slice"
+    query: |
+      *[_type == "article" && author->deprioritize != true] | order(publishedAt asc)[0...2] { _id }
+    result:
+    - _id: "article-01"
+    - _id: "article-03"
+
+  - name: "Descending with an offset slice"
+    query: |
+      *[_type == "article" && author->deprioritize != true] | order(publishedAt desc)[1...3] { _id }
+    result:
+    - _id: "article-06"
+    - _id: "article-04"
+
+  - name: "Without a dereferencing filter"
+    query: |
+      *[_type == "article"] | order(publishedAt desc)[0...3] { _id }
+    result:
+    - _id: "article-08"
+    - _id: "article-07"
+    - _id: "article-06"
+
+- name: "Relative to projections and slices"
+  version: ">= 1.0"
+  documents:
+  - _id: projection-1
+    _type: projectionOrder
+    title: First
+    rank: 1
+
+  - _id: projection-2
+    _type: projectionOrder
+    title: Second
+    rank: 3
+
+  - _id: projection-3
+    _type: projectionOrder
+    title: Third
+    rank: 2
+
+  - _id: slice-1
+    _type: sliceOrder
+    rank: 1
+
+  - _id: slice-2
+    _type: sliceOrder
+    rank: 3
+
+  - _id: slice-3
+    _type: sliceOrder
+    rank: 2
+
+  - _id: slice-4
+    _type: sliceOrder
+    rank: 100
+
+  tests:
+  - name: "After a projection, only projected values are visible"
+    query: |
+      *[_type == "projectionOrder"]{_id, title} | order(rank desc)._id
+    result:
+    - projection-1
+    - projection-2
+    - projection-3
+
+  - name: "After a slice, only the sliced values are sorted"
+    query: |
+      *[_type == "sliceOrder"][0..2] | order(rank desc)._id
+    result:
+    - slice-2
+    - slice-3
+    - slice-1
+
+  - name: "Parameterized sort key"
+    query: |
+      *[_type == "projectionOrder"] | order(@[$sortOrder] asc)[0...2]._id
+    params:
+      sortOrder: rank
+    result:
+    - projection-1
+    - projection-3
+
+- name: "Over the whole document set with a slice"
+  version: ">= 1.0"
+  documents:
+  - _id: "doc1"
+    _type: "thing"
+    n: 3
+  - _id: "doc2"
+    _type: "thing"
+    n: 1
+  - _id: "doc3"
+    _type: "thing"
+    n: 4
+  - _id: "doc4"
+    _type: "thing"
+    n: 1
+  - _id: "doc5"
+    _type: "thing"
+    n: 5
+
+  tests:
+  - name: "Ascending with a limiting slice"
+    query: '*[] | order(_id asc) [0...3]._id'
+    result:
+    - "doc1"
+    - "doc2"
+    - "doc3"
+
+  - name: "Descending with a limiting slice"
+    query: '*[] | order(_id desc) [0...2]._id'
+    result:
+    - "doc5"
+    - "doc4"
+
+  - name: "Ascending with an offset slice"
+    query: '*[] | order(_id asc) [1...4]._id'
+    result:
+    - "doc2"
+    - "doc3"
+    - "doc4"
+
+  - name: "Without a slice"
+    query: '*[] | order(_id asc)._id'
+    result:
+    - "doc1"
+    - "doc2"
+    - "doc3"
+    - "doc4"
+    - "doc5"
+
+  - name: "Slice without ordering"
+    query: '*[][0...2]._id'
+    result:
+    - "doc1"
+    - "doc2"
+
+  - name: "Non-_id sort key with a limiting slice"
+    query: '*[] | order(n asc, _id asc) [0...3]._id'
+    result:
+    - "doc2"
+    - "doc4"
+    - "doc1"
+
